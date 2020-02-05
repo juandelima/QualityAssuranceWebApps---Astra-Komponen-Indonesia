@@ -133,6 +133,7 @@ class User extends CI_Controller {
 	}
 
 	public function edit_profile($id_user) {
+		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
 		$valid = $this->form_validation;
 		$valid->set_rules('full_name', 'FULL NAME', 'required',
@@ -222,12 +223,14 @@ class User extends CI_Controller {
 		}
 
 		$get_data = array(
-			'user' => $user
+			'user' => $user,
+			'slug' => $slug
 		);
 		$this->load->view('user/edit_profile', $get_data);	
 	}
 
 	public function edit($id_user) {
+		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
 		$valid = $this->form_validation;
 		$valid->set_rules('full_name', 'FULL NAME', 'required',
@@ -304,7 +307,8 @@ class User extends CI_Controller {
 		}
 
 		$get_data = array(
-			'user' => $user
+			'user' => $user,
+			'slug' => $slug
 		);
 		$this->load->view('user/edit', $get_data);		
 	}
