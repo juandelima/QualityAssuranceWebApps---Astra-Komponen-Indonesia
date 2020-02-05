@@ -181,13 +181,13 @@
 						<ul class="nav nav-tabs">
 							<li class="active">
 								<a href="#chart_parts" data-toggle="tab">
-									<span class="visible-xs"><i class="entypo-home"></i></span>
+									<span class="visible-xs"><i class="entypo-chart-line"></i></span>
 									<span class="hidden-xs">Parts Graph</span>
 								</a>
 							</li>
 							<li>
 								<a href="#chart_rejections" data-toggle="tab">
-									<span class="visible-xs"><i class="entypo-user"></i></span>
+									<span class="visible-xs"><i class="entypo-chart-bar"></i></span>
 									<span class="hidden-xs">Rejections Graph</span>
 								</a>
 							</li>
