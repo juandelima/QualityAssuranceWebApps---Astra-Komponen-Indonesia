@@ -211,7 +211,7 @@
 											</div>
 										</div>
 
-										<table class="table table-bordered table-responsive">
+										<table class="table table-bordered table-responsive" id="table-qgi-point">
 											<thead>
 												<tr>
 													<th>HS</th>

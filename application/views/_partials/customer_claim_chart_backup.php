@@ -21,7 +21,8 @@
 				}
 			},
 			"pageLength": 10,
-			"lengthChange": true
+			"lengthChange": true,
+			"scrollX": true
 		});
 		<?php
 			foreach($customer_claim as $data) {
@@ -106,14 +107,29 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartData = [];
+							const chartValue = [];
+							const chartPpm = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
+								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
+									}
+									let dataValue = {
 										"value": obj[key],
 									}
-									chartData.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartData.push(dataLabel);
+									chartValue.push(dataValue);
+									chartPpm.push(dataPpm);
 								}
 							}
 
@@ -124,26 +140,37 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY & PPM (AHM)",
 									"subCaption": caption,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
-									"sYAxisName": "",
+									"sYAxisName": "PPM",
 									"numberPrefix": "",
 									"theme": "fusion",
 									"showValues": "0",
-									"exportenabled": "1",
-									"exportfilename": "Customer Claim Chart",
-									"labelDisplay": label,
+									"labelDisplay": label
 								},
-								"data": chartData
+								"categories": [{
+									"category": chartData
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValue
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpm
+								}]
 								}
 							}).render();
 						});
@@ -162,7 +189,7 @@
 				$("#end").val(null);
 				let part = $("#part").val();
 				let year = $(e.target).val();
-				let month = $("#month option:selected").text();
+				let month = $("#month").val();
 				
 				let date_range = $("#date_ranges").val();
 				if(date_range != "") {
@@ -199,14 +226,29 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartData = [];
+							const chartValue = [];
+							const chartPpm = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
+								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
+									}
+									let dataValue = {
 										"value": obj[key],
 									}
-									chartData.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartData.push(dataLabel);
+									chartValue.push(dataValue);
+									chartPpm.push(dataPpm);
 								}
 							}
 
@@ -217,31 +259,40 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY & PPM (AHM)",
 									"subCaption": caption,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
-									"sYAxisName": "",
+									"sYAxisName": "PPM",
 									"numberPrefix": "",
 									"theme": "fusion",
 									"showValues": "0",
-									"exportenabled": "1",
-									"exportfilename": "Customer Claim Chart",
 									"labelDisplay": label,
 								},
-								"data": chartData
+								"categories": [{
+									"category": chartData
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValue
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpm
+								}]
 								}
 							}).render();
 						});
-
-						
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
 						$("#error_text").text(textStatus +" "+errorThrown);
@@ -262,20 +313,32 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartDataPart = [];
+							const chartValuePart = [];
+							const chartPpmPart = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
 								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
-										"value": obj[key],
 									}
 									let dataValue = {
 										"value": obj[key],
 									}
-									chartDataPart.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartDataPart.push(dataLabel);
+									chartValuePart.push(dataValue);
+									chartPpmPart.push(dataPpm);
 								}
 							}
+
 							let label;
 							if(chartDataPart.length > 6) {
 								label = "rotate";
@@ -283,28 +346,39 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container_partChart',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
-									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
-										"subCaption": caption,
-										"xAxisname": "Part Name",
-										"pYAxisName": "QTY",
-										"sYAxisName": "",
-										"numberPrefix": "",
-										"theme": "fusion",
-										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
-										"labelDisplay": label,
-										"palettecolors": "#29c3be"
-									},
-									"data":chartDataPart
-									
+								"chart": {
+									"caption": "ALL REJECTION PARTS - QTY & PPM (AHM)",
+									"subCaption": caption,
+									"xAxisname": "Part Name",
+									"pYAxisName": "QTY",
+									"sYAxisName": "PPM",
+									"numberPrefix": "",
+									"theme": "fusion",
+									"showValues": "0",
+									"labelDisplay": label,
+									"lineColor": "#fc3c3c",
+									"palettecolors": "#29c3be"
+								},
+								"categories": [{
+									"category": chartDataPart
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValuePart
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpmPart
+								}]
 								}
 							}).render();
 						});
@@ -318,13 +392,12 @@
 			});
 
 			$("#filter_chart").on('change', 'select#month', function(e) {
-				console.log("test");
 				$("#date_ranges").val(null);
 				$("#start").val(null);
 				$("#end").val(null);
 				let part = $("#part").val();
 				let year = $("#year").val();
-				let month = $("#month option:selected").text();
+				let month = $(e.target).val();
 				let date_range = $("#date_ranges").val();
 				if(date_range != "") {
 					if(year != "" && month != "") {
@@ -360,14 +433,29 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartData = [];
+							const chartValue = [];
+							const chartPpm = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
+								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
+									}
+									let dataValue = {
 										"value": obj[key],
 									}
-									chartData.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartData.push(dataLabel);
+									chartValue.push(dataValue);
+									chartPpm.push(dataPpm);
 								}
 							}
 
@@ -378,26 +466,37 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY & PPM (AHM)",
 									"subCaption": caption,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
-									"sYAxisName": "",
+									"sYAxisName": "PPM",
 									"numberPrefix": "",
 									"theme": "fusion",
 									"showValues": "0",
-									"exportenabled": "1",
-									"exportfilename": "Customer Claim Chart",
 									"labelDisplay": label,
 								},
-								"data": chartData
+								"categories": [{
+									"category": chartData
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValue
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpm
+								}]
 								}
 							}).render();
 						});
@@ -420,20 +519,32 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartDataPart = [];
+							const chartValuePart = [];
+							const chartPpmPart = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
 								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
-										"value": obj[key],
 									}
 									let dataValue = {
 										"value": obj[key],
 									}
-									chartDataPart.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartDataPart.push(dataLabel);
+									chartValuePart.push(dataValue);
+									chartPpmPart.push(dataPpm);
 								}
 							}
+
 							let label;
 							if(chartDataPart.length > 6) {
 								label = "rotate";
@@ -441,28 +552,39 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container_partChart',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
-									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
-										"subCaption": caption,
-										"xAxisname": "Part Name",
-										"pYAxisName": "QTY",
-										"sYAxisName": "",
-										"numberPrefix": "",
-										"theme": "fusion",
-										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
-										"labelDisplay": label,
-										"palettecolors": "#29c3be"
-									},
-									"data":chartDataPart
-									
+								"chart": {
+									"caption": "ALL REJECTION PARTS- QTY & PPM (AHM)",
+									"subCaption": caption,
+									"xAxisname": "Part Name",
+									"pYAxisName": "QTY",
+									"sYAxisName": "PPM",
+									"numberPrefix": "",
+									"theme": "fusion",
+									"showValues": "0",
+									"labelDisplay": label,
+									"lineColor": "#fc3c3c",
+									"palettecolors": "#29c3be"
+								},
+								"categories": [{
+									"category": chartDataPart
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValuePart
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpmPart
+								}]
 								}
 							}).render();
 						});
@@ -502,17 +624,31 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartData = [];
+							const chartValue = [];
+							const chartPpm = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
+								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
+									}
+									let dataValue = {
 										"value": obj[key],
 									}
-									chartData.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartData.push(dataLabel);
+									chartValue.push(dataValue);
+									chartPpm.push(dataPpm);
 								}
 							}
-
 							let label;
 							if(chartData.length > 10) {
 								label = "rotate";
@@ -520,26 +656,37 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY & PPM (AHM)",
 									"subCaption": formart_start+" - "+formart_end,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
-									"sYAxisName": "",
+									"sYAxisName": "PPM",
 									"numberPrefix": "",
 									"theme": "fusion",
 									"showValues": "0",
-									"exportenabled": "1",
-									"exportfilename": "Customer Claim Chart",
 									"labelDisplay": label,
 								},
-								"data": chartData
+								"categories": [{
+									"category": chartData
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValue
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpm
+								}]
 								}
 							}).render();
 						});
@@ -563,18 +710,29 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartDataPart = [];
+							const chartValuePart = [];
+							const chartPpmPart = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
 								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
-										"value": obj[key],
 									}
 									let dataValue = {
 										"value": obj[key],
 									}
-									chartDataPart.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartDataPart.push(dataLabel);
+									chartValuePart.push(dataValue);
+									chartPpmPart.push(dataPpm);
 								}
 							}
 							let label;
@@ -584,28 +742,39 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container_partChart',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
-									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
-										"subCaption": formart_start+" - "+formart_end,
-										"xAxisname": "Part Name",
-										"pYAxisName": "QTY",
-										"sYAxisName": "",
-										"numberPrefix": "",
-										"theme": "fusion",
-										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
-										"labelDisplay": label,
-										"palettecolors": "#29c3be"
-									},
-									"data":chartDataPart
-									
+								"chart": {
+									"caption": "ALL REJECTION PARTS - QTY & PPM (AHM)",
+									"subCaption": formart_start+" - "+formart_end,
+									"xAxisname": "Part Name",
+									"pYAxisName": "QTY",
+									"sYAxisName": "PPM",
+									"numberPrefix": "",
+									"theme": "fusion",
+									"showValues": "0",
+									"labelDisplay": label,
+									"lineColor": "#fc3c3c",
+									"palettecolors": "#29c3be"
+								},
+								"categories": [{
+									"category": chartDataPart
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValuePart
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpmPart
+								}]
 								}
 							}).render();
 						});
@@ -630,18 +799,29 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartDataPart = [];
+							const chartValuePart = [];
+							const chartPpmPart = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
 								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
-										"value": obj[key],
 									}
 									let dataValue = {
 										"value": obj[key],
 									}
-									chartDataPart.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartDataPart.push(dataLabel);
+									chartValuePart.push(dataValue);
+									chartPpmPart.push(dataPpm);
 								}
 							}
 							let label;
@@ -651,29 +831,39 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container_partChart',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "ALL REJECTION PARTS - QTY (AHM)",
+									"caption": "ALL REJECTION PARTS - QTY & PPM (AHM)",
 									"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
 									"xAxisname": "Part Name",
 									"pYAxisName": "QTY",
-									"sYAxisName": "",
+									"sYAxisName": "PPM",
 									"numberPrefix": "",
 									"theme": "fusion",
 									"showValues": "0",
-									"exportenabled": "1",
-									"exportfilename": "Customer Claim Chart",
 									"labelDisplay": label,
+									"lineColor": "#fc3c3c",
 									"palettecolors": "#29c3be"
 								},
-								
-								"data":chartDataPart
-								
+								"categories": [{
+									"category": chartDataPart
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValuePart
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpmPart
+								}]
 								}
 							}).render();
 						});
@@ -698,14 +888,29 @@
 					success: function(data_filter) {
 						FusionCharts.ready(function() {
 							const chartData = [];
+							const chartValue = [];
+							const chartPpm = [];
 							let obj = data_filter.result;
 							for(let key in obj) {
+								let defect = parseInt(obj[key]);
+								let tot_rejection = 0;
 								if(obj[key] > 0) {
-									let initData = {
+									for(let key2 in obj) {
+										tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+									}
+									let dataLabel = {
 										"label": key,
+									}
+									let dataValue = {
 										"value": obj[key],
 									}
-									chartData.push(initData);
+									let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartData.push(dataLabel);
+									chartValue.push(dataValue);
+									chartPpm.push(dataPpm);
 								}
 							}
 
@@ -716,26 +921,37 @@
 								label = "wrap";
 							}
 							var revenueChart = new FusionCharts({
-								type: 'column2d',
+								type: 'mscombidy2d',
 								renderAt: 'container',
 								width: '100%',
 								height: '490',
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS - QTY (AHM)",
+									"caption": "REJECTIONS - QTY & PPM (AHM)",
 									"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
-									"sYAxisName": "",
+									"sYAxisName": "PPM",
 									"numberPrefix": "",
 									"theme": "fusion",
 									"showValues": "0",
-									"exportenabled": "1",
-									"exportfilename": "Customer Claim Chart",
 									"labelDisplay": label,
 								},
-								"data": chartData
+								"categories": [{
+									"category": chartData
+								}],
+								"dataset": [{
+									"seriesName": "Rejection",
+									"showValues": "0",
+									"numberSuffix": "",
+									"data": chartValue
+								}, {
+									"seriesName": "PPM",
+									"parentYAxis": "S",
+									"renderAs": "line",
+									"data": chartPpm
+								}]
 								}
 							}).render();
 						});
@@ -786,15 +1002,29 @@
 							countInitChartRejection = get_count_customer_claim;
 							FusionCharts.ready(function() {
 								const chartData = [];
-								
+								const chartValue = [];
+								const chartPpm = [];
 								let obj = data_filter.result;
 								for(let key in obj) {
+									let defect = parseInt(obj[key]);
+									let tot_rejection = 0;
 									if(obj[key] > 0) {
-										let initData = {
+										for(let key2 in obj) {
+											tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+										}
+										let dataLabel = {
 											"label": key,
+										}
+										let dataValue = {
 											"value": obj[key],
 										}
-										chartData.push(initData);
+										let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+										let dataPpm = {
+											"value": ppm,
+										}
+										chartData.push(dataLabel);
+										chartValue.push(dataValue);
+										chartPpm.push(dataPpm);
 									}
 								}
 
@@ -805,26 +1035,37 @@
 									label = "wrap";
 								}
 								var revenueChart = new FusionCharts({
-									type: 'column2d',
+									type: 'mscombidy2d',
 									renderAt: 'container',
 									width: '100%',
 									height: '490',
 									dataFormat: 'json',
 									dataSource: {
 									"chart": {
-										"caption": "REJECTIONS - QTY (AHM)",
+										"caption": "REJECTIONS - QTY & PPM (AHM)",
 										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
 										"xAxisname": "Rejection Name",
 										"pYAxisName": "QTY",
-										"sYAxisName": "",
+										"sYAxisName": "PPM",
 										"numberPrefix": "",
 										"theme": "fusion",
 										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
 										"labelDisplay": label,
 									},
-									"data": chartData
+									"categories": [{
+										"category": chartData
+									}],
+									"dataset": [{
+										"seriesName": "Rejection",
+										"showValues": "0",
+										"numberSuffix": "",
+										"data": chartValue
+									}, {
+										"seriesName": "PPM",
+										"parentYAxis": "S",
+										"renderAs": "line",
+										"data": chartPpm
+									}]
 									}
 								}).render();
 							});
@@ -856,18 +1097,29 @@
 							countInitChartPart = get_count_customer_claim;
 							FusionCharts.ready(function() {
 								const chartDataPart = [];
+								const chartValuePart = [];
+								const chartPpmPart = [];
 								let obj = data_filter.result;
 								for(let key in obj) {
 									let defect = parseInt(obj[key]);
+									let tot_rejection = 0;
 									if(obj[key] > 0) {
-										let initData = {
+										for(let key2 in obj) {
+											tot_rejection = parseInt(tot_rejection) + parseInt(obj[key2]);
+										}
+										let dataLabel = {
 											"label": key,
-											"value": obj[key],
 										}
 										let dataValue = {
 											"value": obj[key],
 										}
-										chartDataPart.push(initData);
+										let ppm = (defect / parseInt(tot_rejection)) * 1000000;
+										let dataPpm = {
+											"value": ppm,
+										}
+										chartDataPart.push(dataLabel);
+										chartValuePart.push(dataValue);
+										chartPpmPart.push(dataPpm);
 									}
 								}
 								let label;
@@ -877,29 +1129,39 @@
 									label = "wrap";
 								}
 								var revenueChart = new FusionCharts({
-									type: 'column2d',
+									type: 'mscombidy2d',
 									renderAt: 'container_partChart',
 									width: '100%',
 									height: '490',
 									dataFormat: 'json',
 									dataSource: {
 									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
+										"caption": "ALL REJECTION PARTS - QTY & PPM (AHM)",
 										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
-										"sYAxisName": "",
+										"sYAxisName": "PPM",
 										"numberPrefix": "",
 										"theme": "fusion",
 										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
 										"labelDisplay": label,
+										"lineColor": "#fc3c3c",
 										"palettecolors": "#29c3be"
 									},
-									
-									"data":chartDataPart
-									
+									"categories": [{
+										"category": chartDataPart
+									}],
+									"dataset": [{
+										"seriesName": "Rejection",
+										"showValues": "0",
+										"numberSuffix": "",
+										"data": chartValuePart
+									}, {
+										"seriesName": "PPM",
+										"parentYAxis": "S",
+										"renderAs": "line",
+										"data": chartPpmPart
+									}]
 									}
 								}).render();
 							});
@@ -914,139 +1176,6 @@
 				});
 			}
 
-
-			function filter_status_claim() {
-				$("#filter_chart").on('change', 'select#status_claim', function(e) {
-					$.ajax({
-						type: "GET",
-						url: "<?php echo base_url('claim/customerclaim/chart_per_part'); ?>",
-						data: $("#filter_chart").serialize(),
-						dataType: "JSON",
-						cache: false,
-						beforeSend: function() {
-							$("#reloading_chart_part").trigger('click');
-						},
-						success: function(data_filter) {
-							FusionCharts.ready(function() {
-								const chartDataPart = [];
-								let obj = data_filter.result;
-								for(let key in obj) {
-									let defect = parseInt(obj[key]);
-									if(obj[key] > 0) {
-										let initData = {
-											"label": key,
-											"value": obj[key],
-										}
-										let dataValue = {
-											"value": obj[key],
-										}
-										chartDataPart.push(initData);
-									}
-								}
-								let label;
-								if(chartDataPart.length > 6) {
-									label = "rotate";
-								} else {
-									label = "wrap";
-								}
-								var revenueChart = new FusionCharts({
-									type: 'column2d',
-									renderAt: 'container_partChart',
-									width: '100%',
-									height: '490',
-									dataFormat: 'json',
-									dataSource: {
-									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
-										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
-										"xAxisname": "Part Name",
-										"pYAxisName": "QTY",
-										"sYAxisName": "",
-										"numberPrefix": "",
-										"theme": "fusion",
-										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
-										"labelDisplay": label,
-										"palettecolors": "#29c3be"
-									},
-									
-									"data":chartDataPart
-									
-									}
-								}).render();
-							});
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							$("#error_text").text(textStatus +" "+errorThrown);
-							$("#modal-error-ajax").modal('show');
-						}
-					});
-
-					$.ajax({
-						type: "GET",
-						url: "<?php echo base_url('claim/customerclaim/filter_chart'); ?>",
-						data: $("#filter_chart").serialize(),
-						dataType: "JSON",
-						cache: false,
-						beforeSend: function(data_filter) {
-							$("#reloading").trigger('click');
-						},
-						success: function(data_filter) {
-							FusionCharts.ready(function() {
-								const chartData = [];
-								const chartValue = [];
-								let obj = data_filter.result;
-								for(let key in obj) {
-									if(obj[key] > 0) {
-										let initData = {
-											"label": key,
-											"value": obj[key],
-										}
-										chartData.push(initData);
-									}
-								}
-
-								let label;
-								if(chartData.length > 10) {
-									label = "rotate";
-								} else {
-									label = "wrap";
-								}
-								var revenueChart = new FusionCharts({
-									type: 'column2d',
-									renderAt: 'container',
-									width: '100%',
-									height: '490',
-									dataFormat: 'json',
-									dataSource: {
-									"chart": {
-										"caption": "REJECTIONS - QTY (AHM)",
-										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
-										"xAxisname": "Rejection Name",
-										"pYAxisName": "QTY",
-										"sYAxisName": "",
-										"numberPrefix": "",
-										"theme": "fusion",
-										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
-										"labelDisplay": label,
-									},
-									"data": chartData
-									}
-								}).render();
-							});
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							$("#error_text").text(textStatus +" "+errorThrown);
-							$("#modal-error-ajax").modal('show');
-						}
-					});
-				});
-			}
-
-			filter_status_claim();
 			let timer_part = setInterval(initRealTimeChartPart, 5000);
 			$("#body_chart_part").hover(
 				function() {

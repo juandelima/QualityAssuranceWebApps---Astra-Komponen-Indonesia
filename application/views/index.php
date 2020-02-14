@@ -22,10 +22,13 @@
 			margin: 0 auto;
 			width: 100%;
 		}
+		.sidebar-menu{
+			z-index: 9999!important;
+		}
 	</style>
 </head>
 <body class="page-body skin-facebook" data-url="http://neon.dev">
-	<div class="page-container">
+	<div class="page-container sidebar-collapsed">
 		<?php
 			if($this->session->flashdata('success')) {
 		?>
@@ -85,6 +88,42 @@
 				<div class="col-md-12">
 					<div class="panel panel-primary" id="charts_env">
 						<div class="panel-body">
+							<div class="row" style="margin-bottom: 15px;">
+								<div class="col-sm-3">
+									<form role="form" id="filter_status_claim" class="form-horizontal form-groups-bordered">
+										<div class="form-group" id="year_list">
+											<div class="col-sm-10">
+												<select name="status_claim" id="status_claim" class="selectboxit" data-first-option="false">
+													<option>claim / tukar guling...</option>
+													<option value="">All</option>
+													<option value="Claim">Claim</option>
+													<option value="Tukar Guling">Tukar Guling</option>
+												</select>
+											</div>
+										</div>
+									</form>
+								</div>
+
+								<div class="col-sm-3">
+									<form role="form" id="filter_by_customer" class="form-horizontal form-groups-bordered">
+										<div class="form-group" id="year_list">
+											<div class="col-sm-10">
+												<select name="by_customer" id="by_customer" class="selectboxit" data-first-option="false">
+													<option>select customer...</option>
+													<option value="">ALL</option>
+													<?php 
+														foreach($customer as $data) {
+													?>
+															<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
+													<?php 
+														}
+													?>
+												</select>
+											</div>
+										</div>	
+									</form>
+								</div>
+							</div>
 							<div class="tab-content">
 								<div class="tab-pane active" id="ahm-chart">
 									<div class="row">
@@ -108,6 +147,8 @@
 																<div class="form-group" id="year_list">
 																	<label class="col-sm-2 control-label">From</label>
 																	<div class="col-sm-10">
+																		<input type="hidden" name="annual_status_claim" id="annual_status_claim">
+																		<input type="hidden" name="annual_customer" id="annual_customer">
 																		<select name="year_from" id="year_from" class="select2" data-allow-clear="true" data-placeholder="Select year...">
 																			<option></option>
 																			<?php
@@ -130,7 +171,7 @@
 																	<div class="col-sm-10">
 																		<select name="year_to" id="year_to" class="select2" data-allow-clear="true" data-placeholder="Select year...">
 																			<option></option>
-																			<!-- <?php
+																			<?php
 																				$firstYear = (int)date('Y') - 9;
 																				$lastYear = $firstYear + 9;
 																				for($i = $firstYear; $i <= $lastYear; $i++) { 
@@ -138,7 +179,7 @@
 																					<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
 																			<?php
 																				}
-																			?> -->
+																			?>
 																		</select>
 																	</div>
 																</div>
@@ -169,6 +210,8 @@
 																<div class="form-group" id="year_list">
 																	<label class="col-sm-2 control-label">Year</label>
 																	<div class="col-sm-10">
+																	<input type="hidden" name="monthly_customer" id="monthly_customer">
+																	<input type="hidden" name="monthly_status_claim" id="monthly_status_claim">
 																		<select name="year" id="year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
 																			<option></option>
 																			<?php

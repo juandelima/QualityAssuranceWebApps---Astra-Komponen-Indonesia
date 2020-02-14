@@ -14,6 +14,7 @@ class User extends CI_Controller {
 		$this->user_model->data_dummy();
 	}
 
+	
 	public function index() {
 		$slug = $this->uri->segment(2);
 		$data_user = $this->user_model->list_user();
@@ -219,7 +220,6 @@ class User extends CI_Controller {
 				$this->session->set_flashdata('success', 'PROFILE ANDA TELAH DIUPDATE!');
 				redirect(base_url(), 'refresh');
 			}
-
 		}
 
 		$get_data = array(

@@ -108,6 +108,7 @@
 												$no = 1; 
 												for($i = 0; $i < count($non_visual); $i++) {
 											?>
+											
 											<tr>
 												<td><?php echo $no++; ?></td>
 												<td style="width: 80%; font-weight:bolder;"><?php echo $non_visual[$i]; ?></td>

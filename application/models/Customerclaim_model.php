@@ -3,6 +3,201 @@ class Customerclaim_model extends CI_Model {
 
 	private $table = 'claim_customer';
 
+
+	public function testing() {
+		$start_date = strtotime("02-08-2018");
+		$list_field_visual = $this->list_field_visual();
+		$list_field_non_visual = $this->list_field_non_visual();
+		$count_list_visual = count($list_field_visual);
+		$count_list_nonvisual = count($list_field_non_visual);
+		$get_customer_claim = $this->get_customer_claim();
+		$index = 278;
+		for($i = 0; $i < 110; $i++) {
+			$getPart = $this->getRandomPart();
+			$intvl = $i + 5;
+			$tgl_input = date("Y-m-d", strtotime("+10 day", $start_date));
+			$tgl_claim = date("Y-m-d", strtotime("+8 day", $start_date));
+			$tgl_delive = date("Y-m-d", strtotime("+6 day", $start_date));
+			$year = date("Y", strtotime($tgl_input));
+			$data = array(
+				'tgl_input' => $tgl_input,
+				'no_surat_claim' => "AHM/0{$i}/11000{$i}/{$i}/{$year}",
+				'tgl_surat_claim' => $tgl_claim,
+				'no_lkk_qro' => "EKT/{$i}/QA/ASKI/{$intvl}/{$year}",
+				'id_part' => $getPart->ID_PART,
+				'total_claim_actual' => 0,
+				'total_claim_surat' => 0,
+				'status_part_claim' => 'RECEIVED',
+				'qty_point' => 0,
+				'jml_qty_visual' => 0,
+				'rank_point_visual' => 0,
+				'jml_qty_nonvisual' => 0,
+				'rank_point_nonvisual' => 'FALSE',
+				'gqi_point' => 0,
+				'card' => NULL,
+				'status_claim' => NULL,
+				'ppt_file' => NULL,
+			);
+
+			if($i % 2 == 0) {
+				$data['status_claim'] = 'Claim';
+			} else {
+				$data['status_claim'] = 'Tukar Guling';
+			}
+
+			$sum_visual = 0;
+			$sum_non_visual = 0;
+			
+			$data_visual = array();
+			for($j = 0; $j < $count_list_visual; $j++) {
+				$field = $list_field_visual[$j];
+				if($field == "id_customer_claim") {
+					$data_visual[$field] = $index;
+					continue;
+				}
+				$data_visual[$field] = rand(0, 30);
+				$sum_visual += $data_visual[$field];
+			}
+
+			$data['jml_qty_visual'] = $sum_visual;
+
+			$data_non_visual = array();
+			for($j = 0; $j < $count_list_nonvisual; $j++) {
+				$field = $list_field_non_visual[$j];
+				if($field == "id_customer_claim") {
+					$data_non_visual[$field] = $index;
+					continue;
+				}
+				$data_non_visual[$field] = rand(0, 30);
+				$sum_non_visual += $data_non_visual[$field];
+			}
+
+			$data['jml_qty_nonvisual'] = $sum_non_visual;
+
+			$sum_all_visual_non = $sum_visual + $sum_non_visual;
+
+			if(!empty($get_customer_claim)) {
+				$year = date('Y', strtotime($tgl_input));
+				$month = date('m', strtotime($tgl_input));
+				$gqi_point = 0;
+				$select_id_part = $this->select_id_part($getPart->ID_PART);
+				$nama_part = $select_id_part->NAMA_PART;
+				for($k = 0; $k < count($get_customer_claim); $k++) {
+					$get_year = date('Y', strtotime($get_customer_claim[$k]->tgl_input));
+					$get_month = date('m', strtotime($get_customer_claim[$k]->tgl_input));
+					$get_nama_part = $get_customer_claim[$k]->NAMA_PART;
+					if($year === $get_year && $month === $get_month && $nama_part === $get_nama_part) {
+						$gqi_point += $get_customer_claim[$k]->gqi_point;
+					}
+				}
+				$data['gqi_point'] = $gqi_point;
+			}
+
+			$data['total_claim_actual'] = $sum_all_visual_non;
+			$data['total_claim_surat'] = $sum_all_visual_non;
+
+			if($data['total_claim_surat'] > 499) {
+				$data['qty_point'] = 115;
+			} elseif($data['total_claim_surat'] > 299) {
+				$data['qty_point'] = 70;
+			} elseif($data['total_claim_surat'] > 199) {
+				$data['qty_point'] = 50;
+			} elseif($data['total_claim_surat'] > 1) { 
+				$data['qty_point'] = 10;
+			} elseif($data['total_claim_surat'] > 0) {
+				$data['qty_point'] = 2;
+			} else {
+				$data['qty_point'] = 0;
+			}
+
+
+			if($data['jml_qty_visual'] > 0) {
+				$data['rank_point_visual'] = 4;
+			} else {
+				$data['rank_point_visual'] = 0;
+			}
+
+			if($getPart->PROSES == 'NON') {
+				$data['rank_point_nonvisual'] = 'FALSE';
+			} elseif($getPart->PROSES == '#N/A') {
+				$data['rank_point_nonvisual'] = '#N/A';
+			} elseif($getPart->PROSES == 'HS') {
+				if($data['jml_qty_nonvisual'] > 0) {
+					$data['rank_point_nonvisual'] = 100;
+				}
+			} elseif($getPart->PROSES == 'HA') {
+				if($data['jml_qty_nonvisual'] > 0) {
+					$data['rank_point_nonvisual'] = 100;
+				}
+			} elseif($getPart->PROSES == 'HB') {
+				if($data['jml_qty_nonvisual'] > 0) {
+					$data['rank_point_nonvisual'] = 20;
+				}
+			} elseif($getPart->PROSES == 'NON') {
+				if($data['jml_qty_nonvisual'] > 0) {
+					$data['rank_point_nonvisual'] = 4;
+				}
+			} else {
+				if($data['jml_qty_nonvisual'] <= 0) {
+					$data['rank_point_nonvisual'] = 0;
+				}
+			}
+
+			$qty_point = $data['qty_point'];
+			$rank_point_visual = $data['rank_point_visual'];
+			$rank_point_nonvisual = $data['rank_point_nonvisual'];
+			if($rank_point_nonvisual == 'FALSE') {
+				$calculate = $qty_point + $rank_point_visual;
+				$data['gqi_point'] += $calculate;
+			} elseif($rank_point_nonvisual == '#N/A') {
+				$data['gqi_point'] = '#N/A';
+			} else {
+				$calc = $qty_point + $rank_point_visual + $rank_point_nonvisual;
+				$data['gqi_point'] += $calc; 
+			}
+
+			$gqi_point = $data['gqi_point'];
+			if($gqi_point > 114) {
+				$data['card'] = 'Red Card';
+			} elseif($gqi_point > 100) {
+				$data['card'] = 'Yellow Card';
+			} elseif($gqi_point > 0) {
+				$data['card'] = 'Green Card';
+			} else {
+				$data['card'] = '#N/A';
+			}
+
+			$data_delivery = array(
+				'tgl_delivery' => $tgl_delive,
+				'qty' => rand(10, 200)
+			);
+			$this->save_claim_customer($data);
+			$this->save_visual($data_visual);
+			$this->save_non_visual($data_non_visual);
+			$this->save_delivery($data_delivery);
+			// echo json_encode($data)."<br/>";
+			// echo json_encode($data_visual)."<br/>";
+			// echo json_encode($data_non_visual);
+			// echo "<br/>";
+			// echo "<br/>";
+			$start_date = strtotime($tgl_input); 
+			$index += 1;
+		}
+		
+	}
+
+	public function save_delivery($data) {
+		$this->db->insert('delivery', $data);
+	}
+	public function getRandomPart() {
+		$this->db->select("*");
+		$this->db->from('data_parts');
+		$this->db->where('CUSTOMER', 1);
+		$this->db->order_by('ID_PART', 'RANDOM');
+		$query = $this->db->get();
+		return $query->row();
+	}
+
 	public function listing_visual() {
 		$this->db->select("*");
 		$this->db->from("visual");
@@ -40,7 +235,7 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from($this->table);
-		$this->db->join('data_parts', 'data_parts.ID_PART = claim_customer.id_part', 'INNER');
+		$this->db->join('data_parts', 'data_parts.id_part = claim_customer.id_part', 'INNER');
 		$this->db->join('visual', 'claim_customer.id_customer_claim = visual.id_customer_claim', 'INNER');
 		$this->db->join('non_visual', 'claim_customer.id_customer_claim = non_visual.id_customer_claim', 'INNER');
 		$query = $this->db->get();
@@ -54,7 +249,7 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from($this->table);
-		$this->db->join('data_parts', 'data_parts.ID_PART = claim_customer.id_part', 'INNER');
+		$this->db->join('data_parts', 'data_parts.id_part = claim_customer.id_part', 'INNER');
 		$this->db->where('id_customer_claim', $id_customer_claim);
 		$query = $this->db->get();
 		return $query->row();
@@ -80,7 +275,7 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from("data_parts");
-		$this->db->join("claim_customer", "data_parts.ID_PART = claim_customer.id_part", "INNER");
+		$this->db->join("claim_customer", "data_parts.id_part = claim_customer.id_part", "INNER");
 		$this->db->join("customer", "customer.id_customer = data_parts.CUSTOMER", "INNER");
 		$this->db->order_by("claim_customer.id_customer_claim", "DESC");
 		$query = $this->db->get();
@@ -176,7 +371,7 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from($this->table);
-		$this->db->join('data_parts', 'data_parts.ID_PART = claim_customer.id_part', 'INNER');
+		$this->db->join('data_parts', 'data_parts.id_part = claim_customer.id_part', 'INNER');
 		$this->db->join('visual', 'claim_customer.id_customer_claim = visual.id_customer_claim', 'INNER');
 		$this->db->join('non_visual', 'claim_customer.id_customer_claim = non_visual.id_customer_claim', 'INNER');
 		$this->db->where("MONTH(claim_customer.tgl_input)", $month);
@@ -199,12 +394,14 @@ class Customerclaim_model extends CI_Model {
 		return $query->result();
 	}
 
-	public function chart_rejection_claim($start = null, $end = null, $part = null, $year = null, $month = null) {
+	public function chart_rejection_claim($start = null, $end = null, $part = null, $year = null, $month = null, $status_claim = null) {
 		$get_customer_claim_sort_by_date = $this->get_customer_claim_sort_by_date();
-		$start_all_part = $get_customer_claim_sort_by_date[0]->tgl_input;
-		$end_all_part = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date)  - 1]->tgl_input;
-		$start_by_all_part = date('Y-m-d', strtotime($start_all_part));
-		$end_by_all_part = date('Y-m-d', strtotime($end_all_part));
+		if(!empty($get_customer_claim_sort_by_date)) {
+			$start_all_part = $get_customer_claim_sort_by_date[0]->tgl_input;
+			$end_all_part = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date)  - 1]->tgl_input;
+			$start_by_all_part = date('Y-m-d', strtotime($start_all_part));
+			$end_by_all_part = date('Y-m-d', strtotime($end_all_part));
+		}
 		$array_select = array(
 			"SUM(visual.Kotor) as Kotor",
 			"SUM(visual.Lecet) as Lecet",
@@ -287,11 +484,15 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from($this->table);
-		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.ID_PART', 'INNER');
+		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.id_part', 'INNER');
 		$this->db->join('visual', 'claim_customer.id_customer_claim = visual.id_customer_claim', 'INNER');
 		$this->db->join('non_visual', 'claim_customer.id_customer_claim = non_visual.id_customer_claim', 'INNER');
 		$this->db->where('data_parts.CUSTOMER', 1);
 		$this->db->order_by("claim_customer.tgl_input", "ASC");
+
+		if($status_claim != null) {
+			$this->db->where('claim_customer.status_claim', $status_claim);
+		}
 
 		if($part != null && $start != null && $end != null) {
 			$this->db->where("data_parts.NAMA_PART", $part);
@@ -347,22 +548,26 @@ class Customerclaim_model extends CI_Model {
 				$query = $this->db->get();
 				return $query->row();
 			} else {
-				$this->db->where("claim_customer.tgl_input >= ", $start_by_all_part);
-				$this->db->where("claim_customer.tgl_input <= ", $end_by_all_part);
-				$query = $this->db->get();
-				return $query->row();
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$this->db->where("claim_customer.tgl_input >= ", $start_by_all_part);
+					$this->db->where("claim_customer.tgl_input <= ", $end_by_all_part);
+					$query = $this->db->get();
+					return $query->row();	
+				}
 			}
 
 		}
 		
 	}
 
-	public function chart_part_claim($start = null, $end = null, $year = null, $month = null) {
+	public function chart_part_claim($start = null, $end = null, $year = null, $month = null, $status_claim = null) {
 		$get_customer_claim_sort_by_date = $this->get_customer_claim_sort_by_date();
-		$start_all_part = $get_customer_claim_sort_by_date[0]->tgl_input;
-		$end_all_part = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date)  - 1]->tgl_input;
-		$start_by_all_part = date('Y-m-d', strtotime($start_all_part));
-		$end_by_all_part = date('Y-m-d', strtotime($end_all_part));
+		if(!empty($get_customer_claim_sort_by_date)) {
+			$start_all_part = $get_customer_claim_sort_by_date[0]->tgl_input;
+			$end_all_part = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date)  - 1]->tgl_input;
+			$start_by_all_part = date('Y-m-d', strtotime($start_all_part));
+			$end_by_all_part = date('Y-m-d', strtotime($end_all_part));
+		}
 		$array_select = array(
 			"data_parts.NAMA_PART",
 			"SUM(visual.Kotor) as Kotor",
@@ -446,13 +651,15 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from($this->table);
-		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.ID_PART', 'INNER');
+		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.id_part', 'INNER');
 		$this->db->join('visual', 'claim_customer.id_customer_claim = visual.id_customer_claim', 'INNER');
 		$this->db->join('non_visual', 'claim_customer.id_customer_claim = non_visual.id_customer_claim', 'INNER');
 		$this->db->where('data_parts.CUSTOMER', 1);
 		$this->db->group_by("data_parts.NAMA_PART");
 		$this->db->order_by("claim_customer.tgl_input", "ASC");
-		
+		if($status_claim != null) {
+			$this->db->where('claim_customer.status_claim', $status_claim);
+		}
 		if($start != null && $end != null) {
 			$this->db->where("claim_customer.tgl_input >= ", $start);
 			$this->db->where("claim_customer.tgl_input <= ", $end);
@@ -474,14 +681,16 @@ class Customerclaim_model extends CI_Model {
 			$query = $this->db->get();
 			return $query->result();
 		} else {
-			$this->db->where("claim_customer.tgl_input >= ", $start_by_all_part);
-			$this->db->where("claim_customer.tgl_input <= ", $end_by_all_part);
-			$query = $this->db->get();
-			return $query->result();
+			if(!empty($get_customer_claim_sort_by_date)) {
+				$this->db->where("claim_customer.tgl_input >= ", $start_by_all_part);
+				$this->db->where("claim_customer.tgl_input <= ", $end_by_all_part);
+				$query = $this->db->get();
+				return $query->result();
+			}
 		}
 	}
 
-	public function rejection_per_year_month($year) {
+	public function rejection_per_year_month($year, $annual_status_claim, $customer) {
 		$array_select = array(
 			'claim_customer.*',
 			'visual.*',
@@ -489,16 +698,22 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from($this->table);
-		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.ID_PART', 'INNER');
+		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.id_part', 'INNER');
 		$this->db->join('visual', 'claim_customer.id_customer_claim = visual.id_customer_claim', 'INNER');
 		$this->db->join('non_visual', 'claim_customer.id_customer_claim = non_visual.id_customer_claim', 'INNER');
-		$this->db->where('data_parts.CUSTOMER', 1);
+		if($customer != null) {
+			$this->db->where('data_parts.CUSTOMER', $customer);
+		}
+		if($annual_status_claim != null) {
+			$this->db->where('claim_customer.status_claim', $annual_status_claim);
+		}
+		
 		$this->db->where('YEAR(claim_customer.tgl_input)', $year);
 		$query = $this->db->get();
 		return $query->result();
 	}
 
-	public function montly_rejection($year, $month) {
+	public function montly_rejection($year, $month, $monthly_status_claim, $customer) {
 		$array_select = array(
 			'claim_customer.*',
 			'visual.*',
@@ -506,10 +721,15 @@ class Customerclaim_model extends CI_Model {
 		);
 		$this->db->select($array_select);
 		$this->db->from($this->table);
-		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.ID_PART', 'INNER');
+		$this->db->join('data_parts', 'claim_customer.id_part = data_parts.id_part', 'INNER');
 		$this->db->join('visual', 'claim_customer.id_customer_claim = visual.id_customer_claim', 'INNER');
 		$this->db->join('non_visual', 'claim_customer.id_customer_claim = non_visual.id_customer_claim', 'INNER');
-		$this->db->where('data_parts.CUSTOMER', 1);
+		if($customer != null) {
+			$this->db->where('data_parts.CUSTOMER', $customer);
+		}
+		if($monthly_status_claim != null) {
+			$this->db->where('claim_customer.status_claim', $monthly_status_claim);
+		}
 		$this->db->where('YEAR(claim_customer.tgl_input)', $year);
 		$this->db->where('MONTH(claim_customer.tgl_input)', $month);
 		$query = $this->db->get();

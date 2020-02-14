@@ -127,7 +127,8 @@
 				}
 			},
 			"pageLength": 10,
-			"lengthChange": false
+			"lengthChange": false,
+			// "scrollX": true
 		});
 	});
 </script>

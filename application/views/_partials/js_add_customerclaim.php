@@ -1006,13 +1006,6 @@
 				// "lengthChange": false,
 			});
 
-			
-
-			// $("#total_claim_surat").keyup(function() {
-			// 	if($(this).val() == "" || $(this).val() < 0) {
-			// 		$(this).val(0);
-			// 	}
-			// });
 
 			$("#total_claim_surat").keyup(function() {
 				var value = $(this).val();
@@ -1178,6 +1171,7 @@
 				// 	error: function(jqXHR, textStatus, errorThrown) {
 				// 		console.log(textStatus +" "+errorThrown);
 				// 	}
+
 				// });
 				if(s_grade === 'NON') {
 					$("#rank_point_non").val('FALSE');

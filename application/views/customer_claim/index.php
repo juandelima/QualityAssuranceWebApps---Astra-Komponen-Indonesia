@@ -8,13 +8,15 @@
 	<style>
 		.col-sm-1 {
 			width: 45px;
-		}	
+		}
+			
 		.select2-container .select2-choice {
 			display: block!important;
 			height: 30px!important;
 			white-space: nowrap!important;
 			line-height: 26px!important;
 		}
+		
 		#container {
 			margin: 0 auto;
 			width: 100%;
@@ -23,11 +25,21 @@
 		td.sorting_1 {
 			text-align: center;
 		}
+		
 		.raphael-group-cMNZkfEe {
 			display: none!important;
 		}
+
 		.dataTables_wrapper.no-footer .dataTables_scrollBody {
     		border-bottom: 1px solid #fff;
+		}
+
+		body.modal-open .datepicker {
+    		z-index: 99999 !important;
+		}
+
+		.sidebar-menu{
+			z-index: 9999!important;
 		}
 	</style>
 </head>
@@ -91,18 +103,37 @@
 				<form role="form" id="filter_chart" class="form-horizontal form-groups-bordered">
 					<div class="row" style="margin-bottom: 10px;">
 						<?php if($this->session->userdata['role'] != 'User') { ?>
-							<div class="col-sm-12">
+							<div class="col-sm-6">
 								<a href="<?php echo base_url('claim/customerclaim/create_ahm'); ?>" class="btn btn-blue btn-icon btn-block">
 									<i class="entypo-user-add"></i>
 									ADD CUSTOMER CLAIM
 								</a>
 							</div>
+
+							<div class="col-sm-6">
+								<a href="javascript:;" onclick="jQuery('#form_delivery').modal('show', {backdrop: 'static', keyboard: false});" class="btn btn-success btn-icon btn-block">
+									<i class="entypo-box"></i>
+									ADD DELIVERY
+								</a>
+							</div>
 						<?php } ?>
 					</div>
 					<div class="row">
-						<div class="col-sm-4" id="choose_part">
+						<div class="col-sm-3" id="choose_status">
 							<div class="form-group">
-								<label class="col-sm-1 control-label" style="text-align:left;">Part</label>
+								<div class="col-sm-10" style="text-align:left;">
+									<select name="status_claim" id="status_claim" class="selectboxit" data-first-option="false">
+										<option>claim / tukar guling...</option>
+										<option value="" selected>All</option>
+										<option value="Claim">Claim</option>
+										<option value="Tukar Guling">Tukar Guling</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-sm-3" id="choose_part">
+							<div class="form-group">
+								<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
 								<div class="col-sm-10" style="text-align:left;">
 									<select name="part" id="part" class="select2" data-allow-clear="true" data-placeholder="Select one part...">
 										<option></option>
@@ -120,9 +151,10 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-sm-3">
-							<div class="form-group" id="year_list">
-								<label class="col-sm-2 control-label">Year</label>
+
+						<div class="col-sm-2" id="year_list">
+							<div class="form-group">
+								<!-- <label class="col-sm-2 control-label">Year</label> -->
 								<div class="col-sm-10">
 									<select name="year" id="year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
 										<option></option>
@@ -139,9 +171,9 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-sm-3">
-							<div class="form-group" id="month_list">
-								<label class="col-sm-2 control-label">Month</label>
+						<div class="col-sm-2" id="month_list">
+							<div class="form-group">
+								<!-- <label class="col-sm-2 control-label">Month</label> -->
 								<div class="col-sm-10">
 									<select name="month" id="month" class="select2" data-allow-clear="true" data-placeholder="Select month...">
 										<option></option>
@@ -158,7 +190,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-sm-4" id="date_custome" style="display: none;">
+						<div class="col-sm-2" id="date_custome" style="display: none;">
 							<div class="form-group">
 								<label class="col-sm-2 control-label">Date</label>
 								<div class="col-sm-10">
@@ -308,7 +340,7 @@
 											<i class="entypo-upload"></i>
 										</a>
 
-									<a <?php if(empty($data->ppt_file)) { ?> disabled <?php } else { ?> href="<?php echo base_url('assets/claim_customer/ppt/'.$data->ppt_file)?>" <?php } ?> class="btn btn-success btn-icon icon-left" download="PART - <?php echo $data->NAMA_PART; ?>" id="download_ppt_file<?php echo $id; ?>">
+										<a <?php if(empty($data->ppt_file)) { ?> disabled <?php } else { ?> href="<?php echo base_url('assets/claim_customer/ppt/'.$data->ppt_file)?>" <?php } ?> class="btn btn-success btn-icon icon-left" download="PART - <?php echo $data->NAMA_PART; ?>" id="download_ppt_file<?php echo $id; ?>">
 												Download
 											<i class="entypo-download"></i>
 										</a>
@@ -365,6 +397,50 @@
 					    }
 					?>
 				</div>
+				<div class="modal fade" id="form_delivery">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title"><b>Delivery</b></h4>
+									<h5>NB: Quantity akan mempengaruhi perubahan value grafik ppm berdasarkan tahun dan bulan di dashboard</h5>
+								</div>
+								<form role="form" class="form-horizontal" id="input_delivery" method="POST">
+									<div class="modal-body">
+										<div class="row" id="spinners">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">Tanggal Delivery</label>
+													<div class="col-sm-4">
+														<div class="input-group">
+															<input type="text" class="form-control datepicker" name="tgl_deliv" id="tgl_deliv" data-format="dd MM yyyy" placeholder="tanggal delivery..." required>
+															<div class="input-group-addon">
+																<a href="#"><i class="entypo-calendar"></i></a>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">Quantity</label>
+													<div class="input-spinner col-sm-3">
+														<button type="button" class="btn btn-blue" id="btn_min">-</button>
+														<input type="text" id="qty" name="qty" class="form-control size-1" value="1"/>
+														<button type="button" class="btn btn-blue" id="btn_plus">+</button>
+													</div>
+												</div>
+											</div>  
+										</div>  
+									</div>
+
+									<div class="modal-footer">
+										<button type="button" id="modal_close" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" id="save_qty" class="btn btn-primary">Simpan</button>
+									</div>
+								</form>
+							</div> 
+						</div>
+					</div>
 				<div class="modal fade" id="modal-error-ajax">
 					<div class="modal-dialog" style="width: 50%;">
 						<div class="modal-content">
@@ -395,21 +471,62 @@
 	<script>
 		// UPLOAD FILE
 		jQuery(document).ready(function($) {
+			$("#form_delivery").find("#btn_min").attr("disabled", true);
+			$("#form_delivery").find("#btn_plus").click(function add() {
+				$("#form_delivery").find("#btn_min").attr("disabled", false);
+			});
+
+			$("#form_delivery").find("#btn_min").click(function subst() {
+				let val_qty = $("#qty").val();
+				if(val_qty < 2) {
+					$("#form_delivery").find("#btn_min").attr("disabled", true);
+				}
+			});
+			$("#input_delivery").on('click', '#save_qty', function(e) {
+				e.preventDefault();
+				$.ajax({
+					url: "<?php echo base_url('claim/customerclaim/ahm_delivery'); ?>",
+					type: "POST",
+					data: $("#input_delivery").serialize(),
+					dataType: "JSON",
+					cache: false,
+					success: function(data) {
+						var opts = {
+							"closeButton": true,
+							"debug": false,
+							"positionClass": "toast-top-right",
+							"onclick": null,
+							"showDuration": "300",
+							"hideDuration": "1000",
+							"timeOut": "5000",
+							"extendedTimeOut": "1000",
+							"showEasing": "swing",
+							"hideEasing": "linear",
+							"showMethod": "fadeIn",
+							"hideMethod": "fadeOut"
+						};
+						toastr.success('DELIVERY SUKSES TERSIMPAN', "SUCCESS", opts);
+
+					},
+					complete: function() {
+						$("#tgl_deliv").val(null);
+						$("#qty").val(1);
+						$("#form_delivery").find("#btn_min").attr("disabled", true);
+						$("#form_delivery").modal('hide');
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						alert(textStatus +" "+errorThrown);
+						// $("#error_text").text(textStatus +" "+errorThrown);
+						// $("#modal-error-ajax").modal('show');;
+					}
+				});
+			});
+
 			<?php
 				$index = 0;
 				foreach($customer_claim as $data) {
 					$id = $data->id_customer_claim;
 			?>
-					
-					// $("#modal_close<?php echo $id; ?>").click(function() {
-					// 	$("#modal-upload-ppt<?php echo $id; ?>").modal('hide');
-					// 	$('#modal-upload-ppt<?php echo $id; ?>').unbind();
-					// });
-
-					// $('#modal-upload-ppt<?php echo $id; ?>').on('hide.bs.modal', function(e) {
-					// 	e.preventDefault();
-					// });
-
 					$("#upload_file<?php echo $id; ?>").submit(function(e) {
 						e.preventDefault();
 						$.ajax({
