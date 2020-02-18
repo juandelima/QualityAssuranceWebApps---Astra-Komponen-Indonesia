@@ -20,131 +20,26 @@ class Customerclaim extends CI_Controller {
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
 		$get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
 		$get_customer_claim_sort_by_date = $this->customerclaim_model->get_customer_claim_sort_by_date();
-		$get_visual = $this->customerclaim_model->listing_visual();	
-		$get_field_visual = $this->customerclaim_model->list_field_visual();
-		$get_non_visual = $this->customerclaim_model->listing_non_visual();
-		$get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
 		$count_customer_claim = count($get_customer_claim);
-		// $rejections = [];
-		$visual = [];
-		$key_visual = [];
-		$non_visual = [];
-		$key_non_visual = [];
-		$value_visual = ['Kotor', 'Lecet', 'Tipis', 'Meler', 'Nyerep', 'O Peel', 'Buram', 'Over Cut',
-					'Burry', 'Belang', 'Ngeflek', 'Minyak', 'Dustray', 'Cat Kelupas', 'Bintik Air', 
-					'Finishing Ng', 'Serat', 'Demotograph', 'Lifting', 'Kusam', 'Flow Mark', 'Legok',
-					'Salah Type', 'Getting', 'Part Campur', 'Sinmark', 'Gores', 'Gloss', 'Patah Depan',
-					'Patah Belakang', 'Patah Kanan', 'Patah Kiri', 'Silver', 'Burn Mark', 'Weld Line',
-					'Bubble', 'Black Dot', 'White Dot', 'Isi Tidak Set', 'Gompal', 'Salah label', 'Sobek terkena cutter',
-					'Terbentur (Sobek handling)', 'Kereta (Sobek handling)', 'Terjatuh (Sobek handling)', 'Terkena Gun (Sobek handling)',
-					'Sobek Handling', 'Sobek Staples', 'Staples Lepas', 'Keriput', 'Seaming Ng', 'Nonjol', 'Seal Lepas', 'Cover Ng',
-					'Belum Finishing', 'Foam Ng'];
-
-		$value_non_visual = ['Deformasi', 'Patah / Crack', 'Part Tidak Lengkap', 'Elector Mark', 'Short Shot', 'Material Asing',
-					'Pecah', 'Stay Lepas', 'Salah Ulir', 'Visual T/A', 'Ulir Ng', 'Rubber TA', 'Hole Ng'];
-		// ALGORITMA UNTUK MEMFILTER JUMLAH VISUAL DAN NON VISUAL YANG LEBIH DARI 0 DAN MEMBACA FIELD VISUAL DAN NON VISUAL
-		for($i = 1; $i < count($get_field_visual); $i++) {
-			$key_visual[] = json_encode($get_field_visual[$i]);
-		}
-		$label_visual = array_combine($key_visual, $value_visual);
-		for($i = 0; $i < count($get_customer_claim); $i++) {
-			$temp = [];
-			if($get_customer_claim[$i]->id_customer_claim === $get_visual[$i]->id_customer_claim) {
-				$id = $get_visual[$i]->id_customer_claim;
-				for($j = 1; $j < count($get_field_visual); $j++) {
-					$field = $get_field_visual[$j];
-					if($get_visual[$i]->$field > 0) {
-						$temp[] = $label_visual[json_encode($field)];
-						$temp[] = $get_visual[$i]->$field;
-					}
-				}
-				$junk = array(
-					$id => $temp,
-				);
-			}
-			$visual[] = $junk;
-		}
-		
-		for($i = 1; $i < count($get_field_non_visual); $i++) {
-			$key_non_visual[] = json_encode($get_field_non_visual[$i]);
-		}
-
-		$label_non_visual = array_combine($key_non_visual, $value_non_visual);
-		for($i = 0; $i < count($get_customer_claim); $i++) {
-			$temp = [];
-			if($get_customer_claim[$i]->id_customer_claim === $get_non_visual[$i]->id_customer_claim) {
-				$id = $get_non_visual[$i]->id_customer_claim;
-				for($j = 1; $j < count($get_field_non_visual); $j++) {
-					$field = $get_field_non_visual[$j];
-					if($get_non_visual[$i]->$field > 0) {
-						$temp[] = $label_non_visual[json_encode($field)];
-						$temp[] = $get_non_visual[$i]->$field;
-					}
-				}
-				$junk = array(
-					$id => $temp,
-				);
-			}
-			$non_visual[] = $junk;
-		}
-		
-		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
-		$merge_field_except = [];
-		for($i = 0; $i < count($mergeField); $i++) {
-			if($mergeField[$i] == "id_customer_claim") {
-				continue;
-			}
-			$merge_field_except[] = $mergeField[$i];
-		}
-
-
-		$mergeLabel = array_merge($label_visual, $label_non_visual);
-		if(!empty($get_customer_claim_sort_by_date)) {		
+		if(!empty($get_customer_claim_sort_by_date)) {
 			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
 			$getEnd = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date) - 1]->tgl_input;
 			$start = date('Y-m-d', strtotime($getStart));
 			$end = date('Y-m-d', strtotime($getEnd));
-			$chart_part_claim = $this->customerclaim_model->chart_part_claim($start, $end, null);
-			$chart_rejection_claim = $this->customerclaim_model->chart_rejection_claim($start, $end, null);
-			$count_chart_part_claim = count($chart_part_claim);
-			$result_chart_part = array();
-			for($i = 0; $i < $count_chart_part_claim; $i++) {
-				$sum = 0;
-				for($j = 0; $j < count($merge_field_except); $j++) {
-					$field = $merge_field_except[$j];
-					if($chart_part_claim[$i]->$field > 0) {
-						$sum += $chart_part_claim[$i]->$field;
-					}
-				}
-				$result_chart_part[$chart_part_claim[$i]->NAMA_PART] = $sum;
-			}
-			arsort($result_chart_part);
-			$chart_part = json_encode($result_chart_part);
-
-			$chart_rejection_claim2 = array();
-			for($i = 0; $i < count($merge_field_except); $i++) {
-				$filter_field = $merge_field_except[$i];
-				$chart_rejection_claim2[$mergeLabel[json_encode($filter_field)]] = $chart_rejection_claim->$filter_field;
-			}
-			arsort($chart_rejection_claim2);
-			$result = json_encode($chart_rejection_claim2);
 		} else {
-			$result = null;
 			$start = null;
 			$end = null;
-			$chart_part = null;
 		}
+		
+		
+	
  		$data = array(
 			'customer' => $get_customer,
 			'customer_claim' => $get_customer_claim,
 			'customer_claim_dist' => $get_customer_claim_distinct,
-			'show_visual' => $visual,
-			'show_non_visual' => $non_visual,
-			'dataChart' => $result,
+			'count_customer_claim' => $count_customer_claim,
 			'start' => $start,
 			'end' => $end,
-			'chartPart' => $chart_part,
-			'count_customer_claim' => $count_customer_claim,
 			'slug' => $slug
 		);
 		$this->load->view('customer_claim/index', $data);
@@ -240,7 +135,7 @@ class Customerclaim extends CI_Controller {
 		if($getYear != null) {
 			$year = $getYear;
 		} else {
-			$year = date('Y');
+			$year = null;
 		}
 
 		if($getMonth != null) {
@@ -258,17 +153,22 @@ class Customerclaim extends CI_Controller {
 		}
 		
 		$chart_rejection_claim = $this->customerclaim_model->chart_rejection_claim($start, $end, $part, $year, $month, $status);
+		// print_r($chart_rejection_claim);
 		$chart_rejection_claim2 = array();
+		$count_merge_field_except = count($merge_field_except);
 		if(!empty($chart_rejection_claim)) {
-			for($i = 0; $i < count($merge_field_except); $i++) {
+			$count_chart_rejection_claim = count($chart_rejection_claim);
+			for($i = 0; $i < $count_merge_field_except; $i++) {
+				$sum = 0;
 				$filter_field = $merge_field_except[$i];
-				$chart_rejection_claim2[$mergeLabel[json_encode($filter_field)]] = $chart_rejection_claim->$filter_field;
+				for($j = 0; $j < $count_chart_rejection_claim; $j++) {
+					$sum += $chart_rejection_claim[$j]->$filter_field;
+				}
+				$chart_rejection_claim2[$mergeLabel[json_encode($filter_field)]] = $sum;
 			}
 		}
 		arsort($chart_rejection_claim2);
 		$result = $chart_rejection_claim2;
-		
-
 		$data = array(
 			'result' => $result,
 			'count_customer_claim' => json_encode($count_customer_claim)
@@ -322,19 +222,28 @@ class Customerclaim extends CI_Controller {
 			$end = null;
 		}
 		// echo json_encode($_GET);
+		
 		$result_chart_part = array();
 		$chart_part_claim = $this->customerclaim_model->chart_part_claim($start, $end, $year, $month, $status);
+		// print_r($chart_part_claim);
 		if(!empty($chart_part_claim)) {
 			$count_chart_part_claim = count($chart_part_claim);
 			for($i = 0; $i < $count_chart_part_claim; $i++) {
+				// echo $i."<br/>";
+				$nama_part = $chart_part_claim[$i]->nama_part;
+				$filter_part = $this->customerclaim_model->filter_part($nama_part, $start, $end, $year, $month, $status);
+				$count_filter_part = count($filter_part);
+				$count_merge_field_except = count($merge_field_except);
 				$sum = 0;
-				for($j = 0; $j < count($merge_field_except); $j++) {
-					$field = $merge_field_except[$j];
-					if($chart_part_claim[$i]->$field > 0) {
-						$sum += $chart_part_claim[$i]->$field;
+				for($k = 0; $k < $count_filter_part; $k++) {
+					for($j = 0; $j < $count_merge_field_except; $j++) {
+						$field = $merge_field_except[$j];
+						if($filter_part[$k]->$field > 0) {
+							$sum = $sum + $filter_part[$k]->$field;
+						}
 					}
 				}
-				$result_chart_part[$chart_part_claim[$i]->NAMA_PART] = $sum;
+				$result_chart_part[$nama_part] = $sum;
 			}
 		}
 		arsort($result_chart_part);
@@ -403,12 +312,12 @@ class Customerclaim extends CI_Controller {
 
 			for($j = 0; $j < count($id_part); $j++) {
 				$get_part = $this->customerclaim_model->select_id_part($id_part[$j]);
-				$nama_part = $get_part->NAMA_PART;
+				$nama_part = $get_part->nama_part;
 				$gqi_point = $data['gqi_point'][$j];
 				for($i = 0; $i < count($get_customer_claim); $i++) {
 					$get_year = date('Y', strtotime($get_customer_claim[$i]->tgl_input));
 					$get_month = date('m', strtotime($get_customer_claim[$i]->tgl_input));
-					$get_nama_part = $get_customer_claim[$i]->NAMA_PART;
+					$get_nama_part = $get_customer_claim[$i]->nama_part;
 					if($year === $get_year && $month === $get_month && $nama_part === $get_nama_part) {
 						$gqi_point += $get_customer_claim[$i]->gqi_point;
 					}
@@ -448,7 +357,7 @@ class Customerclaim extends CI_Controller {
 				$select_record_part = $this->customerclaim_model->select_id_part($data_multiple['id_part']);
 				$sum = 0;
 				for($i = 0; $i < count($get_customer_claim); $i++) {
-					if($select_record_part->id_customer === $get_customer_claim[$i]->CUSTOMER) {
+					if($select_record_part->id_customer === $get_customer_claim[$i]->customer) {
 						$sum += $get_customer_claim[$i]->jml_qty_visual + $get_customer_claim[$i]->jml_qty_nonvisual;
 					}
 				}

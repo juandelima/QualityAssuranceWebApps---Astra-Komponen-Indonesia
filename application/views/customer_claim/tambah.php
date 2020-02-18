@@ -312,15 +312,15 @@
 														?>
 																	<tr>
 																		<td><?php echo $no; ?></td>
-																		<td><?php echo $data->NAMA_PART; ?></td>
-																		<td><?php echo $data->TYPE; ?></td>
-																		<td><?php echo $data->NO_SAP; ?></td>
-																		<td><?php echo $data->SAFETY_GRADE; ?></td>
-																		<td><?php echo $data->PROSES; ?></td>
+																		<td><?php echo $data->nama_part; ?></td>
+																		<td><?php echo $data->type; ?></td>
+																		<td><?php echo $data->no_sap; ?></td>
+																		<td><?php echo $data->safety_grade; ?></td>
+																		<td><?php echo $data->proses; ?></td>
 																		<td><?php echo $data->nama_customer; ?></td>
 																		<td>
 																			<center>
-																				<button type="button" class="btn btn-green btn-icon btn_add"  data-id="<?php echo $data->ID_PART; ?>" data-part="<?php echo $data->NAMA_PART; ?>" data-type="<?php echo $data->TYPE; ?>" data-no-part="<?php echo $data->NO_SAP; ?>" data-safety="<?php echo $data->SAFETY_GRADE; ?>" data-proses="<?php echo $data->PROSES; ?>" data-customer="<?php echo $data->nama_customer; ?>" data-dismiss="modal">
+																				<button type="button" class="btn btn-green btn-icon btn_add"  data-id="<?php echo $data->id_part; ?>" data-part="<?php echo $data->nama_part; ?>" data-type="<?php echo $data->type; ?>" data-no-part="<?php echo $data->no_sap; ?>" data-safety="<?php echo $data->safety_grade; ?>" data-proses="<?php echo $data->proses; ?>" data-customer="<?php echo $data->nama_customer; ?>" data-dismiss="modal">
 																					PILIH
 																					<i class="entypo-check"></i>
 																				</button>

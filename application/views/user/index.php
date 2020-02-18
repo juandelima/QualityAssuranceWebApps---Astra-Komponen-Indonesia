@@ -72,12 +72,14 @@
 			<?php 
 				}
 			?>
+
 			<div class="pull-left" style="margin-bottom: 20px;">
 				<a href="<?php echo base_url('datauser/user/create'); ?>" class="btn btn-blue btn-icon">
 					Add User
 					<i class="entypo-user-add"></i>
 				</a>
 			</div>
+			
 			<table class="table table-bordered" id="table-1">
 				<thead>
 					<tr>

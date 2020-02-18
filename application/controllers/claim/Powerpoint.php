@@ -131,7 +131,7 @@ class Powerpoint extends CI_Controller {
 		
 		$writer = new PowerPoint2007($phpPresentation);
 		
-		$filename = 'PART - '.$select_claim->NAMA_PART;
+		$filename = 'PART - '.$select_claim->nama_part;
 		
 		header('Content-Type: application/vnd.ms-powerpoint');
 		header('Content-Disposition: attachment;filename="'. $filename .'.pptx"'); 
@@ -149,7 +149,7 @@ class Powerpoint extends CI_Controller {
 		$config = array(
 			'upload_path' => './assets/claim_customer/ppt/',
 			'allowed_types' => 'gif|jpg|png|jpeg|pdf|ppt|pptx|xls|xlsx|doc|docx',
-			'file_name'	=> 'Part '.$select_claim->NAMA_PART,
+			'file_name'	=> 'Part '.$select_claim->nama_part,
 			'overwrite' => true,
 			'max_size ' => 1280000
 		);

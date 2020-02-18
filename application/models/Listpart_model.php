@@ -17,7 +17,7 @@ class Listpart_model extends CI_Model {
 
 		$this->db->select($query_array);
 		$this->db->from('data_parts');
-		$this->db->join('customer', 'customer.id_customer = data_parts.CUSTOMER', 'inner');
+		$this->db->join('customer', 'customer.id_customer = data_parts.customer', 'inner');
 		$this->db->order_by('id_part', 'desc');
 		$data = $this->db->get();
 		return $data->result();
@@ -38,8 +38,8 @@ class Listpart_model extends CI_Model {
 	}
 
 	public function search_no_sap($no_sap){
-        $this->db->like('NO_SAP', $no_sap , 'both');
-        $this->db->order_by('NO_SAP', 'ASC');
+        $this->db->like('no_sap', $no_sap , 'both');
+        $this->db->order_by('no_sap', 'ASC');
         $this->db->limit(10);
         return $this->db->get('data_parts')->result();
 	}
@@ -47,7 +47,7 @@ class Listpart_model extends CI_Model {
 	public function search_dataPart_by_noSap($no_sap) {
 		$this->db->select("*");
 		$this->db->from('data_parts');
-		$this->db->where('NO_SAP', $no_sap);
+		$this->db->where('no_sap', $no_sap);
 		$query = $this->db->get();
 		return $query->result();
 	}

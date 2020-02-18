@@ -100,11 +100,11 @@
 					?>
 					<tr>
 						<td><?php echo $no; ?></td>
-						<td><?php echo $data->NO_SAP; ?></td>
-						<td><?php echo $data->SAFETY_GRADE; ?></td>
-						<td><?php echo $data->NAMA_PART; ?></td>
-						<td><?php echo $data->TYPE; ?></td>
-						<td><?php echo $data->PROSES; ?></td>
+						<td><?php echo $data->no_sap; ?></td>
+						<td><?php echo $data->safety_grade; ?></td>
+						<td><?php echo $data->nama_part; ?></td>
+						<td><?php echo $data->type; ?></td>
+						<td><?php echo $data->proses; ?></td>
 						<td><?php echo $data->nama_customer; ?></td>
 					</tr>
 					<?php 

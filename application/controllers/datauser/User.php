@@ -121,13 +121,13 @@ class User extends CI_Controller {
 				'updated_at' => date('Y-m-d H:i:s')
 			);
 			$this->user_model->save($data);
-			$get_user = $this->user_model->list_user();
-			$get_pass = $this->user_model->edit_user($get_user[0]->id_users);
-			$data_reset = array(
-				'password' => $get_pass->password,
-				'id_user' => $get_pass->id_users
-			);
-			$this->user_model->reset_password($data_reset);
+			// $get_user = $this->user_model->list_user();
+			// $get_pass = $this->user_model->edit_user($get_user[0]->id_users);
+			// $data_reset = array(
+			// 	'password' => $get_pass->password,
+			// 	'id_user' => $get_pass->id_users
+			// );
+			// $this->user_model->reset_password($data_reset);
 			$this->session->set_flashdata('sukses', 'USER '.strtoupper($data['full_name']).' BERHASIL DITAMBAHKAN!');
 			redirect(base_url('datauser/user'), 'refresh');
 		}

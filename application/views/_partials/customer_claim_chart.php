@@ -917,6 +917,31 @@
 
 			function filter_status_claim() {
 				$("#filter_chart").on('change', 'select#status_claim', function(e) {
+					let part = $("#part").val();
+					let year = $("#year").val();
+					let month = $("#month option:selected").text();
+					let date_range = $("#date_ranges").val();
+					if(date_range != "") {
+						if(year != "" && month != "") {
+							caption = year+" - "+month;
+						} else if(year != "") {
+							caption = year;
+						} else if(month != "") {
+							caption = month;
+						} else {
+							caption = caption = formart_start+" - "+formart_end;
+						}
+					} else {
+						if(year != "" && month != "") {
+							caption = year+" - "+month;
+						} else if(year != "") {
+							caption = year;
+						} else if(month != "") {
+							caption = month;
+						} else {
+							caption = "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>";
+						}
+					}
 					$.ajax({
 						type: "GET",
 						url: "<?php echo base_url('claim/customerclaim/chart_per_part'); ?>",

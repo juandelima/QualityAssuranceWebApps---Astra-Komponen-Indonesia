@@ -49,52 +49,15 @@ class Dashboard extends CI_Controller {
 			$merge_field_except[] = $mergeField[$i];
 		}
 
-		$nowYear = date('Y');
-		$months = ["Jan-$nowYear", "Feb-$nowYear", "Mar-$nowYear","Apr-$nowYear", "May-$nowYear", "Jun-$nowYear", 
-					"Jul-$nowYear", "Aug-$nowYear", "Sep-$nowYear", "Oct-$nowYear", "Nov-$nowYear", "Dec-$nowYear"];
-		$count_merge_field = count($merge_field_except);
 		$firstYear = (int)date('Y') - 9;
 		$lastYear = $firstYear + 9;
-		$dataYear = array();
-		$dataMonth = array();
 		$years = [];
 		$count_customer_claim = count($get_customer_claim);
 		for($i = $firstYear; $i <= $lastYear; $i++) {
 			$years[] = $i;
-			$chart_rejection_claim = $this->customerclaim_model->rejection_per_year_month($i, null, null);
-			$count_chart_rejection_claim = count($chart_rejection_claim);
-			$sumByYear = 0;
-			for($j = 0; $j < $count_merge_field; $j++) {
-				$field = $merge_field_except[$j];
-				for($k = 0; $k < $count_chart_rejection_claim; $k++) {
-					if($chart_rejection_claim[$k]->$field > 0) {
-						$sumByYear += $chart_rejection_claim[$k]->$field;
-					}			
-				}
-			}
-			$dataYear[$i] = $sumByYear;
-		}
-
-		for($i = 0; $i < count($months); $i++) {
-			$month = date("m", strtotime($months[$i]));
-			$rejection_per_year_month = $this->customerclaim_model->montly_rejection($nowYear, $month, null, null);
-			$count_chart_rejection_claim_month = count($rejection_per_year_month);
-			$sumByMonth = 0;
-			for($j = 0; $j < $count_merge_field; $j++) {
-				$field = $merge_field_except[$j];
-				for($k = 0; $k < $count_chart_rejection_claim_month; $k++) {
-					if($rejection_per_year_month[$k]->$field > 0) {
-						$sumByMonth += $rejection_per_year_month[$k]->$field;
-					}			
-				}
-			}
-			$bulan = date("M", strtotime($months[$i]));
-			$dataMonth[$bulan] = $sumByMonth;
 		}
 		
 		$data = array(
-			"dataChartYear" => json_encode($dataYear),
-			"dataChartMonth" => json_encode($dataMonth),
 			"year" => $years,
 			"count_customer_claim" => $count_customer_claim,
 			"slug" => $slug,

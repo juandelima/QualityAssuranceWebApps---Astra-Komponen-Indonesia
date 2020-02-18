@@ -142,7 +142,7 @@
 										<?php
 											foreach($customer_claim_dist as $data) {
 										?>
-											<option value="<?php echo $data->NAMA_PART; ?>"><?php echo $data->NAMA_PART; ?></option>
+											<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
 										<?php 
 											}
 										?>
@@ -286,6 +286,7 @@
 									<!-- <th style="text-align: center;" width="40">Grafik</th> -->
 								</tr>
 							</thead>
+							
 							<tbody>
 								<?php
 									$no = 1;
@@ -324,12 +325,12 @@
 									<td><?php echo $no++; ?></td>
 									<td><?php echo date('d-m-Y', strtotime($data->tgl_input)); ?></td>
 									<td><?php echo $data->no_surat_claim; ?></td>
-									<td><?php echo $data->NAMA_PART; ?></td>
-									<td><?php echo $data->TYPE; ?></td>
-									<td><?php echo $data->PROSES; ?></td>
+									<td><?php echo $data->nama_part; ?></td>
+									<td><?php echo $data->type; ?></td>
+									<td><?php echo $data->proses; ?></td>
 									
 									<!-- <td style="text-align: center;">
-										<a href="javascript:;" onclick="jQuery('#modal-data-non<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static'});" class="popover-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="KLIK UNTUK MELIHAT DATA REJECTION <?php echo $data->NAMA_PART; ?>">
+										<a href="javascript:;" onclick="jQuery('#modal-data-non<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static'});" class="popover-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="KLIK UNTUK MELIHAT DATA REJECTION <?php echo $data->nama_part; ?>">
 											<?php echo $sum_rejection; ?>
 										</a>
 									</td> -->
@@ -340,14 +341,14 @@
 											<i class="entypo-upload"></i>
 										</a>
 
-										<a <?php if(empty($data->ppt_file)) { ?> disabled <?php } else { ?> href="<?php echo base_url('assets/claim_customer/ppt/'.$data->ppt_file)?>" <?php } ?> class="btn btn-success btn-icon icon-left" download="PART - <?php echo $data->NAMA_PART; ?>" id="download_ppt_file<?php echo $id; ?>">
+										<a <?php if(empty($data->ppt_file)) { ?> disabled <?php } else { ?> href="<?php echo base_url('assets/claim_customer/ppt/'.$data->ppt_file)?>" <?php } ?> class="btn btn-success btn-icon icon-left" download="PART - <?php echo $data->nama_part; ?>" id="download_ppt_file<?php echo $id; ?>">
 												Download
 											<i class="entypo-download"></i>
 										</a>
 									</td>
 									<td style="<?php echo $style_card; ?>"><?php echo $data->card; ?></td>
 									<!-- <td style="text-align: center;">
-										<a href="javascript:;" onclick="jQuery('#charts<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static'});" class="btn btn-danger btn-icon icon-left popover-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="KLIK UNTUK MELIHAT GRAFIK REJECTION <?php echo $data->NAMA_PART; ?>">
+										<a href="javascript:;" onclick="jQuery('#charts<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static'});" class="btn btn-danger btn-icon icon-left popover-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="KLIK UNTUK MELIHAT GRAFIK REJECTION <?php echo $data->nama_part; ?>">
 												Grafik
 											<i class="entypo-chart-line"></i>
 										</a>
@@ -369,7 +370,7 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">Upload PPT File - <?php echo $data->NAMA_PART; ?></h4>
+									<h4 class="modal-title">Upload PPT File - <?php echo $data->nama_part; ?></h4>
 								</div>
 								<form role="form" class="form-horizontal" id="upload_file<?php echo $id; ?>" enctype="multipart/form-data">
 									<div class="modal-body">
