@@ -168,16 +168,12 @@ class User extends CI_Controller {
 			$username = $this->input->post('username');
 			$check_username = $this->user_model->get_username($username);
 
-			if($check_username === TRUE) {
-				if($username != $user->username) {
-					if($check_username === TRUE) {
-						$this->session->set_flashdata('error', 'USERNAME SUDAH DIGUNAKAN!');
-						redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
-					}
-					
-				}
-				
-			} 
+			if($username != $user->username) {
+				if($check_username === TRUE) {
+					$this->session->set_flashdata('error', 'USERNAME SUDAH DIGUNAKAN!');
+					redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
+				}	
+			}
 
 			// CEK PASSWORD
 			$old_password = $this->input->post('old_password');

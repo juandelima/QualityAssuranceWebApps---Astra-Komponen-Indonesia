@@ -326,6 +326,14 @@
 				let year = $("#year").val();
 				let month = $("#month option:selected").text();
 				let date_range = $("#date_ranges").val();
+				const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun",
+				"Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+				var start = $("[name=daterangepicker_start]").val();
+				var end = $("[name=daterangepicker_end]").val();
+				var start_date = new Date(start);
+				var end_date = new Date(end);
+				var formart_start = start_date.getDate()+" "+months[start_date.getMonth()]+" "+start_date.getFullYear();
+				var formart_end = end_date.getDate()+" "+months[end_date.getMonth()]+" "+end_date.getFullYear();
 				if(date_range != "") {
 					if(year != "" && month != "") {
 						caption = year+" - "+month;
@@ -342,7 +350,7 @@
 					} else if(year != "") {
 						caption = year;
 					} else if(month != "") {
-						caption = month;
+						caption = "<?php echo date("Y", strtotime($start)); ?> "+month+" - "+"<?php echo date("Y", strtotime($end)); ?> "+month;
 					} else {
 						caption = "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>";
 					}
