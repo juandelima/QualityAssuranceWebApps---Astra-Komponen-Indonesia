@@ -66,7 +66,7 @@
 							"hideMethod": "fadeOut"
 						};
 			
-						toastr.error("<?php echo $this->session->flashdata('hapus'); ?>", "SUCCESS", opts);
+						toastr.error("<?php echo $this->session->flashdata('hapus'); ?>", "ERROR", opts);
 					});
 				</script>
 			<?php 
@@ -109,9 +109,11 @@
 						<td><?php echo $data->updated_at; ?></td>
 						<?php if($this->session->userdata['role'] == 'Super Admin') { ?>
 						<td style="text-align: center;">
+							<?php if($this->session->userdata['role'] != $data->role ) { ?>
 							<a href="<?php echo base_url('datauser/user/edit/'.$data->id_users); ?>" class="btn btn-info btn-sm">
 								Ubah
 							</a>
+							<?php } ?>
 							<?php if($data->role != 'Super Admin') { ?>
 							<a href="javascript:;" onclick="jQuery('#modal-5<?php echo $data->id_users; ?>').modal('show', {backdrop: 'static'});" class="btn btn-danger btn-sm">
 								Delete

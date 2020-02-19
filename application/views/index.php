@@ -74,7 +74,7 @@
 						"showMethod": "fadeIn",
 						"hideMethod": "fadeOut"
 					};
-					toastr.error("<?php echo $this->session->flashdata('success'); ?>", "ERROR", opts);
+					toastr.error("<?php echo $this->session->flashdata('error'); ?>", "ERROR", opts);
 				});
 			</script>
 		<?php

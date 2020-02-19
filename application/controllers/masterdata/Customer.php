@@ -11,6 +11,11 @@ class Customer extends CI_Controller {
 	}
 
 	public function index() {
+		$session_role = $this->session->userdata['role'];
+		if($session_role != 'Super Admin' and $session_role != 'Admin') {
+			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$listpart_model = $this->listpart_model->list_part();
 		$data = array(
 			'listpart' => $listpart_model

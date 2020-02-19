@@ -46,6 +46,7 @@ class Customerclaim extends CI_Controller {
 	} 
 	
 	public function ahm_delivery() {
+		
 		$tgl = $_POST['tgl_deliv'];
 		$qty = $_POST['qty'];
 		$strTgl_toTime = date('Y-m-d', strtotime($tgl));
@@ -55,6 +56,11 @@ class Customerclaim extends CI_Controller {
 	}
 
  	public function create_ahm() {
+		$session_role = $this->session->userdata['role'];
+		if($session_role != 'Super Admin' and $session_role != 'Admin') {
+			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$slug = $this->uri->segment(3);
 		$get_field_visual = $this->customerclaim_model->list_field_visual();
 		$get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
@@ -79,6 +85,7 @@ class Customerclaim extends CI_Controller {
 	}
 
 	public function filter_chart() {
+		
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
 		$count_customer_claim = count($get_customer_claim);
 		$get_field_visual = $this->customerclaim_model->list_field_visual();
@@ -267,6 +274,7 @@ class Customerclaim extends CI_Controller {
 	}
 
 	public function save() {
+		
 		// $get_field_visual = $this->customerclaim_model->list_field_visual();
 		// $get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();

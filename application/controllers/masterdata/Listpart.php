@@ -22,6 +22,7 @@ class Listpart extends CI_Controller {
 	// }
 
 	public function index() {
+		
 		$slug = $this->uri->segment(2);
 		$get_data_part = $this->listpart_model->get_data_part();
 		$data = array(
@@ -129,6 +130,11 @@ class Listpart extends CI_Controller {
 	}
 
 	public function create() {
+		$session_role = $this->session->userdata['role'];
+		if($session_role != 'Super Admin' and $session_role != 'Admin') {
+			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$customer_model = $this->customer_model->customer_list();
 		$data = array(
 			'customer' => $customer_model
@@ -188,6 +194,11 @@ class Listpart extends CI_Controller {
 	}
 
 	public function edit($id_part) {
+		$session_role = $this->session->userdata['role'];
+		if($session_role != 'Super Admin' and $session_role != 'Admin') {
+			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$listpart = $this->listpart_model->edit_part($id_part);
 		$customer_model = $this->customer_model->customer_list();
 		$valid = $this->form_validation;

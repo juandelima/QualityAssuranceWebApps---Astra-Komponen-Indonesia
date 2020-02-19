@@ -16,6 +16,11 @@ class User extends CI_Controller {
 
 	
 	public function index() {
+		$session_role = $this->session->userdata['role'];
+		if($session_role != 'Super Admin' and $session_role != 'Admin') {
+			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$slug = $this->uri->segment(2);
 		$data_user = $this->user_model->list_user();
 		$data = array(
@@ -26,6 +31,11 @@ class User extends CI_Controller {
 	}
 
 	public function create() {
+		$session_role = $this->session->userdata['role'];
+		if($session_role != 'Super Admin' and $session_role != 'Admin') {
+			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$slug = $this->uri->segment(3);
 		$data = array(
 			'slug' => $slug
@@ -136,6 +146,11 @@ class User extends CI_Controller {
 	public function edit_profile($id_user) {
 		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
+		$session_id = $this->session->userdata['id_users'];
+		if($session_id != $user->id_users) {
+			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$valid = $this->form_validation;
 		$valid->set_rules('username', 'USERNAME', 'required',
 		array('required' => '%s harus diisi'));
@@ -144,7 +159,6 @@ class User extends CI_Controller {
 		
 		
 		if($valid->run()) {
-			
 			date_default_timezone_set("Asia/Jakarta");
 			$this->load->library('upload');
 			$config = array(
@@ -239,6 +253,11 @@ class User extends CI_Controller {
 	public function edit($id_user) {
 		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
+		$session_role = $this->session->userdata['role'];
+		if($session_role != 'Super Admin') {
+			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url('datauser/user'), 'refresh');
+		}
 		$valid = $this->form_validation;
 		$valid->set_rules('full_name', 'FULL NAME', 'required',
 		array('required' => '%s harus diisi'));
@@ -272,16 +291,14 @@ class User extends CI_Controller {
 			$username = $this->input->post('username');
 			$check_username = $this->user_model->get_username($username);
 
-			if($check_username === TRUE) {
-				if($username != $user->username) {
-					if($check_username === TRUE) {
-						$this->session->set_flashdata('error', 'USERNAME SUDAH DIGUNAKAN!');
-						redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
-					}
-					
-				}
+			
+			if($username != $user->username) {
+				if($check_username === TRUE) {
+					$this->session->set_flashdata('error', 'USERNAME SUDAH DIGUNAKAN!');
+					redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
+				}	
+			}
 				
-			} 
 
 			if($this->input->post('old_password') != NULL) {
 				$data = array(
@@ -347,6 +364,7 @@ class User extends CI_Controller {
 	}
 
 	public function delete($id_user) {
+		
 		$user = $this->user_model->edit_user($id_user);
 		$delete_session_user = array(
 			'id_users' => $user->id_users,
