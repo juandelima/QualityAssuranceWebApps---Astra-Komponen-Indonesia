@@ -19,6 +19,31 @@
 		<?php $this->load->view('_partials/navbar.php'); ?>
 		<div class="main-content">
 			<?php $this->load->view('_partials/navbar_head.php'); ?>
+			<?php if($this->session->flashdata('error')) {
+			?>
+				<script>
+					jQuery(document).ready(function($) {
+						var opts = {
+							"closeButton": true,
+							"debug": false,
+							"positionClass": "toast-top-full-width",
+							"onclick": null,
+							"showDuration": "300",
+							"hideDuration": "1000",
+							"timeOut": "5000",
+							"extendedTimeOut": "1000",
+							"showEasing": "swing",
+							"hideEasing": "linear",
+							"showMethod": "fadeIn",
+							"hideMethod": "fadeOut"
+						};
+			
+						toastr.error("<?php echo $this->session->flashdata('error'); ?>", "ERROR", opts);
+					});
+				</script>
+			<?php 
+				}
+			?>
 			<h2>Edit User</h2>
 			<ol class="breadcrumb bc-3">
 				<li>

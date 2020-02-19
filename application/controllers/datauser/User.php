@@ -137,12 +137,14 @@ class User extends CI_Controller {
 		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
 		$valid = $this->form_validation;
-		$valid->set_rules('full_name', 'FULL NAME', 'required',
-		array('required' => '%s harus diisi'));
 		$valid->set_rules('username', 'USERNAME', 'required',
 		array('required' => '%s harus diisi'));
-
+		$valid->set_rules('full_name', 'FULL_NAME', 'required',
+		array('required' => '%s harus diisi'));
+		
+		
 		if($valid->run()) {
+			
 			date_default_timezone_set("Asia/Jakarta");
 			$this->load->library('upload');
 			$config = array(
@@ -167,21 +169,30 @@ class User extends CI_Controller {
 			$check_username = $this->user_model->get_username($username);
 
 			if($check_username === TRUE) {
-				$this->session->set_flashdata('error', 'USERNAME SUDAH DIGUNAKAN!');
-				redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
+				if($username != $user->username) {
+					if($check_username === TRUE) {
+						$this->session->set_flashdata('error', 'USERNAME SUDAH DIGUNAKAN!');
+						redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
+					}
+					
+				}
+				
 			} 
 
 			// CEK PASSWORD
 			$old_password = $this->input->post('old_password');
+			$confirm_pass = $this->input->post('password_confirmation');
 			if($old_password != NULL) {
-				$new_password = $this->input->post('password');
-				$confirm_pass = $this->input->post('password_confirmation');
 				if(password_verify($old_password, $user->password)) {
-					if($new_password != $confirm_pass) {
-						$this->session->set_flashdata('error', 'PASSWORD TIDAK SESUAI!');
+					 $new_password = $this->input->post('password');
+					 if($new_password != $confirm_pass) {
+						$this->session->set_flashdata('error', 'KONFIRMASI PASSWORD HARUS SAMA DENGAN PASSWORD BARU ATAU SEBALIKNYA!');
 						redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
-					}
-				}
+					 }
+				} else {
+					$this->session->set_flashdata('error', 'PASSWORD LAMA SALAH!');
+					redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
+				} 	
 				$data = array(
 					'id_users' => $id_user,
 					'photo' => $photo,
@@ -261,9 +272,22 @@ class User extends CI_Controller {
 				$photo = $user->photo;
 			}
 			
+			// CEK USERNAME
+			$username = $this->input->post('username');
+			$check_username = $this->user_model->get_username($username);
+
+			if($check_username === TRUE) {
+				if($username != $user->username) {
+					if($check_username === TRUE) {
+						$this->session->set_flashdata('error', 'USERNAME SUDAH DIGUNAKAN!');
+						redirect(base_url('datauser/user/edit_profile/'.$id_user), 'refresh');
+					}
+					
+				}
+				
+			} 
 
 			if($this->input->post('old_password') != NULL) {
-
 				$data = array(
 					'id_users' => $id_user,
 					'photo' => $photo,

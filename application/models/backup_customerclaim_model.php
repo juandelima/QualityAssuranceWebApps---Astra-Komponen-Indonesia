@@ -11,14 +11,13 @@ class Customerclaim_model extends CI_Model {
 		$count_list_visual = count($list_field_visual);
 		$count_list_nonvisual = count($list_field_non_visual);
 		$get_customer_claim = $this->get_customer_claim();
-		$index = 1;
-		for($i = 0; $i < 1000; $i++) {
+		for($i = 0; $i < 500; $i++) {
 			$getPart = $this->getRandomPart();
 			$getClaim = $this->getClaim();
 			$intvl = $i + 5;
 			$tgl_input = date("Y-m-d", strtotime("+10 day", $start_date));
-			$tgl_claim = date("Y-m-d", strtotime("+8 day", $start_date));
-			$tgl_delive = date("Y-m-d", strtotime("+6 day", $start_date));
+			$tgl_claim = date("Y-m-d", strtotime("+5 day", $start_date));
+			$tgl_delive = date("Y-m-d", strtotime("+15 day", $start_date));
 			$year = date("Y", strtotime($tgl_input));
 			$data = array(
 				'tgl_input' => $tgl_input,
@@ -55,7 +54,7 @@ class Customerclaim_model extends CI_Model {
 				if($field == "id_customer_claim") {
 					continue;
 				}
-				$data_visual[$field] = rand(0, 30);
+				$data_visual[$field] = rand(0, 5);
 				$sum_visual += $data_visual[$field];
 			}
 
@@ -67,7 +66,7 @@ class Customerclaim_model extends CI_Model {
 				if($field == "id_customer_claim") {
 					continue;
 				}
-				$data_non_visual[$field] = rand(0, 30);
+				$data_non_visual[$field] = rand(0, 5);
 				$sum_non_visual += $data_non_visual[$field];
 			}
 
@@ -186,7 +185,6 @@ class Customerclaim_model extends CI_Model {
 			// echo "<br/>";
 			// echo "<br/>";
 			$start_date = strtotime($tgl_input); 
-			$index += 1;
 		}
 		
 	}

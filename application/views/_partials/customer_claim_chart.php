@@ -58,7 +58,7 @@
 			const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun",
 			"Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
 			let year = $("#year").val();
-			let month = $("#month").val();
+			let month = $("#month option:selected").text();
 			let start = $("[name=daterangepicker_start]").val();
 			let end = $("[name=daterangepicker_end]").val();
 			let start_date = new Date(start);
@@ -771,76 +771,158 @@
 
 			var countInitChartRejection = <?php echo $count_customer_claim; ?>;
 			function initRealTimeChartRejection() {
-				$.ajax({
-					type: "GET",
-					url: "<?php echo base_url('claim/customerclaim/filter_chart'); ?>",
-					data: $("#filter_chart").serialize(),
-					dataType: "JSON",
-					cache: false,
-					beforeSend: function(data_filter) {
-						$("#reloading").trigger('click');
-					},
-					success: function(data_filter) {
-						let get_count_customer_claim = data_filter.count_customer_claim;
-						if(countInitChartRejection != get_count_customer_claim) {
-							countInitChartRejection = get_count_customer_claim;
-							FusionCharts.ready(function() {
-								const chartData = [];
-								
-								let obj = data_filter.result;
-								for(let key in obj) {
-									if(obj[key] > 0) {
-										let initData = {
-											"label": key,
-											"value": obj[key],
-										}
-										chartData.push(initData);
-									}
-								}
-
-								let label;
-								if(chartData.length > 10) {
-									label = "rotate";
-								} else {
-									label = "wrap";
-								}
-								var revenueChart = new FusionCharts({
-									type: 'column2d',
-									renderAt: 'container',
-									width: '100%',
-									height: '490',
-									dataFormat: 'json',
-									dataSource: {
-									"chart": {
-										"caption": "REJECTIONS - QTY (AHM)",
-										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
-										"xAxisname": "Rejection Name",
-										"pYAxisName": "QTY",
-										"sYAxisName": "",
-										"numberPrefix": "",
-										"theme": "fusion",
-										"showValues": "0",
-										"exportenabled": "1",
-										"exportfilename": "Customer Claim Chart",
-										"labelDisplay": label,
-									},
-									"data": chartData
-									}
-								}).render();
-							});
+				let part = $("#part").val();
+				let date_range = $("#date_ranges").val();
+				const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun",
+				"Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+				let year = $("#year").val();
+				let month = $("#month option:selected").text();
+				let start = $("[name=daterangepicker_start]").val();
+				let end = $("[name=daterangepicker_end]").val();
+				let start_date = new Date(start);
+				let end_date = new Date(end);
+				let formart_start = start_date.getDate()+" "+months[start_date.getMonth()]+" "+start_date.getFullYear();
+				let formart_end = end_date.getDate()+" "+months[end_date.getMonth()]+" "+end_date.getFullYear();
+				let caption;
+				if(date_range != "") {
+					if(year != "" && month != "") {
+							$("#start").val("");
+							$("#end").val("");
+							caption = year+" - "+month;
+						} else if(year != "") {
+							$("#start").val("");
+							$("#end").val("");
+							caption = year;
+						} else if(month != "") {
+							$("#start").val("");
+							$("#end").val("");
+							caption = month;
 						} else {
-							countInitChartRejection = get_count_customer_claim;
+							caption = caption = formart_start+" - "+formart_end;
 						}
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						$("#error_text").text(textStatus +" "+errorThrown);
-						$("#modal-error-ajax").modal('show');
+					} else {
+						if(year != "" && month != "") {
+							caption = year+" - "+month;
+						} else if(year != "") {
+							caption = year;
+						} else if(month != "") {
+							caption = month;
+						} else {
+							caption = "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>";
+						}
+
 					}
-				});
+					$.ajax({
+						type: "GET",
+						url: "<?php echo base_url('claim/customerclaim/filter_chart'); ?>",
+						data: $("#filter_chart").serialize(),
+						dataType: "JSON",
+						cache: false,
+						beforeSend: function(data_filter) {
+							$("#reloading").trigger('click');
+						},
+						success: function(data_filter) {
+							let get_count_customer_claim = data_filter.count_customer_claim;
+							if(countInitChartRejection != get_count_customer_claim) {
+								countInitChartRejection = get_count_customer_claim;
+								FusionCharts.ready(function() {
+									const chartData = [];
+									
+									let obj = data_filter.result;
+									for(let key in obj) {
+										if(obj[key] > 0) {
+											let initData = {
+												"label": key,
+												"value": obj[key],
+											}
+											chartData.push(initData);
+										}
+									}
+
+									let label;
+									if(chartData.length > 10) {
+										label = "rotate";
+									} else {
+										label = "wrap";
+									}
+									var revenueChart = new FusionCharts({
+										type: 'column2d',
+										renderAt: 'container',
+										width: '100%',
+										height: '490',
+										dataFormat: 'json',
+										dataSource: {
+										"chart": {
+											"caption": "REJECTIONS - QTY (AHM)",
+											"subCaption": caption,
+											"xAxisname": "Rejection Name",
+											"pYAxisName": "QTY",
+											"sYAxisName": "",
+											"numberPrefix": "",
+											"theme": "fusion",
+											"showValues": "0",
+											"exportenabled": "1",
+											"exportfilename": "Customer Claim Chart",
+											"labelDisplay": label,
+										},
+										"data": chartData
+										}
+									}).render();
+								});
+							} else {
+								countInitChartRejection = get_count_customer_claim;
+							}
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							$("#error_text").text(textStatus +" "+errorThrown);
+							$("#modal-error-ajax").modal('show');
+						}
+					});
 			}
 
 			var countInitChartPart = <?php echo $count_customer_claim; ?>;
 			function initRealTimeChartPart() {
+				let part = $("#part").val();
+				let date_range = $("#date_ranges").val();
+				const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun",
+				"Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+				let year = $("#year").val();
+				let month = $("#month option:selected").text();
+				let start = $("[name=daterangepicker_start]").val();
+				let end = $("[name=daterangepicker_end]").val();
+				let start_date = new Date(start);
+				let end_date = new Date(end);
+				let formart_start = start_date.getDate()+" "+months[start_date.getMonth()]+" "+start_date.getFullYear();
+				let formart_end = end_date.getDate()+" "+months[end_date.getMonth()]+" "+end_date.getFullYear();
+				let caption;
+				if(date_range != "") {
+					if(year != "" && month != "") {
+							$("#start").val("");
+							$("#end").val("");
+							caption = year+" - "+month;
+						} else if(year != "") {
+							$("#start").val("");
+							$("#end").val("");
+							caption = year;
+						} else if(month != "") {
+							$("#start").val("");
+							$("#end").val("");
+							caption = month;
+						} else {
+							caption = caption = formart_start+" - "+formart_end;
+						}
+					} else {
+						if(year != "" && month != "") {
+							caption = year+" - "+month;
+						} else if(year != "") {
+							caption = year;
+						} else if(month != "") {
+							caption = month;
+						} else {
+							caption = "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>";
+						}
+
+				}
 				$.ajax({
 					type: "GET",
 					url: "<?php echo base_url('claim/customerclaim/chart_per_part'); ?>",
@@ -885,7 +967,7 @@
 									dataSource: {
 									"chart": {
 										"caption": "ALL REJECTION PARTS - QTY (AHM)",
-										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
+										"subCaption": caption,
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
 										"sYAxisName": "",
@@ -919,6 +1001,8 @@
 				$("#filter_chart").on('change', 'select#status_claim', function(e) {
 					let part = $("#part").val();
 					let year = $("#year").val();
+					let status = $($(this)).val();
+					console.log(status);
 					let month = $("#month option:selected").text();
 					let date_range = $("#date_ranges").val();
 					if(date_range != "") {
@@ -983,7 +1067,7 @@
 									dataSource: {
 									"chart": {
 										"caption": "ALL REJECTION PARTS - QTY (AHM)",
-										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
+										"subCaption": caption,
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
 										"sYAxisName": "",
@@ -1047,7 +1131,7 @@
 									dataSource: {
 									"chart": {
 										"caption": "REJECTIONS - QTY (AHM)",
-										"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
+										"subCaption": caption,
 										"xAxisname": "Rejection Name",
 										"pYAxisName": "QTY",
 										"sYAxisName": "",

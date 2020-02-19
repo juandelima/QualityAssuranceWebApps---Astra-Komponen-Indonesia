@@ -19,6 +19,31 @@
 		<?php $this->load->view('_partials/navbar.php'); ?>
 		<div class="main-content">
 			<?php $this->load->view('_partials/navbar_head.php'); ?>
+			<?php if($this->session->flashdata('error')) {
+			?>
+				<script>
+					jQuery(document).ready(function($) {
+						var opts = {
+							"closeButton": true,
+							"debug": false,
+							"positionClass": "toast-top-full-width",
+							"onclick": null,
+							"showDuration": "300",
+							"hideDuration": "1000",
+							"timeOut": "5000",
+							"extendedTimeOut": "1000",
+							"showEasing": "swing",
+							"hideEasing": "linear",
+							"showMethod": "fadeIn",
+							"hideMethod": "fadeOut"
+						};
+			
+						toastr.error("<?php echo $this->session->flashdata('error'); ?>", "ERROR", opts);
+					});
+				</script>
+			<?php 
+				}
+			?>
 			<h2>Edit Profile</h2>
 			<ol class="breadcrumb bc-3">
 				<li>
@@ -32,7 +57,7 @@
 				<div class="col-md-12">
 				<div class="panel panel-primary" data-collapsed="0">
 						<div class="panel-body">
-							<form role="form" id="create_user" class="form-horizontal" enctype="multipart/form-data" action="<?php echo base_url('datauser/user/edit_profile/'.$user->id_users); ?>" method="post">
+							<form role="form" name="submit" id="create_user" class="form-horizontal" enctype="multipart/form-data" action="<?php echo base_url('datauser/user/edit_profile/'.$user->id_users); ?>" method="post">
 								<div class="form-group">
 									<label class="col-sm-3 control-label" style="text-align:left;">&emsp;&emsp;FOTO PROFILE	</label>
 									<div class="col-sm-5">
@@ -55,13 +80,13 @@
 								<div class="form-group">
 									<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">&emsp;&emsp;FULL NAME</label>
 									<div class="col-sm-5">
-										<input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo $user->full_name; ?>" placeholder="ex: juan valerian delima" required>
+										<input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo $user->full_name; ?>" placeholder="ex: juan valerian delima">
 									</div>
 								</div>
 								<div class="form-group">
 									<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">&emsp;&emsp;USERNAME</label>
 									<div class="col-sm-5">
-										<input type="text" class="form-control" id="username" name="username" value="<?php echo $user->username; ?>" placeholder="ex: juandelima" required>
+										<input type="text" class="form-control" id="username" name="username" value="<?php echo $user->username; ?>" placeholder="ex: juandelima">
 									</div>
 									<div id="msg"></div>
 								</div>
