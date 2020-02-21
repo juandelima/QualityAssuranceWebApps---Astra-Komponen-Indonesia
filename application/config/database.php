@@ -96,35 +96,11 @@ $query_builder = TRUE;
 // 	'save_queries' => TRUE
 // );
 
-// $db['default'] = array(
-// 	'dsn'	   => '',
-// 	'hostname' => 'localhost',
-// 	'username' => 'postgres',
-// 	'password' => '123456',
-// 	'database' => 'qa_aski',
-// 	'dbdriver' => 'postgre',
-// 	'dbprefix' => '',
-// 	'port' => '5432',
-// 	'pconnect' => FALSE,
-// 	'db_debug' => (ENVIRONMENT !== 'production'),
-// 	'cache_on' => FALSE,
-// 	'cachedir' => '',
-// 	'char_set' => 'utf8',
-// 	'dbcollat' => 'utf8_general_ci',
-// 	'swap_pre' => '',
-// 	'encrypt' => FALSE,
-// 	'compress' => FALSE,
-// 	'stricton' => FALSE,
-// 	'failover' => array(),
-// 	'save_queries' => TRUE
-// );
-
-
 $db['default'] = array(
 	'dsn'	   => '',
-	'hostname' => '10.14.39.195',
+	'hostname' => 'localhost',
 	'username' => 'postgres',
-	'password' => 'just4ASKI',
+	'password' => '123456',
 	'database' => 'qa_aski',
 	'dbdriver' => 'postgre',
 	'dbprefix' => '',
@@ -142,3 +118,27 @@ $db['default'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
+
+
+// $db['default'] = array(
+// 	'dsn'	   => '',
+// 	'hostname' => '10.14.39.195',
+// 	'username' => 'postgres',
+// 	'password' => 'just4ASKI',
+// 	'database' => 'qa_aski',
+// 	'dbdriver' => 'postgre',
+// 	'dbprefix' => '',
+// 	'port' => '5432',
+// 	'pconnect' => FALSE,
+// 	'db_debug' => (ENVIRONMENT !== 'production'),
+// 	'cache_on' => FALSE,
+// 	'cachedir' => '',
+// 	'char_set' => 'utf8',
+// 	'dbcollat' => 'utf8_general_ci',
+// 	'swap_pre' => '',
+// 	'encrypt' => FALSE,
+// 	'compress' => FALSE,
+// 	'stricton' => FALSE,
+// 	'failover' => array(),
+// 	'save_queries' => TRUE
+// );

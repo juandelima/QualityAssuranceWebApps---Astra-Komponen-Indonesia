@@ -319,17 +319,19 @@ class Customerclaim extends CI_Controller {
 			$id_part = $data['id_part'];
 
 			for($j = 0; $j < count($id_part); $j++) {
-				$get_part = $this->customerclaim_model->select_id_part($id_part[$j]);
-				$nama_part = $get_part->nama_part;
 				$gqi_point = $data['gqi_point'][$j];
-				for($i = 0; $i < count($get_customer_claim); $i++) {
-					$get_year = date('Y', strtotime($get_customer_claim[$i]->tgl_input));
-					$get_month = date('m', strtotime($get_customer_claim[$i]->tgl_input));
-					$get_nama_part = $get_customer_claim[$i]->nama_part;
-					if($year === $get_year && $month === $get_month && $nama_part === $get_nama_part) {
-						$gqi_point += $get_customer_claim[$i]->gqi_point;
-					}
+				$get_customer_claim_by_tb = $this->customerclaim_model->get_customer_claim_by_tb($year, $month, $data['id_part'][$j]);
+				if(!empty($get_customer_claim_by_tb)) {
+					$gqi_point += $get_customer_claim_by_tb[0]->gqi_point;
 				}
+				// for($i = 0; $i < count($get_customer_claim); $i++) {
+				// 	$get_year = date('Y', strtotime($get_customer_claim[$i]->tgl_input));
+				// 	$get_month = date('m', strtotime($get_customer_claim[$i]->tgl_input));
+				// 	$get_nama_part = $get_customer_claim[$i]->nama_part;
+				// 	if($year === $get_year && $month === $get_month && $nama_part === $get_nama_part) {
+				// 		$gqi_point += $get_customer_claim[$i]->gqi_point;
+				// 	}
+				// }
 				$data['gqi_point'][$j] = $gqi_point;
 				if($gqi_point > 114) {
 					$data['card'][$j] = 'Red Card';
@@ -526,25 +528,6 @@ class Customerclaim extends CI_Controller {
 					'Rubber_TA' => $data_non_visual['Rubber_TA'][$j], 
 					'Hole_Ng' => $data_non_visual['Hole_Ng'][$j], 
 				);
-
-				// $select_claim = $this->customerclaim_model->select_claim($data_non_multiple["id_customer_claim"]);
-				// $detail_claim = $this->customerclaim_model->detail_customer_claim();
-				// $year = date('Y', strtotime($select_claim->tgl_input));
-				// $month = date('m', strtotime($select_claim->tgl_input));
-				// $nama_part = $select_claim->NAMA_PART;
-				// for($i = 0; $i < count($detail_claim); $i++) {
-				// 	$get_year = date('Y', strtotime($detail_claim[$i]->tgl_input));
-				// 	$get_month = date('m', strtotime($detail_claim[$i]->tgl_input));
-				// 	$get_nama_part = $detail_claim[$i]->NAMA_PART;
-				// 	if($year == $get_year && $month == $get_month && $nama_part == $get_nama_part) {
-				// 		for($x = 1; $x < count($get_field_non_visual); $x++) {
-				// 			$field = $get_field_non_visual[$x];
-				// 			if($data_non_multiple[$field] > 0 || $detail_claim[$i]->$field > 0) {
-				// 				$data_non_multiple[$field] += $detail_claim[$i]->$field;
-				// 			}
-				// 		}
-				// 	}
-				// }
 
 				$this->customerclaim_model->save_non_visual($data_non_multiple);
 			}

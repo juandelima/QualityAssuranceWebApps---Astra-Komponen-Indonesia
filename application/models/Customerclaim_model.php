@@ -378,6 +378,16 @@ class Customerclaim_model extends CI_Model {
 		return $max;
 	}
 
+	public function get_customer_claim_by_tb($tahun, $bulan, $id_part) {
+		$query = $this->db->query("
+			select * from claim_customer inner join data_parts
+			on claim_customer.id_part = data_parts.id_part
+			where extract(year from claim_customer.tgl_input) = $tahun and
+			extract(month from claim_customer.tgl_input) = $bulan and
+			claim_customer.id_part = '$id_part' order by claim_customer.id_customer_claim desc limit 1
+		");
+		return $query->result();
+	}
 
 	public function filter_claim($year, $month, $nama_part) { // Buat get datapart sebelumnya utk kalkulasi card
 		$array_select = array(
