@@ -75,4 +75,12 @@ class Customer_model extends CI_Model {
 		$this->db->where('id_customer', $id_customer);
 		$this->db->update($this->table);
 	}
+
+	public function getCustomer($id_customer) {{
+		$this->db->select("*");
+		$this->db->from($this->table);
+		$this->db->where('id_customer', $id_customer);
+		$result = $this->db->get();
+		return $result->row();
+	}}
 }

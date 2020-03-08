@@ -28,7 +28,6 @@
 			$("#tambah_part").click(function(e) {
 				e.preventDefault();
 				var html = '';
-				console.log(loop);
 				var parts = '';
 				html +=
 				'<div id="part_'+loop+'">'+
@@ -383,11 +382,13 @@
 				'<th>Aksi</th>'+
 				'</thead>'+
 				'<tbody>'+
+
 				<?php
 					$no = 1; 
 					foreach($listpart as $data) {
 						if($data->nama_customer == "AHM") {
 				?>
+				
 				'<tr>'+
 				'<td><?php echo $no; ?></td>'+
 				'<td><?php echo $data->nama_part; ?></td>'+
@@ -454,7 +455,6 @@
 
 				$("#add_form_part").on('click', '#modal_parts_'+loop, function() {
 					var loop2 = loop - 1;
-					console.log(loop2);
 					$(".modal_parts_tbl_"+loop2).modal('show');
 				});
 
@@ -843,7 +843,6 @@
 
 				$("#parts_table_"+loop).on('click', ".btn_add_"+loop, function() {
 					var loop3 = loop - 1;
-					console.log(loop3);
 					$("#id_part_"+loop3).val($(this).data('id'));
 					$("#nama_part_"+loop3).val($(this).data('part'));
 					$("#type_part_"+loop3).val($(this).data('type'));
@@ -853,7 +852,6 @@
 					$("#customer_"+loop3).val($(this).data('customer'));
 					var jumlah_qty_non = $("#jumlah_qty_non_"+loop3).val();
 					var s_grade = $("#s_grade_"+loop3).val();
-					console.log(s_grade);
 					if(s_grade === 'NON') {
 						$("#rank_point_non_"+loop3).val('FALSE');
 					} else if(s_grade === '#N/A') {
@@ -910,6 +908,7 @@
 						$("#card_"+loop3).css('color', '#222831');
 					}
 					$("#visual_and_nonvisual_"+loop3).show();
+
 					$("#tambah_part").show();
 					$("#total_claim_surat_"+loop3).prop("readonly", false);
 				});
@@ -1118,61 +1117,21 @@
 			?>
 
 			$('.datatable').on('click', '.btn_add', function() {
+				let nama_part = $(this).data('part');
+				let customer = $(this).data('customer');
+				let proses = $(this).data('proses');
+				let split_nama_part = nama_part.split('-').join(' ');
+				let split_customer = customer.split('-').join(' ');
+				let split_proses = proses.split('-').join(' ');
 				$("#id_part").val($(this).data('id'));
-				$("#nama_part").val($(this).data('part'));
+				$("#nama_part").val(split_nama_part);
 				$("#type_part").val($(this).data('type'));
 				$("#no_part").val($(this).data('no-part'));
 				$("#s_grade").val($(this).data('safety'));
-				$("#proses").val($(this).data('proses'));
-				$("#customer").val($(this).data('customer'));
+				$("#proses").val(split_proses);
+				$("#customer").val(split_customer);
 				var jumlah_qty_non = $("#jumlah_qty_non").val();
 				var s_grade = $("#s_grade").val();
-				// $.ajax({
-				// 	type: "POST",
-				// 	url: "<?php echo base_url('claim/customerclaim/get_previous_data_part'); ?>",
-				// 	data: $('#create_claim').serialize(),
-				// 	dataType: "JSON",
-				// 	cache: false,
-				// 	beforeSend: function() {
-				// 		$("#reloading").trigger('click');
-				// 	},
-				// 	success: function(get_data) {
-				// 		console.log(get_data);
-				// 		var qty_point = get_data["qty_point"];
-				// 		var jumlah_visual = get_data["jml_qty_visual"];
-				// 		var rank_visual = get_data["rank_point_visual"];
-				// 		var jumlah_qty_non = get_data["jml_qty_nonvisual"];
-				// 		var rank_non = get_data["rank_point_nonvisual"];
-				// 		var gqi_point = get_data["gqi_point"];
-				// 		var card = get_data["card"];
-				// 		console.log(qty_point);
-				// 		$("#qty_point").val(qty_point);
-				// 		$("#jumlah_qty_visual").val(jumlah_visual);
-				// 		$("#rank_point_visual").val(rank_visual);
-				// 		$("#jumlah_qty_non").val(jumlah_qty_non);
-				// 		$("#rank_point_non").val(rank_non);
-				// 		$("#gqi_point").val(gqi_point);
-				// 		if(gqi_point > 114) {
-				// 			$("#card").css('background-color', '#ff0000').val('Red Card');
-				// 			$("#card").css('color', '#ffffff');
-				// 		} else if(gqi_point > 100) {
-				// 			$("#card").css('background-color', '#ffd800').val('Yellow Card');
-				// 			$("#card").css('color', '#222831');
-				// 		} else if(gqi_point > 0) {
-				// 			$("#card").css('background-color', '#42b883').val('Green Card');
-				// 			$("#card").css('color', '#ffffff');
-				// 		} else {
-				// 			$("#card").css('background-color', '#eeeeee').val('#N/A');
-				// 			$("#card").css('color', '#222831');
-				// 		}
-				// 		$("#card").val(card);
-						
-				// 	},
-				// 	error: function(jqXHR, textStatus, errorThrown) {
-				// 		console.log(textStatus +" "+errorThrown);
-				// 	}
-
-				// });
 				if(s_grade === 'NON') {
 					$("#rank_point_non").val('FALSE');
 				} else if(s_grade === '#N/A') {
@@ -1228,12 +1187,12 @@
 					$("#card").css('background-color', '#eeeeee').val('#N/A');
 					$("#card").css('color', '#222831');
 				}
-				
+
 				$("#visual_and_nonvisual").show();
 				$("#tambah_part").show();
 				$("#total_claim_surat").prop("readonly", false);
 			});
-
+			
 			function calculate() {
 				<?php
 					foreach($merge_visual_non as $data_field) {
@@ -1322,7 +1281,6 @@
 								parseInt(pecah) + parseInt(stay_lepas) +
 								parseInt(salah_ulir) + parseInt(visual_ta) +
 								parseInt(ulir_ng) + parseInt(rubber_ta) + parseInt(hole_ng);
-				console.log(total_claim);
 
 				var jumlah_visual = parseInt(kotor) + parseInt(lecet) + 
 								parseInt(tipis) + parseInt(meler) + 
@@ -1352,7 +1310,6 @@
 								parseInt(seaming_ng) + parseInt(nonjol) +
 								parseInt(seal_lepas) + parseInt(cover_ng) +
 								parseInt(b_finishing) + parseInt(foam_ng);
-				//console.log(jumlah_visual);
 				var jumlah_non_visual = parseInt(deformasi) + parseInt(patah) +
 								parseInt(incomplete_part) + parseInt(e_mark) +
 								parseInt(short_shot) + parseInt(material_asing) +
@@ -1450,8 +1407,6 @@
 				} else {
 					$("#status_part").val("REJECTED");
 				}
-
-				calculate_qty_point(claim_surat);
 				
 			}
 

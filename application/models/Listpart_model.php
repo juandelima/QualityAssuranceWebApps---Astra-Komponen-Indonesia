@@ -77,4 +77,17 @@ class Listpart_model extends CI_Model {
 		$this->db->where('id_part', $id_part);
 		$this->db->delete('list_part');
 	}
+
+	public function getDataPartByCustomer($id_customer) {
+		$array_select = array(
+			'data_parts.*',
+			'customer.*'
+		);
+		$this->db->select($array_select);
+		$this->db->from("data_parts");
+		$this->db->join("customer", "data_parts.customer = customer.id_customer", "INNER");
+		$this->db->where("customer", $id_customer);
+		$query = $this->db->get();
+		return $query->result();
+	}
 }

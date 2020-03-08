@@ -12,10 +12,10 @@ class Customerclaim extends CI_Controller {
 		$this->load->helper('date');
 		$this->load->helper('url');
 	}
-
-
-	public function ahm() {
-		$slug = $this->uri->segment(3);
+	
+	public function index() {
+		$slug = $this->uri->segment(2);
+		$customers = $this->customer_model->customer_list();
 		$get_customer = $this->customerclaim_model->get_customer();
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
 		$get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
@@ -31,9 +31,8 @@ class Customerclaim extends CI_Controller {
 			$end = null;
 		}
 		
-		
-	
  		$data = array(
+			'customers' => $customers,
 			'customer' => $get_customer,
 			'customer_claim' => $get_customer_claim,
 			'customer_claim_dist' => $get_customer_claim_distinct,
@@ -55,12 +54,13 @@ class Customerclaim extends CI_Controller {
 
 	}
 
- 	public function create_ahm() {
+ 	public function create_customerclaim() {
 		$session_role = $this->session->userdata['role'];
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
 			redirect(base_url(), 'refresh');
 		}
+		$list_customer = $this->customer_model->customer_list();
 		$slug = $this->uri->segment(3);
 		$get_field_visual = $this->customerclaim_model->list_field_visual();
 		$get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
@@ -74,18 +74,17 @@ class Customerclaim extends CI_Controller {
 			}
 			$merge_field_filter[] = $merge_field[$i];
 		}
-		// print_r($merge_field_filter);
  		$listpart_model = $this->listpart_model->get_data_part();
  		$data = array(
 			'listpart' => $listpart_model,
 			'non_visual_field' => $merge_field_filter,
-			'slug' => $slug
+			'slug' => $slug,
+			'list_customer' => $list_customer
 		);
 		$this->load->view('customer_claim/tambah', $data);
 	}
 
 	public function filter_chart() {
-		
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
 		$count_customer_claim = count($get_customer_claim);
 		$get_field_visual = $this->customerclaim_model->list_field_visual();
@@ -126,6 +125,13 @@ class Customerclaim extends CI_Controller {
 		$getMonth = $_GET['month'];
 		$getStart = $_GET['start'];
 		$getEnd = $_GET['end'];
+		$getIdCustomer = $_GET['id_customer'];
+
+		if($getIdCustomer != null) {
+			$id_customer = $getIdCustomer;
+		} else {
+			$id_customer = null;
+		}
 
 		if($status_claim != null) {
 			$status = $status_claim;
@@ -158,9 +164,8 @@ class Customerclaim extends CI_Controller {
 			$start = null;
 			$end = null;
 		}
-		
-		$chart_rejection_claim = $this->customerclaim_model->chart_rejection_claim($start, $end, $part, $year, $month, $status);
-		// print_r($chart_rejection_claim);
+
+		$chart_rejection_claim = $this->customerclaim_model->chart_rejection_claim($start, $end, $part, $year, $month, $status, $id_customer);
 		$chart_rejection_claim2 = array();
 		$count_merge_field_except = count($merge_field_except);
 		if(!empty($chart_rejection_claim)) {
@@ -194,6 +199,7 @@ class Customerclaim extends CI_Controller {
 		$getMonth = $_GET['month'];
 		$getStart = $_GET['start'];
 		$getEnd = $_GET['end'];
+		$getIdCustomer = $_GET['id_customer'];
 		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
 		$merge_field_except = [];
 		for($i = 0; $i < count($mergeField); $i++) {
@@ -203,6 +209,12 @@ class Customerclaim extends CI_Controller {
 			$merge_field_except[] = $mergeField[$i];
 		}
 
+		if($getIdCustomer != null) {
+			$id_customer = $getIdCustomer;
+		} else {
+			$id_customer = null;
+		}
+		
 		if($status_claim != null) {
 			$status = $status_claim;
 		} else {
@@ -231,14 +243,14 @@ class Customerclaim extends CI_Controller {
 		// echo json_encode($_GET);
 		
 		$result_chart_part = array();
-		$chart_part_claim = $this->customerclaim_model->chart_part_claim($start, $end, $year, $month, $status);
+		$chart_part_claim = $this->customerclaim_model->chart_part_claim($start, $end, $year, $month, $status, $id_customer);
 		// print_r($chart_part_claim);
 		if(!empty($chart_part_claim)) {
 			$count_chart_part_claim = count($chart_part_claim);
 			for($i = 0; $i < $count_chart_part_claim; $i++) {
 				// echo $i."<br/>";
 				$nama_part = $chart_part_claim[$i]->nama_part;
-				$filter_part = $this->customerclaim_model->filter_part($nama_part, $start, $end, $year, $month, $status);
+				$filter_part = $this->customerclaim_model->filter_part($nama_part, $start, $end, $year, $month, $status, $id_customer);
 				$count_filter_part = count($filter_part);
 				$count_merge_field_except = count($merge_field_except);
 				$sum = 0;
@@ -263,7 +275,32 @@ class Customerclaim extends CI_Controller {
 		echo json_encode($data);
 		
 	}
-	
+
+	public function filter_table() {
+		$customer = $_GET['table_ganti_customer'];
+		$nama_part = $_GET['table_ganti_part'];
+		$year = $_GET['table_year'];
+		if($customer != null) {
+			$customer = $customer;
+		} else {
+			$customer = null;
+		}
+
+		if($nama_part != null) {
+			$nama_part = $nama_part;
+		} else {
+			$nama_part = null;
+		}
+
+		if($year != null) {
+			$year = $year;
+		} else {
+			$year = null;
+		}
+		$get_all_customer_claim = $this->customerclaim_model->model_filter_table($nama_part, $customer, $year);
+		echo json_encode($get_all_customer_claim);
+	}
+
 	public function get_previous_data_part() {
 		$tgl_input = $_GET['tgl'];
 		$year = date('Y', strtotime($tgl_input));
@@ -274,9 +311,6 @@ class Customerclaim extends CI_Controller {
 	}
 
 	public function save() {
-		
-		// $get_field_visual = $this->customerclaim_model->list_field_visual();
-		// $get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
 		$valid = $this->form_validation;
 		$valid->set_rules('id_part[]', 'Id Part', 'required', 
@@ -324,14 +358,7 @@ class Customerclaim extends CI_Controller {
 				if(!empty($get_customer_claim_by_tb)) {
 					$gqi_point += $get_customer_claim_by_tb[0]->gqi_point;
 				}
-				// for($i = 0; $i < count($get_customer_claim); $i++) {
-				// 	$get_year = date('Y', strtotime($get_customer_claim[$i]->tgl_input));
-				// 	$get_month = date('m', strtotime($get_customer_claim[$i]->tgl_input));
-				// 	$get_nama_part = $get_customer_claim[$i]->nama_part;
-				// 	if($year === $get_year && $month === $get_month && $nama_part === $get_nama_part) {
-				// 		$gqi_point += $get_customer_claim[$i]->gqi_point;
-				// 	}
-				// }
+	
 				$data['gqi_point'][$j] = $gqi_point;
 				if($gqi_point > 114) {
 					$data['card'][$j] = 'Red Card';
@@ -342,6 +369,8 @@ class Customerclaim extends CI_Controller {
 				} else {
 					$data['card'][$j] = '#N/A';	
 				}
+
+				
 				$data_multiple = array(
 					'tgl_input' => $data['tgl_input'],
 					'no_surat_claim' => $data['no_surat_claim'],
@@ -533,10 +562,10 @@ class Customerclaim extends CI_Controller {
 			}
 
 			$this->session->set_flashdata('sukses', 'CUSTOMER CLAIM TELAH DI SIMPAN!');
-			redirect(base_url('claim/customerclaim/ahm'), 'refresh');
+			redirect(base_url('claim/customerclaim'), 'refresh');
 		}
 	}
-	
+
 	public function testing_input() {
 		echo $this->customerclaim_model->testing();
 	}

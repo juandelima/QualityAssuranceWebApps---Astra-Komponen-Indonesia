@@ -52,6 +52,7 @@
 		<?php
 			}
 		?>
+		
 		$("#filter_chart").on('change', 'select#part', function(e) {
 			let part = $(e.target).val();
 			let date_range = $("#date_ranges").val();
@@ -131,7 +132,7 @@
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY",
 									"subCaption": caption,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
@@ -224,7 +225,7 @@
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY",
 									"subCaption": caption,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
@@ -290,7 +291,7 @@
 								dataFormat: 'json',
 								dataSource: {
 									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
+										"caption": "ALL REJECTION PARTS - QTY",
 										"subCaption": caption,
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
@@ -393,7 +394,7 @@
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY",
 									"subCaption": caption,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
@@ -456,7 +457,7 @@
 								dataFormat: 'json',
 								dataSource: {
 									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
+										"caption": "ALL REJECTION PARTS - QTY",
 										"subCaption": caption,
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
@@ -535,7 +536,7 @@
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS "+part+" - QTY (AHM)",
+									"caption": "REJECTIONS "+part+" - QTY",
 									"subCaption": formart_start+" - "+formart_end,
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
@@ -599,7 +600,7 @@
 								dataFormat: 'json',
 								dataSource: {
 									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
+										"caption": "ALL REJECTION PARTS - QTY",
 										"subCaption": formart_start+" - "+formart_end,
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
@@ -666,7 +667,7 @@
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "ALL REJECTION PARTS - QTY (AHM)",
+									"caption": "ALL REJECTION PARTS - QTY",
 									"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
 									"xAxisname": "Part Name",
 									"pYAxisName": "QTY",
@@ -731,7 +732,7 @@
 								dataFormat: 'json',
 								dataSource: {
 								"chart": {
-									"caption": "REJECTIONS - QTY (AHM)",
+									"caption": "REJECTIONS - QTY",
 									"subCaption": "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>",
 									"xAxisname": "Rejection Name",
 									"pYAxisName": "QTY",
@@ -861,7 +862,7 @@
 										dataFormat: 'json',
 										dataSource: {
 										"chart": {
-											"caption": "REJECTIONS - QTY (AHM)",
+											"caption": "REJECTIONS - QTY",
 											"subCaption": caption,
 											"xAxisname": "Rejection Name",
 											"pYAxisName": "QTY",
@@ -974,7 +975,7 @@
 									dataFormat: 'json',
 									dataSource: {
 									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
+										"caption": "ALL REJECTION PARTS - QTY",
 										"subCaption": caption,
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
@@ -1074,7 +1075,7 @@
 									dataFormat: 'json',
 									dataSource: {
 									"chart": {
-										"caption": "ALL REJECTION PARTS - QTY (AHM)",
+										"caption": "ALL REJECTION PARTS - QTY",
 										"subCaption": caption,
 										"xAxisname": "Part Name",
 										"pYAxisName": "QTY",
@@ -1138,7 +1139,7 @@
 									dataFormat: 'json',
 									dataSource: {
 									"chart": {
-										"caption": "REJECTIONS - QTY (AHM)",
+										"caption": "REJECTIONS - QTY",
 										"subCaption": caption,
 										"xAxisname": "Rejection Name",
 										"pYAxisName": "QTY",

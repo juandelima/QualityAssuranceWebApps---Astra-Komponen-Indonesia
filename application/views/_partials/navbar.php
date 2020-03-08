@@ -1,5 +1,4 @@
 <div class="sidebar-menu">
-
 		<div class="sidebar-menu-inner">
 
 			<header class="logo-env">
@@ -53,23 +52,23 @@
 						</li>
 					</ul>
 				</li>
-				<li class="<?php if($slug == 'ahm' || $slug == 'create_ahm' || $slug == 'comingsoon'){ ?>opened active <?php } ?>has-sub">
+				<li class="<?php if($slug == 'ahm' || $slug == 'create_customerclaim' || $slug == 'comingsoon'){ ?>opened active <?php } ?>has-sub">
 					<a href="#">
 						<i class="entypo-newspaper"></i>
 						<span class="title">Claim</span>
 					</a>
-					<ul <?php if($slug == 'ahm' || $slug == 'create_ahm' || $slug == 'comingsoon') { ?>class="visible"<?php } ?>>
-						<li class="<?php if($slug == 'ahm' || $slug == 'create_ahm'){ ?>opened active <?php } ?>has-sub">
-							<a href="#">
+					<ul <?php if($slug == 'ahm' || $slug == 'customerclaim' || $slug == 'comingsoon') { ?>class="visible"<?php } ?>>
+						<li class="<?php if($slug == 'ahm' || $slug == 'customerclaim'){ ?>active <?php } ?>">
+							<a href="<?php echo base_url('claim/customerclaim') ?>">
 								<span class="title">Customer Claim</span>
 							</a>
-							<ul>
-								<li <?php if($slug == 'ahm' || $slug == 'create_ahm') { ?>class="active"<?php } ?>>
+							<!-- <ul>
+								<li <?php if($slug == 'ahm' || $slug == 'create_customerclaim') { ?>class="active"<?php } ?>>
 									<a href="<?php echo base_url('claim/customerclaim/ahm') ?>">
 										<span class="title">AHM</span>
 									</a>
 								</li>
-							</ul>
+							</ul> -->
 						</li>
 						<li <?php if($slug == 'comingsoon') { ?>class="active"<?php } ?>>
 							<a href="<?php echo base_url('comingsoon'); ?>" >

@@ -22,7 +22,6 @@ class Listpart extends CI_Controller {
 	// }
 
 	public function index() {
-		
 		$slug = $this->uri->segment(2);
 		$get_data_part = $this->listpart_model->get_data_part();
 		$data = array(

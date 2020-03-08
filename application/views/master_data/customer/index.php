@@ -20,7 +20,6 @@
 			text-align: center;
 		}
 	</style>
-	
 </head>
 <body class="page-body skin-facebook" data-url="http://neon.dev">
 	<div class="page-container">

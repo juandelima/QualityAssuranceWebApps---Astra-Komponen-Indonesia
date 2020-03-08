@@ -1098,7 +1098,6 @@
 				});
 			});
 		}
-
 		filter_status_claim();
 		filter_by_customer();
 });
