@@ -195,6 +195,13 @@ class Customerclaim_model extends CI_Model {
 		$this->db->insert('delivery', $data);
 	}
 
+	public function save_pergantian_part($data) {
+		$result = $this->db->insert('pergantian_part', $data);
+		return $result;
+	}
+
+	
+
 	public function getClaim() {
 		$this->db->select("*");
 		$this->db->from($this->table);
@@ -371,6 +378,26 @@ class Customerclaim_model extends CI_Model {
 		return $result;
 	}
 
+	public function last_id_pergantian_part() {
+		$this->db->select("*");
+		$this->db->from('pergantian_part');
+		$this->db->order_by('id_pergantian_part', 'DESC');
+		$result = $this->db->get();
+		return $result->row();
+	}
+	public function update_pergantian_part($data) {
+		$this->db->set('id_pergantian_part', $data['id_pergantian_part']);
+		$this->db->where('id_customer_claim', $data['id_customer_claim']);
+		$this->db->update('claim_customer');
+	}
+
+	public function upload_ofp($data) {
+		$this->db->set('ofp', $data['ofp']);
+		$this->db->where('id_customer_claim', $data['id_customer_claim']);
+		$result = $this->db->update('claim_customer');
+		return $result;
+	}
+
 	public function max_id() {
 		$this->db->select_max('id_customer_claim');
 		$this->db->from($this->table);
@@ -385,7 +412,7 @@ class Customerclaim_model extends CI_Model {
 			on claim_customer.id_part = data_parts.id_part
 			where extract(year from claim_customer.tgl_input) = $tahun and
 			extract(month from claim_customer.tgl_input) = $bulan and
-			claim_customer.id_part = '$id_part' order by claim_customer.id_customer_claim desc limit 1
+			claim_customer.id_part = '$id_part' and data_parts.customer = 1 order by claim_customer.id_customer_claim desc limit 1
 		");
 		return $query->result();
 	}

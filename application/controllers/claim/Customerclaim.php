@@ -44,15 +44,6 @@ class Customerclaim extends CI_Controller {
 		$this->load->view('customer_claim/index', $data);
 	} 
 	
-	public function ahm_delivery() {
-		
-		$tgl = $_POST['tgl_deliv'];
-		$qty = $_POST['qty'];
-		$strTgl_toTime = date('Y-m-d', strtotime($tgl));
-		$result = $this->delivery_model->save_delivery($strTgl_toTime, $qty);
-		echo json_encode($result);
-
-	}
 
  	public function create_customerclaim() {
 		$session_role = $this->session->userdata['role'];
@@ -335,6 +326,7 @@ class Customerclaim extends CI_Controller {
 				'tgl_surat_claim' => date('Y-m-d', strtotime($tanggal_surat_claim)),
 				'no_lkk_qro' => $this->input->post('no_lkk_qro'),
 				'status_claim' => $this->input->post('status_claim'),
+				'ahm_plant' => $this->input->post('ahm_plant'),
 				'id_part' => $this->input->post('id_part'),
 				'total_claim_actual' => $this->input->post('total_claim'),
 				'total_claim_surat' => $this->input->post('total_claim_surat'),
@@ -377,6 +369,7 @@ class Customerclaim extends CI_Controller {
 					'tgl_surat_claim' => $data['tgl_surat_claim'],
 					'no_lkk_qro' => $data['no_lkk_qro'][$j],
 					'status_claim' => $data['status_claim'][$j],
+					'ahm_plant' => $data['ahm_plant'][$j],
 					'id_part' => $data['id_part'][$j],
 					'total_claim_actual' => $data['total_claim_actual'][$j],
 					'total_claim_surat' => $data['total_claim_surat'][$j],
@@ -564,6 +557,32 @@ class Customerclaim extends CI_Controller {
 			$this->session->set_flashdata('sukses', 'CUSTOMER CLAIM TELAH DI SIMPAN!');
 			redirect(base_url('claim/customerclaim'), 'refresh');
 		}
+	}
+
+	public function ahm_delivery() {
+		
+		$tgl = $_POST['tgl_deliv'];
+		$qty = $_POST['qty'];
+		$strTgl_toTime = date('Y-m-d', strtotime($tgl));
+		$result = $this->delivery_model->save_delivery($strTgl_toTime, $qty);
+		echo json_encode($result);
+
+	}
+
+	public function pergantian_part() {
+		$data = array(
+			'tgl_pembayaran' => date('Y-m-d', strtotime($_POST['tgl_pembayaran'])),
+			'no_gi_451' => $_POST['no_gi_451'],
+			'no_gi_945' => $_POST['no_gi_945']
+		);
+		$result = $this->customerclaim_model->save_pergantian_part($data);
+		$get_last_id = $this->customerclaim_model->last_id_pergantian_part();
+		$dataUpdate = array(
+			'id_customer_claim' => $_POST['id_customer_claim'],
+			'id_pergantian_part' => $get_last_id->id_pergantian_part
+		);
+		$this->customerclaim_model->update_pergantian_part($dataUpdate);
+		echo json_encode($result);
 	}
 
 	public function testing_input() {

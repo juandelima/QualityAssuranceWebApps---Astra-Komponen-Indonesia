@@ -24,6 +24,9 @@
 		td.sorting_1 {
 			text-align: center;
 		}
+		.selectboxitTrigger {
+    		visibility: visible !important;
+		}
 	</style>
 </head>
 <body class="page-body skin-facebook" data-url="http://neon.dev">
@@ -135,6 +138,20 @@
 										</div>
 									</div>
 
+									<div class="form-group" id="ahmPlant">
+										<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">AHM Plant</label>
+										<div class="col-sm-5">
+											<select name="ahm_plant[]" class="form-control" id="ahm_plant">
+												<option value="<?php echo null; ?>" selected>Select AHM plant...</option>
+												<option value="AHM 1">AHM 1</option>
+												<option value="AHM 2">AHM 2</option>
+												<option value="AHM 3">AHM 3</option>
+												<option value="AHM 4">AHM 4</option>
+												<option value="AHM 5">AHM 5</option>
+											</select>
+										</div>
+									</div>
+									
 									<div id="part_1" style="margin-top: 15px;">
 										<div class="form-group">
 											<input type="hidden" class="form-control" id="id_part" name="id_part[]" required>

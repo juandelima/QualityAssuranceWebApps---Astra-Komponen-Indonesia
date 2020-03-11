@@ -16,6 +16,7 @@ class Powerpoint extends CI_Controller {
 		$this->load->model('customer_model');
 		$this->load->model('customerclaim_model');
 		$this->load->model('listpart_model');
+		$this->load->library('upload');
 	}
 
 	public function download($id_customer_claim) {
@@ -145,7 +146,6 @@ class Powerpoint extends CI_Controller {
 		$get_tgl_input = strtotime($select_claim->tgl_input);
 		$due_date = date("Y-m-d", strtotime("+3 day", $get_tgl_input));
 		$dateNow = date("Y-m-d");
-		$this->load->library('upload');
 		$config = array(
 			'upload_path' => './assets/claim_customer/ppt/',
 			'allowed_types' => 'gif|jpg|png|jpeg|pdf|ppt|pptx|xls|xlsx|doc|docx',
@@ -163,6 +163,38 @@ class Powerpoint extends CI_Controller {
 				'ppt_file' => $file_name
 			);
 			$this->customerclaim_model->upload_ppt($data);
+			$output = array(
+				'file_name' => $file_name,
+				'select_claim' => $select_claim,
+				'due_date' => $due_date,
+				'dateNow' => $dateNow
+			);
+			echo json_encode($output);
+		} 
+	}
+
+
+	public function upload_ofp($id_customer_claim) {
+		$select_claim = $this->customerclaim_model->select_claim($id_customer_claim);
+		$get_tgl_input = strtotime($select_claim->tgl_input);
+		$due_date = date("Y-m-d", strtotime("+3 day", $get_tgl_input));
+		$dateNow = date("Y-m-d");
+		$config = array(
+			'upload_path' => './assets/claim_customer/ofp/',
+			'allowed_types' => 'gif|jpg|png|jpeg|pdf|ppt|pptx|xls|xlsx|doc|docx',
+			'file_name'	=> 'OFP '.$select_claim->nama_part,
+			'overwrite' => true,
+			'max_size ' => 1280000
+		);
+		$this->upload->initialize($config);
+		if($this->upload->do_upload('nama_file_ofp')) {
+			$upload_file = array('upload_file' => $this->upload->data());
+			$file_name = $upload_file['upload_file']['file_name'];
+			$data = array(
+				'id_customer_claim' => $id_customer_claim,
+				'ofp' => $file_name
+			);
+			$this->customerclaim_model->upload_ofp($data);
 			$output = array(
 				'file_name' => $file_name,
 				'select_claim' => $select_claim,

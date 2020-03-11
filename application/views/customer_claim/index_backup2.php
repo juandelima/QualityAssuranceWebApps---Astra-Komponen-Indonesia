@@ -6,6 +6,42 @@
 <head>
 	<?php $this->load->view('_partials/head.php'); ?>
 	<style>
+		@keyframes loading {
+			40% {
+				background-position: 100% 0;
+			}
+			100% {
+				background-position: 100% 0;
+			}
+		}
+
+		.tbody .loading {
+			position: relative;
+		}
+
+		.tbody .loading .bar {
+			background-color: #e7e7e7;
+			height: 14px;
+			border-radius: 7px;
+			width: 80%;
+		}
+
+		.tbody .loading:after {
+			position: absolute;
+			transform: translateY(-50%);
+			top: 50%;
+			left: 0;
+			content: "";
+			display: block;
+			width: 100%;
+			height: 24px;
+			background-image: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0) 80%);
+			background-size: 200px 24px;
+			background-position: -100px 0;
+			background-repeat: no-repeat;
+			animation: loading 1s infinite;
+		}
+
 		.col-sm-1 {
 			width: 45px;
 		}
@@ -40,6 +76,72 @@
 
 		.sidebar-menu{
 			z-index: 9999!important;
+		}
+
+		.red {
+			background-color: #fa163f;
+			color: #fff;
+			text-align: center;
+			font-weight: bold;
+		}
+
+		.kuning {
+			background-color: #ffdc34;
+			color: #1b262c;
+			text-align: center;
+			font-weight: bold;
+		}
+		.hijau {
+			background-color: #21bf73;
+			color: #fff;
+			text-align: center;
+			font-weight: bold;
+		}
+
+		.netral {
+			text-align: center;
+			font-weight: bolder;
+			font-size: 20px;
+		}
+		.proses {
+			width: 4%;
+			text-align: center;
+		}
+
+		.no_surat_claim {
+			width: 9%;
+			text-align: center;
+		}
+
+		.pica {
+			width: 19%;
+			text-align: center;
+		}
+
+		.centered {
+			width: 5%;
+			text-align: center;
+		}
+
+		.hide-main-table {
+			display: none;
+		}
+
+		.show-main-table {
+			display: block;
+		}
+
+		.remove-skeleton-table {
+			display: none;
+		}
+
+		.show-skeleton-table {
+			display: block;
+		}
+		
+		.text-align {
+			text-align: center;
+			font-weight: bolder;
 		}
 	</style>
 </head>
@@ -297,7 +399,7 @@
 
 				<form role="form" id="filter_table" class="form-horizontal form-groups-bordered" style="margin-top: 20px;">
 					<div class="row">
-						<div class="col-sm-4">
+						<div class="col-sm-3">
 							<div class="form-group">
 								<div class="col-sm-10">
 									<select name="table_ganti_customer" id="table_ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
@@ -310,7 +412,7 @@
 							</div>
 						</div>
 						
-						<div class="col-sm-4">
+						<div class="col-sm-3">
 							<div class="form-group">
 								<div class="col-sm-10">
 									<select name="table_ganti_part" id="table_ganti_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
@@ -326,121 +428,159 @@
 								</div>
 							</div>
 						</div>
+
+						<div class="col-sm-2">
+							<div class="form-group">
+								<!-- <label class="col-sm-2 control-label">Year</label> -->
+								<div class="col-sm-10">
+									<select name="table_year" id="table_year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
+										<option></option>
+										<?php
+											$firstYear = (int)date('Y') - 9;
+											$lastYear = $firstYear + 9;
+											for($i = $firstYear; $i <= $lastYear; $i++) { 
+										?>
+												<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+										<?php
+											}
+										?>
+									</select>
+								</div>
+							</div>
+						</div>
 					</div>										
 				</form>
 
 				<div class="row">
 					<div class="col-md-12">
-						<table class="table table-bordered" id="table-1">
-							<thead>
-								<tr>
-									<th width="1" style="text-align: center;">No</th>
-									<th width="50" style="text-align: center;">Tgl</th>
-									<th style="text-align: center;">No Surat Claim</th>
-									<th style="text-align: center;">Nama Part</th>
-									<th style="text-align: center;">Type</th>
-									<th style="text-align: center;">Proses</th>
-									<!-- <th width="10" style="text-align: center;">Rejection</th> -->
-									<th width="50" style="text-align: center;">Due Date</th>
-									<th width="200" style="text-align: center;">PICA</th>
-									<th style="text-align: center;" width="40">Card</th>
-									<!-- <th style="text-align: center;" width="40">Grafik</th> -->
-								</tr>
-							</thead>
-							
-							<tbody>
-								<?php
-									$no = 1;
-									foreach($customer_claim as $data) {
-										$id = $data->id_customer_claim;
-										$date = strtotime($data->tgl_input);
-										$card = $data->card;
-										if($card == "Green Card") {
-											$style_card = "background-color: #42b883; color: #ffffff";
-										} elseif($card == "Red Card") {
-											$style_card = "background-color: #ff0000; color: #ffffff";
-										} elseif($card == "Yellow Card") {
-											$style_card = "background-color: #ffd800; color: #222831";
-										} else {
-											$style_card = null;
-										}
+						<div id="skeleton-table">
+							<table class="table table-bordered" id="table_skeleton">
+								<thead>
+									<tr>
+										<th style="text-align: center;">No</th>
+										<th style="text-align: center;">Tgl</th>
+										<th style="text-align: center;">No Surat Claim</th>
+										<th style="text-align: center;">Nama Part</th>
+										<th style="text-align: center;">Type</th>
+										<th style="text-align: center;">Proses</th>
+										<th style="text-align: center;">Due Date</th>
+										<th style="text-align: center;">OFP</th>
+										<th style="text-align: center;">Pergantian Part</th>
+										<th style="text-align: center;">Sortir Stock</th>
+										<th style="text-align: center;">PICA</th>
+										<th style="text-align: center;">PFMEA</th>
+										<th style="text-align: center;">Status</th>
+										<th style="text-align: center;">Card</th>
+									</tr>
+								</thead>
+								
+								<tbody class="tbody">
+									<?php for($i = 0; $i < 10; $i++) {
 
-										$sum_rejection = $data->jml_qty_visual + $data->jml_qty_nonvisual;
-										$overdue = date("Y-m-d", strtotime("+3 day", $date));
-										$datenow = date("Y-m-d");
-										if($datenow > $overdue) {
-											if(!empty($data->ppt_file)) {
-												$style = "background-color: #ffd800; color: #222831";
-											} else {
-												$style = "background-color: #ff0000; color: #ffffff";
-											}
-										} else {
-											if(!empty($data->ppt_file)) {
-												$style = "background-color: #42b883; color: #ffffff";
-											} else {
-												$style = "background-color: #ffffff; color: #222831";
-											}
-										}
-								?>
-								<tr>
-									<td><?php echo $no++; ?></td>
-									<td><?php echo date('d-m-Y', strtotime($data->tgl_input)); ?></td>
-									<td><?php echo $data->no_surat_claim; ?></td>
-									<td><?php echo $data->nama_part; ?></td>
-									<td><?php echo $data->type; ?></td>
-									<td><?php echo $data->proses; ?></td>
+									?>
+									<tr>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+									</tr>
+									<?php } ?>
+								</tbody>
+								
+							</table>
+						</div>
+						<div id="main-table">
+							<table class="table table-bordered display nowrap" id="table_customer_claim">
+								<thead>
+									<tr>
+										<th width="1" style="text-align: center;">No</th>
+										<th width="50" style="text-align: center;">Tgl</th>
+										<th class="no_surat_claim">No Surat Claim</th>
+										<th style="text-align: center;">Nama Part</th>
+										<th style="text-align: center;">Type</th>
+										<th style="text-align: center;">Proses</th>
+										<th width="50" style="text-align: center;">Due Date</th>
+										<th style="text-align: center;">OFP</th>
+										<th style="text-align: center;">Pergantian Part</th>
+										<th style="text-align: center;">Sortir Stock</th>
+										<th width="180" style="text-align: center;">PICA</th>
+										<th style="text-align: center;">PFMEA</th>
+										<th style="text-align: center;">Status</th>
+										<th style="text-align: center;" width="40">Card</th>
+									</tr>
+								</thead>
+								
+								<tbody>
 									
-									<!-- <td style="text-align: center;">
-										<a href="javascript:;" onclick="jQuery('#modal-data-non<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static'});" class="popover-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="KLIK UNTUK MELIHAT DATA REJECTION <?php echo $data->nama_part; ?>">
-											<?php echo $sum_rejection; ?>
-										</a>
-									</td> -->
-									<td style="<?php echo $style; ?>" id="status_color<?php echo $id; ?>"><?php echo date('d-m-Y', strtotime($overdue)); ?></td>
-									<td style="text-align: center;">
-										<a href="javascript:;" onclick="jQuery('#modal-upload-ppt<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static', keyboard: false});" class="btn btn-blue btn-icon icon-left">
-												Upload
-											<i class="entypo-upload"></i>
-										</a>
-
-										<a <?php if(empty($data->ppt_file)) { ?> disabled <?php } else { ?> href="<?php echo base_url('assets/claim_customer/ppt/'.$data->ppt_file)?>" <?php } ?> class="btn btn-success btn-icon icon-left" download="PART - <?php echo $data->nama_part; ?>" id="download_ppt_file<?php echo $id; ?>">
-												Download
-											<i class="entypo-download"></i>
-										</a>
-									</td>
-									<td style="<?php echo $style_card; ?>"><?php echo $data->card; ?></td>
-									<!-- <td style="text-align: center;">
-										<a href="javascript:;" onclick="jQuery('#charts<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static'});" class="btn btn-danger btn-icon icon-left popover-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="KLIK UNTUK MELIHAT GRAFIK REJECTION <?php echo $data->nama_part; ?>">
-												Grafik
-											<i class="entypo-chart-line"></i>
-										</a>
-									</td> -->
-								</tr>
-								<?php
-								}
-								?>
-							</tbody>
-						</table>
+								</tbody>
+							</table>
+						</div>
 					</div>
 					<?php
 						$index = 0;
 						foreach($customer_claim as $data) {
 							$id = $data->id_customer_claim;
 					?>
-					<div class="modal fade" id="modal-upload-ppt<?php echo $data->id_customer_claim; ?>">
+					<div class="modal fade" id="upload-ppt<?php echo $id; ?>">
 						<div class="modal-dialog" style="width: 50%;">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">Upload PPT File - <?php echo $data->nama_part; ?></h4>
+									<h4 class="modal-title">Upload PICA File - <?php echo $data->nama_part; ?></h4>
 								</div>
-								<form role="form" class="form-horizontal" id="upload_file<?php echo $id; ?>" enctype="multipart/form-data">
+								<form role="form" class="form-horizontal" id="upload_file<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ppt/'.$id); ?>" method="POST">
 									<div class="modal-body">
 										<div class="row" id="spinners">
 											<div class="col-md-12">
 												<div class="form-group">
 													<label class="col-sm-3 control-label">File PPT</label>
 													<div class="col-sm-5">
-														<input type="file" name="ppt_file" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
+														<input type="file" id="nama_file<?php echo $id; ?>" name="ppt_file" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
+													</div>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="progress progress-striped active">
+													<div id="progress-bar<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+														<span id="progress<?php echo $id; ?>"></span>
 													</div>
 												</div>
 											</div>  
@@ -454,6 +594,96 @@
 							</div> 
 						</div>
 					</div>
+
+					<div class="modal fade" id="upload-ofp<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">Upload OFP File - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<form role="form" class="form-horizontal" id="upload_ofpfile<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ofp/'.$id); ?>" method="POST" accept-charset="utf-8">
+									<div class="modal-body">
+										<div class="row" id="spinners">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-sm-3 control-label">File</label>
+													<div class="col-sm-5">
+														<input type="file" id="nama_file_ofp<?php echo $id; ?>" name="nama_file_ofp" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
+													</div>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="progress progress-striped active">
+													<div id="progress-bar-ofp<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+														<span id="progress-ofp<?php echo $id; ?>"></span>
+													</div>
+												</div>
+											</div>  
+										</div>  
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="modal_close_ofp<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" class="btn btn-primary">Upload</button>
+									</div>
+								</form>
+							</div> 
+						</div>
+					</div>
+
+					<div class="modal fade" id="pergantian-part<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">Pergantian Part <?php echo $data->nama_part; ?></h4>
+								</div>
+								<form role="form" class="form-horizontal" id="upload_pergantian<?php echo $id; ?>" enctype="multipart/form-data" method="POST" accept-charset="utf-8">
+									<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">Tanggal Pembayaran</label>
+													<div class="col-sm-4">
+														<div class="input-group">
+															<input type="text" class="form-control datepicker" name="tgl_pembayaran" id="tgl_pembayaran<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
+															<div class="input-group-addon">
+																<a href="#"><i class="entypo-calendar"></i></a>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">NO GI 451</label>
+													<div class="col-sm-4">
+														<div class="input-group">
+															<input type="text" class="form-control" name="no_gi_451" id="no_gi_451<?php echo $id; ?>" placeholder="4953444424" required>
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">NO GI 945</label>
+													<div class="col-sm-4">
+														<div class="input-group">
+															<input type="text" class="form-control" name="no_gi_945" id="no_gi_945<?php echo $id; ?>" placeholder="4953444428" required>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="modal_close_pergantian<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" id="simpan_pergantian<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
+									</div>
+								</form>
+							</div> 
+						</div>
+					</div>
+
 					<?php
 						$index++;
 					    }
@@ -529,6 +759,7 @@
 	<script src="<?php echo site_url('assets/js/fusioncharts.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.theme.fusion.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.jqueryplugin.min.js'); ?>"></script>
+	<script src="http://malsup.github.com/jquery.form.js"></script> 
 	<?php $this->load->view('_partials/customer_claim_chart.php'); ?>
 	<?php $this->load->view('_partials/filter_customerclaim_byCustomer.php'); ?>
 	<script>
@@ -584,7 +815,6 @@
 					}
 				});
 			});
-
 			<?php
 				$index = 0;
 				foreach($customer_claim as $data) {
@@ -592,39 +822,36 @@
 			?>
 					$("#upload_file<?php echo $id; ?>").submit(function(e) {
 						e.preventDefault();
-						$.ajax({
-							url: "<?php echo base_url('claim/powerpoint/upload_ppt/'.$id); ?>",
-							type: "POST",
-							data: new FormData(this),
-							dataType: "JSON",
-							processData: false,
-							contentType: false,
-							cache: false,
-							beforeSend: function() {
-								show_loading_bar(100);
+						$(this).ajaxSubmit({
+							beforeSubmit: () => {
+								$('#progress-bar<?php echo $id; ?>').width('0%');
 							},
-							success: function(data) {
-								console.log(data);
-								let select_claim = data.select_claim;
-								let due_date = Date.parse(data.due_date);
-								let dateNow = Date.parse(data.dateNow);
-								// console.log(data);
+							uploadProgress: (event, position, total, percentComplete) => {
+								console.log(percentComplete);
+								$("#progress-bar<?php echo $id; ?>").width(percentComplete + '%');
+								$("span#progress<?php echo $id; ?>").text(percentComplete+"%");
+							},
+							success: (data) => {
+								let data_json = JSON.parse(data);
+								console.log(data_json);
+								let select_claim = data_json.select_claim;
+								let due_date = Date.parse(data_json.due_date);
+								let dateNow = Date.parse(data_json.dateNow);
 								function closeModal() {
 									if(dateNow > due_date) {
-										$("#status_color<?php echo $id; ?>").css('background-color', '#ffd800');
-										$("#status_color<?php echo $id; ?>").css('color', '#222831');
+										$("#status_color<?php echo $id; ?>").addClass('kuning');
 									} else {
-										$("#status_color<?php echo $id; ?>").css('background-color', '#42b883');
-										$("#status_color<?php echo $id; ?>").css('color', '#ffffff');
+										$("#status_color<?php echo $id; ?>").addClass('hijau');
 									}
-									$("#modal-upload-ppt"+select_claim.id_customer_claim).modal('hide');
+									$("#upload-ppt"+select_claim.id_customer_claim).modal('hide');
 								}
-								setTimeout(closeModal, 3000);
+								setTimeout(closeModal, 1500);
 							},
-							complete: function(data) {
-								let jsonResponse = data.responseJSON.select_claim;
-								let fileName = data.responseJSON.file_name;
-								// console.log(jsonResponse);
+							complete: (data) => {
+								let data_json = JSON.parse(data.responseText);
+								let jsonResponse = data_json.select_claim;
+								let fileName = data_json.file_name;
+								console.log(jsonResponse);
 								var opts = {
 									"closeButton": true,
 									"debug": false,
@@ -643,11 +870,132 @@
 									toastr.success('FILE BERHASIL DIUPLOAD', "SUCCESS", opts);
 									$("#download_ppt_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
 									$("#download_ppt_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ppt/'); ?>"+fileName+"");
+									if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
+										$("#status_claim"+jsonResponse.id_customer_claim).text("");
+										$("#status_claim"+jsonResponse.id_customer_claim).text("CLOSE");
+									}
 								}
-								setTimeout(successUpload, 3000);
-								$('#modal-upload-ppt<?php echo $id; ?>').unbind();
+								function afterUpload() {
+									$("span.file-input-name").text("");
+									$('#progress-bar<?php echo $id; ?>').width('0%');
+									$('#nama_file<?php echo $id; ?>').val(null);
+								}
+								setTimeout(successUpload, 1500);
+								setTimeout(afterUpload, 2000);
+								$('#upload-ppt<?php echo $id; ?>').unbind();
 							},
 							error: function(jqXHR, textStatus, errorThrown) {
+								alert(textStatus +" "+errorThrown);
+								// $("#error_text").text(textStatus +" "+errorThrown);
+								// $("#modal-error-ajax").modal('show');;
+							}
+						});
+					});
+
+
+					$("#upload_ofpfile<?php echo $id; ?>").submit(function(e) {
+						e.preventDefault();
+						$(this).ajaxSubmit({
+							beforeSubmit: () => {
+								$('#progress-bar-ofp<?php echo $id; ?>').width('0%');
+							},
+							uploadProgress: (event, position, total, percentComplete) => {
+								console.log(percentComplete);
+								$("#progress-bar-ofp<?php echo $id; ?>").width(percentComplete + '%');
+								$("span#progress-ofp<?php echo $id; ?>").text(percentComplete+"%");
+							},
+							success: (data) => {
+								console.log(data);
+								let data_json = JSON.parse(data);
+								console.log(data_json);
+								let select_claim = data_json.select_claim;
+								let due_date = Date.parse(data_json.due_date);
+								let dateNow = Date.parse(data_json.dateNow);
+								function closeModal() {
+									$("#upload-ofp"+select_claim.id_customer_claim).modal('hide');
+								}
+								setTimeout(closeModal, 1500);
+							},
+							complete: (data) => {
+								let data_json = JSON.parse(data.responseText);
+								let jsonResponse = data_json.select_claim;
+								let fileName = data_json.file_name;
+								console.log(jsonResponse);
+								var opts = {
+									"closeButton": true,
+									"debug": false,
+									"positionClass": "toast-top-right",
+									"onclick": null,
+									"showDuration": "300",
+									"hideDuration": "1000",
+									"timeOut": "5000",
+									"extendedTimeOut": "1000",
+									"showEasing": "swing",
+									"hideEasing": "linear",
+									"showMethod": "fadeIn",
+									"hideMethod": "fadeOut"
+								};
+								function successUpload() {
+									toastr.success('FILE OFP BERHASIL DIUPLOAD', "SUCCESS", opts);
+									$("#download_ofp_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
+									$("#download_ofp_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ofp/'); ?>"+fileName+"");
+									if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
+										$("#status_claim"+jsonResponse.id_customer_claim).text("");
+										$("#status_claim"+jsonResponse.id_customer_claim).text("CLOSE");
+									}
+								}
+								function afterUpload() {
+									$("span.file-input-name").text("");
+									$('#progress-bar-ofp<?php echo $id; ?>').width('0%');
+									$('#nama_file_ofp<?php echo $id; ?>').val(null);
+								}
+								setTimeout(successUpload, 1500);
+								setTimeout(afterUpload, 2000);
+							},
+							error: function(jqXHR, textStatus, errorThrown) {
+								alert(textStatus +" "+errorThrown);
+								// $("#error_text").text(textStatus +" "+errorThrown);
+								// $("#modal-error-ajax").modal('show');;
+							}
+						});
+					});
+
+					$("#simpan_pergantian<?php echo $id; ?>").click((e) => {
+						e.preventDefault();
+						$.ajax({
+							url: "<?php echo base_url('claim/customerclaim/pergantian_part'); ?>",
+							type: "POST",
+							data: $("#upload_pergantian<?php echo $id; ?>").serialize(),
+							dataType: "JSON",
+							cache: false,
+							success: (data) => {
+								var opts = {
+									"closeButton": true,
+									"debug": false,
+									"positionClass": "toast-top-right",
+									"onclick": null,
+									"showDuration": "300",
+									"hideDuration": "1000",
+									"timeOut": "5000",
+									"extendedTimeOut": "1000",
+									"showEasing": "swing",
+									"hideEasing": "linear",
+									"showMethod": "fadeIn",
+									"hideMethod": "fadeOut"
+								};
+								toastr.success('PERGANTIAN BERHASIL DILAKUKAN!', "SUCCESS", opts);
+
+							},
+							complete: () => {
+								let status_pergantian = "<i id='ganti-part<?php echo $id; ?>' class='entypo-check' style='color: #21bf73; font-weight: bold;'></i> Sudah melakukan pergantian part"
+								$("#tgl_pembayaran<?php echo $id; ?>").val(null);
+								$("#no_gi_451<?php echo $id; ?>").val("");
+								$("#no_gi_945<?php echo $id; ?>").val("");
+								$("#modal-pergantian-part<?php echo $id; ?>").remove();
+								$("#pergantian_part<?php echo $id; ?>").html(status_pergantian);
+								$("#pergantian-part<?php echo $id; ?>").modal('hide');
+							},
+							error: (jqXHR, textStatus, errorThrown) => {
 								alert(textStatus +" "+errorThrown);
 								// $("#error_text").text(textStatus +" "+errorThrown);
 								// $("#modal-error-ajax").modal('show');;
@@ -657,7 +1005,8 @@
 			<?php 
 				}
 			?>
-		});		
+		});	
+
 	</script>
 </body>
 </html>

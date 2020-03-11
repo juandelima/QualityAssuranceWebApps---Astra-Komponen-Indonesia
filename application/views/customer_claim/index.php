@@ -110,10 +110,16 @@
 
 		.no_surat_claim {
 			width: 9%;
+			text-align: center;
 		}
 
 		.pica {
 			width: 19%;
+			text-align: center;
+		}
+
+		.centered {
+			width: 5%;
 			text-align: center;
 		}
 
@@ -451,15 +457,20 @@
 							<table class="table table-bordered" id="table_skeleton">
 								<thead>
 									<tr>
-										<th width="1" style="text-align: center;">No</th>
-										<th width="50" style="text-align: center;">Tgl</th>
+										<th style="text-align: center;">No</th>
+										<th style="text-align: center;">Tgl</th>
 										<th style="text-align: center;">No Surat Claim</th>
 										<th style="text-align: center;">Nama Part</th>
 										<th style="text-align: center;">Type</th>
 										<th style="text-align: center;">Proses</th>
-										<th width="50" style="text-align: center;">Due Date</th>
-										<th width="180" style="text-align: center;">PICA</th>
-										<th style="text-align: center;" width="40">Card</th>
+										<th style="text-align: center;">Due Date</th>
+										<th style="text-align: center;">OFP</th>
+										<th style="text-align: center;">Pergantian Part</th>
+										<th style="text-align: center;">Sortir Stock</th>
+										<th style="text-align: center;">PICA</th>
+										<th style="text-align: center;">PFMEA</th>
+										<th style="text-align: center;">Status</th>
+										<th style="text-align: center;">Card</th>
 									</tr>
 								</thead>
 								
@@ -495,6 +506,21 @@
 										<td class="loading">
 											<div class="bar"></div>
 										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
+										<td class="loading">
+											<div class="bar"></div>
+										</td>
 									</tr>
 									<?php } ?>
 								</tbody>
@@ -502,17 +528,22 @@
 							</table>
 						</div>
 						<div id="main-table">
-							<table class="table table-bordered" id="table_customer_claim">
+							<table class="table table-bordered display nowrap" id="table_customer_claim">
 								<thead>
 									<tr>
 										<th width="1" style="text-align: center;">No</th>
 										<th width="50" style="text-align: center;">Tgl</th>
-										<th style="text-align: center;">No Surat Claim</th>
+										<th class="no_surat_claim">No Surat Claim</th>
 										<th style="text-align: center;">Nama Part</th>
 										<th style="text-align: center;">Type</th>
 										<th style="text-align: center;">Proses</th>
 										<th width="50" style="text-align: center;">Due Date</th>
+										<th style="text-align: center;">OFP</th>
+										<th style="text-align: center;">Pergantian Part</th>
+										<th style="text-align: center;">Sortir Stock</th>
 										<th width="180" style="text-align: center;">PICA</th>
+										<th style="text-align: center;">PFMEA</th>
+										<th style="text-align: center;">Status</th>
 										<th style="text-align: center;" width="40">Card</th>
 									</tr>
 								</thead>
@@ -533,7 +564,7 @@
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">Upload PPT File - <?php echo $data->nama_part; ?></h4>
+									<h4 class="modal-title">Upload PICA File - <?php echo $data->nama_part; ?></h4>
 								</div>
 								<form role="form" class="form-horizontal" id="upload_file<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ppt/'.$id); ?>" method="POST">
 									<div class="modal-body">
@@ -542,7 +573,7 @@
 												<div class="form-group">
 													<label class="col-sm-3 control-label">File PPT</label>
 													<div class="col-sm-5">
-														<input type="file" name="ppt_file" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
+														<input type="file" id="nama_file<?php echo $id; ?>" name="ppt_file" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
 													</div>
 												</div>
 											</div>
@@ -563,6 +594,96 @@
 							</div> 
 						</div>
 					</div>
+
+					<div class="modal fade" id="upload-ofp<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">Upload OFP File - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<form role="form" class="form-horizontal" id="upload_ofpfile<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ofp/'.$id); ?>" method="POST" accept-charset="utf-8">
+									<div class="modal-body">
+										<div class="row" id="spinners">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-sm-3 control-label">File</label>
+													<div class="col-sm-5">
+														<input type="file" id="nama_file_ofp<?php echo $id; ?>" name="nama_file_ofp" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
+													</div>
+												</div>
+											</div>
+											<div class="col-md-12">
+												<div class="progress progress-striped active">
+													<div id="progress-bar-ofp<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+														<span id="progress-ofp<?php echo $id; ?>"></span>
+													</div>
+												</div>
+											</div>  
+										</div>  
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="modal_close_ofp<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" class="btn btn-primary">Upload</button>
+									</div>
+								</form>
+							</div> 
+						</div>
+					</div>
+
+					<div class="modal fade" id="pergantian-part<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">Pergantian Part <?php echo $data->nama_part; ?></h4>
+								</div>
+								<form role="form" class="form-horizontal" id="upload_pergantian<?php echo $id; ?>" enctype="multipart/form-data" method="POST" accept-charset="utf-8">
+									<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">Tanggal Pembayaran</label>
+													<div class="col-sm-4">
+														<div class="input-group">
+															<input type="text" class="form-control datepicker" name="tgl_pembayaran" id="tgl_pembayaran<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
+															<div class="input-group-addon">
+																<a href="#"><i class="entypo-calendar"></i></a>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">NO GI 451</label>
+													<div class="col-sm-4">
+														<div class="input-group">
+															<input type="text" class="form-control" name="no_gi_451" id="no_gi_451<?php echo $id; ?>" placeholder="4953444424" required>
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">NO GI 945</label>
+													<div class="col-sm-4">
+														<div class="input-group">
+															<input type="text" class="form-control" name="no_gi_945" id="no_gi_945<?php echo $id; ?>" placeholder="4953444428" required>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="modal_close_pergantian<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" id="simpan_pergantian<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
+									</div>
+								</form>
+							</div> 
+						</div>
+					</div>
+
 					<?php
 						$index++;
 					    }
@@ -694,76 +815,6 @@
 					}
 				});
 			});
-			$.ajaxSu
-			<?php
-				$index = 0;
-				foreach($customer_claim as $data) {
-					$id = $data->id_customer_claim;
-			?>
-					$("#upload_file<?php echo $id; ?>").submit(function(e) {
-						e.preventDefault();
-						$(this).ajaxSubmit({
-							beforeSubmit: () => {
-								$('#progress-bar<?php echo $id; ?>').width('0%');
-							},
-							uploadProgress: (event, position, total, percentComplete) => {
-								console.log(percentComplete);
-								$("#progress-bar<?php echo $id; ?>").width(percentComplete + '%');
-								$("span#progress<?php echo $id; ?>").text(percentComplete+"%");
-							},
-							success: (data) => {
-								let data_json = JSON.parse(data);
-								console.log(data_json);
-								let select_claim = data_json.select_claim;
-								let due_date = Date.parse(data_json.due_date);
-								let dateNow = Date.parse(data_json.dateNow);
-								function closeModal() {
-									if(dateNow > due_date) {
-										$("#status_color<?php echo $id; ?>").addClass('kuning');
-									} else {
-										$("#status_color<?php echo $id; ?>").addClass('hijau');
-									}
-									$("#upload-ppt"+select_claim.id_customer_claim).modal('hide');
-								}
-								setTimeout(closeModal, 1500);
-							},
-							complete: (data) => {
-								let data_json = JSON.parse(data.responseText);
-								let jsonResponse = data_json.select_claim;
-								let fileName = data_json.file_name;
-								console.log(jsonResponse);
-								var opts = {
-									"closeButton": true,
-									"debug": false,
-									"positionClass": "toast-top-right",
-									"onclick": null,
-									"showDuration": "300",
-									"hideDuration": "1000",
-									"timeOut": "5000",
-									"extendedTimeOut": "1000",
-									"showEasing": "swing",
-									"hideEasing": "linear",
-									"showMethod": "fadeIn",
-									"hideMethod": "fadeOut"
-								};
-								function successUpload() {
-									toastr.success('FILE BERHASIL DIUPLOAD', "SUCCESS", opts);
-									$("#download_ppt_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
-									$("#download_ppt_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ppt/'); ?>"+fileName+"");
-								}
-								setTimeout(successUpload, 1500);
-								$('#upload-ppt<?php echo $id; ?>').unbind();
-							},
-							error: function(jqXHR, textStatus, errorThrown) {
-								alert(textStatus +" "+errorThrown);
-								// $("#error_text").text(textStatus +" "+errorThrown);
-								// $("#modal-error-ajax").modal('show');;
-							}
-						});
-					});
-			<?php 
-				}
-			?>
 		});	
 
 	</script>

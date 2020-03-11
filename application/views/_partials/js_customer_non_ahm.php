@@ -17,6 +17,8 @@
         $("#change_customer").change((e) => {
             let customer = $(e.target).val();
             if(customer != 1) {
+				$("#ahmPlant").css("display", "none");
+				$("#ahm_plant").val(null);
 				$("#status_form").val(customer);
                 $("#safety_grade").hide();
                 $("#gqi_control").hide();
@@ -59,6 +61,7 @@
                 $("#gqi_control").show();
                 $("#search_part_nonahm").hide();
                 $("#search_part_ahm").show();
+				$("#ahmPlant").css("display", "block");
             }
         });
 
@@ -108,6 +111,20 @@
 				'<select name="status_claim[]" id="upload_file_ppt'+loop_nonahm+'" class="form-control">'+
 				'<option value="Claim">Claim</option>'+
 				'<option value="Tukar Guling">Tukar Guling</option>'+
+				'</select>'+
+				'</div>'+
+				'</div>'+
+
+				'<div class="form-group" id="ahmPlantNon'+loop_nonahm+'">'+
+				'<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">AHM Plant</label>'+
+				'<div class="col-sm-5">'+
+				'<select name="ahm_plant[]" id="ahm_plant'+loop_nonahm+'" class="form-control">'+
+				'<option value="<?php echo null; ?>" selected>null</option>'+
+				'<option value="AHM 1">AHM 1</option>'+
+				'<option value="AHM 2">AHM 2</option>'+
+				'<option value="AHM 3">AHM 3</option>'+
+				'<option value="AHM 4">AHM 4</option>'+
+				'<option value="AHM 5">AHM 5</option>'+
 				'</select>'+
 				'</div>'+
 				'</div>'+
@@ -427,6 +444,7 @@
 				$("#add_form_parts").append(parts);
 				$("#visual_and_nonvisual_"+loop_nonahm).hide();
 				$("#add_form_part").find("#gqi_control_noahm").hide();
+				$("#add_form_part").find("#ahmPlantNon"+loop_nonahm).css("display", "none");
                 let tableRedraw = $("#parts_table_nonahm"+loop_nonahm).DataTable({
                     "oLanguage": {
                         "sSearch": "Search:",

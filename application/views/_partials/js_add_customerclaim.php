@@ -73,6 +73,19 @@
 				'</div>'+
 				'</div>'+
 
+				'<div class="form-group" id="ahmPlant'+loop+'">'+
+				'<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">AHM Plant</label>'+
+				'<div class="col-sm-5">'+
+				'<select name="ahm_plant[]" id="ahm_plant'+loop+'" class="form-control">'+
+				'<option value="AHM 1">AHM 1</option>'+
+				'<option value="AHM 2">AHM 2</option>'+
+				'<option value="AHM 3">AHM 3</option>'+
+				'<option value="AHM 4">AHM 4</option>'+
+				'<option value="AHM 5">AHM 5</option>'+
+				'</select>'+
+				'</div>'+
+				'</div>'+
+
 				'<div class="form-group">'+
 				'<input type="hidden" class="form-control" id="id_part_'+loop+'" name="id_part[]" required>'+
 				'<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">Nama Part</label>'+
@@ -418,10 +431,10 @@
 				'</div>'+
 				'</div>'+
 				'</div>';
-
 				$("#add_form_part").append(html);
 				$("#add_form_parts").append(parts);
 				$("#visual_and_nonvisual_"+loop).hide();
+				// $("#upload_file_ppt"+loop).addClass("selectboxitTrigger");
 				$("#total_claim_surat_"+loop).prop("readonly", true);
 				$("#parts_table_"+loop).DataTable({
 					"oLanguage": {
