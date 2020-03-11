@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 5.0.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 28, 2020 at 01:16 PM
--- Server version: 10.1.30-MariaDB
--- PHP Version: 7.2.1
+-- Generation Time: Mar 11, 2020 at 09:07 AM
+-- Server version: 10.4.11-MariaDB
+-- PHP Version: 7.2.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -35,41 +35,58 @@ CREATE TABLE `claim_customer` (
   `tgl_surat_claim` date NOT NULL,
   `no_lkk_qro` varchar(30) NOT NULL,
   `id_part` int(5) NOT NULL,
-  `total_claim_actual` int(5) NOT NULL DEFAULT '0',
-  `total_claim_surat` int(5) NOT NULL DEFAULT '0',
+  `total_claim_actual` int(5) NOT NULL DEFAULT 0,
+  `total_claim_surat` int(5) NOT NULL DEFAULT 0,
   `status_part_claim` varchar(25) NOT NULL DEFAULT '0',
-  `qty_point` int(5) NOT NULL DEFAULT '0',
-  `jml_qty_visual` int(5) NOT NULL DEFAULT '0',
-  `rank_point_visual` int(5) NOT NULL DEFAULT '0',
-  `jml_qty_nonvisual` int(5) NOT NULL DEFAULT '0',
+  `qty_point` int(5) NOT NULL DEFAULT 0,
+  `jml_qty_visual` int(5) NOT NULL DEFAULT 0,
+  `rank_point_visual` int(5) NOT NULL DEFAULT 0,
+  `jml_qty_nonvisual` int(5) NOT NULL DEFAULT 0,
   `rank_point_nonvisual` varchar(15) NOT NULL DEFAULT '0',
   `gqi_point` varchar(15) NOT NULL,
   `card` varchar(12) DEFAULT NULL,
-  `ppt_file` text
+  `ppt_file` text DEFAULT NULL,
+  `status_claim` varchar(15) DEFAULT NULL,
+  `ahm_plant` varchar(7) DEFAULT NULL,
+  `ofp` text DEFAULT NULL,
+  `id_pergantian_part` int(3) DEFAULT NULL,
+  `id_sortir_stock` int(3) DEFAULT NULL,
+  `id_pfmea` int(3) DEFAULT NULL,
+  `status` varchar(6) DEFAULT 'open'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `claim_customer`
 --
 
-INSERT INTO `claim_customer` (`id_customer_claim`, `tgl_input`, `no_surat_claim`, `tgl_surat_claim`, `no_lkk_qro`, `id_part`, `total_claim_actual`, `total_claim_surat`, `status_part_claim`, `qty_point`, `jml_qty_visual`, `rank_point_visual`, `jml_qty_nonvisual`, `rank_point_nonvisual`, `gqi_point`, `card`, `ppt_file`) VALUES
-(1, '2019-11-05', 'AHM/00003/1100078/11/2019', '2019-11-01', 'EKT/03/QA/ASKI/11/2019', 26, 1, 1, 'RECEIVED', 2, 0, 0, 1, '20', '22', 'Green Card', NULL),
-(2, '2019-11-05', 'AHM/00003/1100078/11/2019', '2019-11-01', 'EKT/04/QA/ASKI/11/2019', 31, 1, 1, 'RECEIVED', 2, 0, 0, 1, '20', '22', 'Green Card', NULL),
-(3, '2019-11-06', 'AHM/00037/1100078/11/2019', '2019-11-04', 'EKT/05/QA/ASKI/11/2019', 209, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL),
-(4, '2019-11-06', '40/MKT/KRW/XI/2019', '2019-11-01', 'EKT/06/QA/ASKI/11/2019', 44, 8, 8, 'RECEIVED', 10, 8, 4, 0, 'FALSE', '14', 'Green Card', NULL),
-(5, '2019-11-08', 'AHM/00040/1100078/11/2019', '2019-11-04', 'EKT/13/QA/ASKI/11/2019', 3, 3, 3, 'RECEIVED', 10, 3, 4, 0, '0', '14', 'Green Card', NULL),
-(6, '2019-11-08', 'AHM/00062/1100078/11/2019', '2019-11-06', 'EKT/14/QA/ASKI/11/2019', 76, 2, 2, 'RECEIVED', 10, 2, 4, 0, 'FALSE', '14', 'Green Card', NULL),
-(7, '2019-11-08', 'AHM/00068/1100078/11/2019', '2019-11-06', 'EKT/15/QA/ASKI/11/2019', 326, 2, 2, 'RECEIVED', 10, 2, 4, 0, 'FALSE', '14', 'Green Card', NULL),
-(8, '2019-11-08', 'AHM/00068/1100078/11/2019', '2019-11-06', 'EKT/16/QA/ASKI/11/2019', 327, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL),
-(9, '2019-11-08', 'AHM/00068/1100078/11/2019', '2019-11-06', 'EKT/17/QA/ASKI/11/2019', 306, 3, 3, 'RECEIVED', 10, 3, 4, 0, 'FALSE', '14', 'Green Card', NULL),
-(10, '2019-11-08', 'AHM/00095/1100078/11/2019', '2019-11-07', 'EKT/18/QA/ASKI/11/2019', 327, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '12', 'Green Card', NULL),
-(11, '2019-11-08', 'AHM/00095/1100078/11/2019', '2019-11-07', 'EKT/19/QA/ASKI/11/2019', 306, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '20', 'Green Card', NULL),
-(12, '2019-11-12', '499/MKT/KRW/11/2019', '2019-11-11', 'EKT/23/QA/ASKI/11/2019', 82, 13, 13, 'RECEIVED', 10, 13, 4, 0, 'FALSE', '14', 'Green Card', NULL),
-(13, '2019-11-12', '499/MKT/KRW/11/2019', '2019-11-11', 'EKT/24/QA/ASKI/11/2019', 328, 6, 6, 'RECEIVED', 10, 5, 4, 1, 'FALSE', '14', 'Green Card', NULL),
-(14, '2019-11-13', 'AHM/00100/1100078/11/2019', '2019-11-07', 'EKT/27/QA/ASKI/11/2019', 76, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '20', 'Green Card', NULL),
-(15, '2019-11-13', 'AHM/00121/1100078/11/2019', '2019-11-11', 'EKT/28/QA/ASKI/11/2019', 76, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '40', 'Green Card', NULL),
-(16, '2019-11-13', 'AHM/00137/1100078/11/2019', '2019-11-11', 'EKT/29/QA/ASKI/11/2019', 99, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL),
-(17, '2019-11-13', 'AHM/00137/1100078/11/2019', '2019-11-11', 'EKT/30/QA/ASKI/11/2019', 87, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL);
+INSERT INTO `claim_customer` (`id_customer_claim`, `tgl_input`, `no_surat_claim`, `tgl_surat_claim`, `no_lkk_qro`, `id_part`, `total_claim_actual`, `total_claim_surat`, `status_part_claim`, `qty_point`, `jml_qty_visual`, `rank_point_visual`, `jml_qty_nonvisual`, `rank_point_nonvisual`, `gqi_point`, `card`, `ppt_file`, `status_claim`, `ahm_plant`, `ofp`, `id_pergantian_part`, `id_sortir_stock`, `id_pfmea`, `status`) VALUES
+(1, '2019-11-05', 'AHM/00003/1100078/11/2019', '2019-11-01', 'EKT/03/QA/ASKI/11/2019', 26, 1, 1, 'RECEIVED', 2, 0, 0, 1, '20', '22', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(2, '2019-11-05', 'AHM/00003/1100078/11/2019', '2019-11-01', 'EKT/04/QA/ASKI/11/2019', 31, 1, 1, 'RECEIVED', 2, 0, 0, 1, '20', '22', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(3, '2019-11-06', 'AHM/00037/1100078/11/2019', '2019-11-04', 'EKT/05/QA/ASKI/11/2019', 209, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(4, '2019-11-06', '40/MKT/KRW/XI/2019', '2019-11-01', 'EKT/06/QA/ASKI/11/2019', 44, 8, 8, 'RECEIVED', 10, 8, 4, 0, 'FALSE', '14', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(5, '2019-11-08', 'AHM/00040/1100078/11/2019', '2019-11-04', 'EKT/13/QA/ASKI/11/2019', 3, 3, 3, 'RECEIVED', 10, 3, 4, 0, '0', '14', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(6, '2019-11-08', 'AHM/00062/1100078/11/2019', '2019-11-06', 'EKT/14/QA/ASKI/11/2019', 76, 2, 2, 'RECEIVED', 10, 2, 4, 0, 'FALSE', '14', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(7, '2019-11-08', 'AHM/00068/1100078/11/2019', '2019-11-06', 'EKT/15/QA/ASKI/11/2019', 326, 2, 2, 'RECEIVED', 10, 2, 4, 0, 'FALSE', '14', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(8, '2019-11-08', 'AHM/00068/1100078/11/2019', '2019-11-06', 'EKT/16/QA/ASKI/11/2019', 327, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(9, '2019-11-08', 'AHM/00068/1100078/11/2019', '2019-11-06', 'EKT/17/QA/ASKI/11/2019', 306, 3, 3, 'RECEIVED', 10, 3, 4, 0, 'FALSE', '14', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(10, '2019-11-08', 'AHM/00095/1100078/11/2019', '2019-11-07', 'EKT/18/QA/ASKI/11/2019', 327, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '12', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(11, '2019-11-08', 'AHM/00095/1100078/11/2019', '2019-11-07', 'EKT/19/QA/ASKI/11/2019', 306, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '20', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(12, '2019-11-12', '499/MKT/KRW/11/2019', '2019-11-11', 'EKT/23/QA/ASKI/11/2019', 82, 13, 13, 'RECEIVED', 10, 13, 4, 0, 'FALSE', '14', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(13, '2019-11-12', '499/MKT/KRW/11/2019', '2019-11-11', 'EKT/24/QA/ASKI/11/2019', 328, 6, 6, 'RECEIVED', 10, 5, 4, 1, 'FALSE', '14', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(14, '2019-11-13', 'AHM/00100/1100078/11/2019', '2019-11-07', 'EKT/27/QA/ASKI/11/2019', 76, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '20', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(15, '2019-11-13', 'AHM/00121/1100078/11/2019', '2019-11-11', 'EKT/28/QA/ASKI/11/2019', 76, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '40', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(16, '2019-11-13', 'AHM/00137/1100078/11/2019', '2019-11-11', 'EKT/29/QA/ASKI/11/2019', 99, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(17, '2019-11-13', 'AHM/00137/1100078/11/2019', '2019-11-11', 'EKT/30/QA/ASKI/11/2019', 87, 1, 1, 'RECEIVED', 2, 1, 4, 0, 'FALSE', '6', 'Green Card', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(18, '2020-03-06', 'TGGSI/00003/1100078/11/2019', '2020-03-03', 'EKT 001', 323, 5, 5, 'RECEIVED', 10, 3, 4, 2, '#N/A', '#N/A', '#N/A', NULL, 'Claim', NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(19, '2020-03-06', 'TGGSI/00003/1100078/11/2019', '2020-03-03', 'EKT 002', 324, 17, 17, 'RECEIVED', 0, 0, 0, 0, '0', '#N/A', '#N/A', NULL, 'Tukar Guling', NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(29, '2020-03-13', 'HJHJHJJJJHJHJH', '2020-03-09', 'MNMNMNMNMN', 327, 4, 4, 'RECEIVED', 10, 4, 4, 0, 'FALSE', '14', 'Green Card', NULL, 'Claim', 'AHM 3', NULL, NULL, NULL, NULL, 'OPEN'),
+(30, '2020-03-13', 'HJHJHJJJJHJHJH', '2020-03-09', 'jjhjhjhjhj', 317, 3, 3, 'RECEIVED', 10, 0, 0, 3, '20', '30', 'Green Card', NULL, 'Tukar Guling', 'AHM 5', NULL, NULL, NULL, NULL, 'OPEN'),
+(31, '2020-03-26', 'MNMNMNNMNNBNVF', '2020-03-16', 'BFBFGFGFGFGF', 325, 2, 2, 'RECEIVED', 10, 2, 4, 0, '#N/A', '#N/A', '#N/A', NULL, 'Tukar Guling', NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(32, '2020-03-26', 'MNMNMNNMNNBNVF', '2020-03-16', 'nmnmnmnmnmn', 323, 5, 5, 'RECEIVED', 0, 0, 0, 0, '0', '#N/A', '#N/A', NULL, 'Tukar Guling', NULL, NULL, NULL, NULL, NULL, 'OPEN'),
+(33, '2020-03-28', 'BGMGHMMGM', '2020-03-23', 'DGFGFGFFG', 329, 2, 2, 'RECEIVED', 10, 2, 4, 0, 'FALSE', '14', 'Green Card', NULL, 'Claim', '', NULL, NULL, NULL, NULL, 'OPEN'),
+(34, '2020-03-28', 'BGMGHMMGM', '2020-03-23', 'nbnbnbnbnbb', 330, 3, 3, 'RECEIVED', 0, 0, 0, 0, '0', '#N/A', '#N/A', NULL, 'Claim', NULL, NULL, 1, NULL, NULL, 'OPEN'),
+(35, '2020-04-11', 'NBMNBN,MGJFMFJR', '2020-05-06', 'EKT 1010', 329, 3, 3, 'RECEIVED', 10, 3, 4, 0, 'FALSE', '14', 'Green Card', NULL, 'Tukar Guling', '', NULL, NULL, NULL, NULL, 'OPEN'),
+(36, '2020-04-11', 'NBMNBN,MGJFMFJR', '2020-05-06', 'NHGJFJDEDHE', 330, 4, 4, 'RECEIVED', 0, 0, 0, 0, '0', '#N/A', '#N/A', NULL, 'Claim', '', NULL, NULL, NULL, NULL, 'OPEN');
 
 -- --------------------------------------------------------
 
@@ -80,7 +97,7 @@ INSERT INTO `claim_customer` (`id_customer_claim`, `tgl_input`, `no_surat_claim`
 CREATE TABLE `customer` (
   `id_customer` int(3) NOT NULL,
   `nama_customer` varchar(100) NOT NULL,
-  `total_visual_and_nonvisual` int(3) DEFAULT '0'
+  `total_visual_and_nonvisual` int(3) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -88,12 +105,7 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`id_customer`, `nama_customer`, `total_visual_and_nonvisual`) VALUES
-(1, 'AHM', 83),
-(2, 'AHM 1', 0),
-(3, 'AHM 2', 0),
-(4, 'AHM 3', 0),
-(5, 'AHM 4', 0),
-(6, 'AHM 5', 0),
+(1, 'AHM', 54),
 (7, 'ADM', 0),
 (8, 'AVI', 0),
 (9, 'DNIA', 0),
@@ -106,8 +118,8 @@ INSERT INTO `customer` (`id_customer`, `nama_customer`, `total_visual_and_nonvis
 (16, 'GEMITA', 0),
 (17, 'YUTAKA', 0),
 (18, 'YASUNLI', 0),
-(19, 'TGSSI', 0),
-(20, 'AHM-PC', 0);
+(19, 'TGSSI', 7),
+(20, 'AHM-PC', 5);
 
 -- --------------------------------------------------------
 
@@ -116,20 +128,20 @@ INSERT INTO `customer` (`id_customer`, `nama_customer`, `total_visual_and_nonvis
 --
 
 CREATE TABLE `data_parts` (
-  `ID_PART` int(11) NOT NULL,
-  `NO_SAP` varchar(17) DEFAULT NULL,
-  `SAFETY_GRADE` varchar(10) NOT NULL,
-  `NAMA_PART` varchar(40) NOT NULL,
-  `TYPE` varchar(4) NOT NULL,
-  `PROSES` varchar(16) NOT NULL,
-  `CUSTOMER` int(3) NOT NULL
+  `id_part` int(4) NOT NULL,
+  `no_sap` varchar(17) DEFAULT NULL,
+  `safety_grade` varchar(10) NOT NULL,
+  `nama_part` varchar(40) NOT NULL,
+  `type` varchar(4) NOT NULL,
+  `proses` varchar(16) NOT NULL,
+  `customer` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `data_parts`
 --
 
-INSERT INTO `data_parts` (`ID_PART`, `NO_SAP`, `SAFETY_GRADE`, `NAMA_PART`, `TYPE`, `PROSES`, `CUSTOMER`) VALUES
+INSERT INTO `data_parts` (`id_part`, `no_sap`, `safety_grade`, `nama_part`, `type`, `proses`, `customer`) VALUES
 (1, 'QI2LSG-GGRB61BK00', 'HS', 'REAR GRAB RAIL ASSY K61A', 'K61A', 'PI', 1),
 (2, 'QI2LSG-GGRB81BK00', 'HS', 'RR GRAB RAIL K81A', 'K81A', 'PI', 1),
 (3, 'QI2LSG-GLUG59BK01', 'HA', 'BOX LUGGAGE SUB ASSY K59J', 'K59J', 'PI', 1),
@@ -464,6 +476,18 @@ INSERT INTO `data_parts` (`ID_PART`, `NO_SAP`, `SAFETY_GRADE`, `NAMA_PART`, `TYP
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `delivery`
+--
+
+CREATE TABLE `delivery` (
+  `id_delivery` int(11) NOT NULL,
+  `tgl_delivery` date NOT NULL,
+  `qty` int(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `list_part`
 --
 
@@ -506,19 +530,19 @@ INSERT INTO `list_part` (`id_part`, `no_sap`, `safety_grade`, `nama_part`, `type
 
 CREATE TABLE `non_visual` (
   `id_customer_claim` int(3) NOT NULL,
-  `Deformasi` int(3) NOT NULL DEFAULT '0',
-  `Patah` int(3) NOT NULL DEFAULT '0',
-  `Part_Tidak_Lengkap` int(3) NOT NULL DEFAULT '0',
-  `Elector_Mark` int(3) NOT NULL DEFAULT '0',
-  `Short_Shot` int(3) NOT NULL DEFAULT '0',
-  `Material_Asing` int(3) NOT NULL DEFAULT '0',
-  `Pecah` int(3) NOT NULL DEFAULT '0',
-  `Stay_Lepas` int(3) NOT NULL DEFAULT '0',
-  `Salah_Ulir` int(3) NOT NULL DEFAULT '0',
-  `Visual_TA` int(3) NOT NULL DEFAULT '0',
-  `Ulir_Ng` int(3) NOT NULL DEFAULT '0',
-  `Rubber_TA` int(3) NOT NULL DEFAULT '0',
-  `Hole_Ng` int(3) NOT NULL DEFAULT '0'
+  `Deformasi` int(3) NOT NULL DEFAULT 0,
+  `Patah` int(3) NOT NULL DEFAULT 0,
+  `Part_Tidak_Lengkap` int(3) NOT NULL DEFAULT 0,
+  `Elector_Mark` int(3) NOT NULL DEFAULT 0,
+  `Short_Shot` int(3) NOT NULL DEFAULT 0,
+  `Material_Asing` int(3) NOT NULL DEFAULT 0,
+  `Pecah` int(3) NOT NULL DEFAULT 0,
+  `Stay_Lepas` int(3) NOT NULL DEFAULT 0,
+  `Salah_Ulir` int(3) NOT NULL DEFAULT 0,
+  `Visual_TA` int(3) NOT NULL DEFAULT 0,
+  `Ulir_Ng` int(3) NOT NULL DEFAULT 0,
+  `Rubber_TA` int(3) NOT NULL DEFAULT 0,
+  `Hole_Ng` int(3) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -542,7 +566,49 @@ INSERT INTO `non_visual` (`id_customer_claim`, `Deformasi`, `Patah`, `Part_Tidak
 (14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+(17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(18, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(19, 1, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(30, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
+(33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pergantian_part`
+--
+
+CREATE TABLE `pergantian_part` (
+  `id_pergantian_part` int(3) NOT NULL,
+  `tgl_pembayaran` date DEFAULT NULL,
+  `no_gi_451` varchar(20) DEFAULT NULL,
+  `no_gi_945` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `pergantian_part`
+--
+
+INSERT INTO `pergantian_part` (`id_pergantian_part`, `tgl_pembayaran`, `no_gi_451`, `no_gi_945`) VALUES
+(1, '2020-03-13', '67676', '2122');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pfmea`
+--
+
+CREATE TABLE `pfmea` (
+  `id_pfmea` int(3) NOT NULL,
+  `tgl_upload` date NOT NULL,
+  `nama_file` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -572,12 +638,12 @@ INSERT INTO `reset_password` (`id_reset`, `password`, `id_user`) VALUES
 
 CREATE TABLE `users` (
   `id_users` int(3) NOT NULL,
-  `photo` text,
+  `photo` text DEFAULT NULL,
   `full_name` varchar(125) NOT NULL,
   `username` varchar(125) NOT NULL,
   `role` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -586,7 +652,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id_users`, `photo`, `full_name`, `username`, `role`, `password`, `created_at`, `updated_at`) VALUES
-(1, 'Foto_Profile_-_Juan_Valerian_D.jpg', 'Juan Valerian', 'juandelima', 'Super Admin', '$2y$10$GV16k8Bww3xXXAWRoqIdtuJzQXULTPKiMQ/AM3COQmSYJkoUlus0W', '2020-01-28 04:52:07', '2020-01-28 04:52:07'),
+(1, 'Foto_Profile_-_Juan_Valerian4.jpg', 'Juan Valerian', 'juandelima', 'Super Admin', '$2y$10$GV16k8Bww3xXXAWRoqIdtuJzQXULTPKiMQ/AM3COQmSYJkoUlus0W', '2020-03-11 03:58:26', '2020-03-11 03:58:26'),
 (5, 'Foto_Profile_-_Bastian_Delima.jpg', 'Bastian Delima', 'bastiandelima', 'Admin', '$2y$10$IO3PgZ9Uy5LD9vzq4Qk4XuHNyXOamyi7nFVtHkz1SkfL4rKTYM.Si', '2019-12-06 00:24:49', '2019-12-06 00:24:49'),
 (6, 'Foto_Profile_-_Cindy_Cornelia_D1.jpg', 'Cindy Cornelia D', 'cindycd', 'User', '$2y$10$tcJP9urWGMjh8ByI4BdMJOxE9iV3XnuGTntR4gQjV/3wrT9sG9o2S', '2019-12-12 15:25:28', '2019-12-12 15:25:28');
 
@@ -677,7 +743,17 @@ INSERT INTO `visual` (`id_customer_claim`, `Kotor`, `Lecet`, `Tipis`, `Meler`, `
 (14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+(17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(18, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(19, 3, 6, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(29, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(31, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(32, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(33, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(34, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(35, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(36, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -688,7 +764,8 @@ INSERT INTO `visual` (`id_customer_claim`, `Kotor`, `Lecet`, `Tipis`, `Meler`, `
 --
 ALTER TABLE `claim_customer`
   ADD PRIMARY KEY (`id_customer_claim`),
-  ADD KEY `claim_customer_ibfk_1` (`id_part`);
+  ADD KEY `claim_customer_ibfk_1` (`id_part`),
+  ADD KEY `id_pergantian_part` (`id_pergantian_part`);
 
 --
 -- Indexes for table `customer`
@@ -700,8 +777,14 @@ ALTER TABLE `customer`
 -- Indexes for table `data_parts`
 --
 ALTER TABLE `data_parts`
-  ADD PRIMARY KEY (`ID_PART`),
-  ADD KEY `CUSTOMER` (`CUSTOMER`);
+  ADD PRIMARY KEY (`id_part`),
+  ADD KEY `CUSTOMER` (`customer`);
+
+--
+-- Indexes for table `delivery`
+--
+ALTER TABLE `delivery`
+  ADD PRIMARY KEY (`id_delivery`);
 
 --
 -- Indexes for table `list_part`
@@ -715,6 +798,18 @@ ALTER TABLE `list_part`
 --
 ALTER TABLE `non_visual`
   ADD KEY `id_customer_claim` (`id_customer_claim`);
+
+--
+-- Indexes for table `pergantian_part`
+--
+ALTER TABLE `pergantian_part`
+  ADD PRIMARY KEY (`id_pergantian_part`);
+
+--
+-- Indexes for table `pfmea`
+--
+ALTER TABLE `pfmea`
+  ADD KEY `id_pfmea` (`id_pfmea`) USING BTREE;
 
 --
 -- Indexes for table `reset_password`
@@ -743,7 +838,7 @@ ALTER TABLE `visual`
 -- AUTO_INCREMENT for table `claim_customer`
 --
 ALTER TABLE `claim_customer`
-  MODIFY `id_customer_claim` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_customer_claim` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `customer`
@@ -755,13 +850,25 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT for table `data_parts`
 --
 ALTER TABLE `data_parts`
-  MODIFY `ID_PART` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=331;
+  MODIFY `id_part` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=331;
+
+--
+-- AUTO_INCREMENT for table `delivery`
+--
+ALTER TABLE `delivery`
+  MODIFY `id_delivery` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `list_part`
 --
 ALTER TABLE `list_part`
   MODIFY `id_part` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `pergantian_part`
+--
+ALTER TABLE `pergantian_part`
+  MODIFY `id_pergantian_part` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `reset_password`
@@ -783,7 +890,9 @@ ALTER TABLE `users`
 -- Constraints for table `claim_customer`
 --
 ALTER TABLE `claim_customer`
-  ADD CONSTRAINT `claim_customer_ibfk_1` FOREIGN KEY (`id_part`) REFERENCES `data_parts` (`id_part`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `claim_customer_ibfk_1` FOREIGN KEY (`id_part`) REFERENCES `data_parts` (`id_part`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `claim_customer_ibfk_2` FOREIGN KEY (`id_pergantian_part`) REFERENCES `pergantian_part` (`id_pergantian_part`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `claim_customer_ibfk_3` FOREIGN KEY (`id_pfmea`) REFERENCES `pfmea` (`id_pfmea`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `data_parts`
