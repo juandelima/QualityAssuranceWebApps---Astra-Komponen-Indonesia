@@ -13,6 +13,7 @@
 	<script src="<?php echo site_url('assets/js/neon-api.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/jvectormap/jquery-jvectormap-1.2.2.min.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/highcharts.js'); ?>"></script>
+	<script src="<?php echo site_url() ?>assets/js/dropzone/dropzone.js"></script>
 	<script src="<?php echo site_url() ?>assets/js/fileinput.js"></script>
 	<script src="<?php echo site_url() ?>assets/js/icheck/icheck.min.js"></script>
 	<!-- <script src="http://code.highcharts.com/modules/exporting.js"></script> -->

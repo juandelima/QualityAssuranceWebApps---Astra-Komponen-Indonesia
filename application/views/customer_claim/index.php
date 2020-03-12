@@ -41,6 +41,7 @@
 			background-repeat: no-repeat;
 			animation: loading 1s infinite;
 		}
+	
 
 		.col-sm-1 {
 			width: 45px;
@@ -142,6 +143,10 @@
 		.text-align {
 			text-align: center;
 			font-weight: bolder;
+		}
+
+		table.dataTable.no-footer {
+    		border-bottom: 1px solid #f9f9f9 !important;
 		}
 	</style>
 </head>
@@ -528,7 +533,7 @@
 							</table>
 						</div>
 						<div id="main-table">
-							<table class="table table-bordered display nowrap" id="table_customer_claim">
+							<table class="table table-bordered nowrap" id="table_customer_claim">
 								<thead>
 									<tr>
 										<th width="1" style="text-align: center;">No</th>
@@ -683,7 +688,68 @@
 							</div> 
 						</div>
 					</div>
-
+					
+					<div class="modal fade" id="pfmea<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">PFMEA - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<form role="form" class="form-horizontal" id="pfmea_file<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="<?php echo base_url('claim/powerpoint/upload_pfmea/'.$id); ?>" accept-charset="utf-8">
+									<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-md-12" style="margin-bottom: 10px;">
+												<input required type="file" id="nama_file_pfmea<?php echo $id; ?>" name="file_pfmea[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+											</div>
+											<div class="col-md-12">
+												<div class="progress progress-striped active">
+													<div id="progress-bar-pfmea<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+														<span id="progress-pfmea<?php echo $id; ?>"></span>
+													</div>
+												</div>
+											</div> 
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="close_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" class="btn btn-primary">Simpan</button>
+									</div>
+								</form>
+							</div> 
+						</div>
+					</div>
+					
+					<div class="modal fade" id="modal_view_files<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 90%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">PFMEA FILES - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<div class="modal-body">
+									<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>">
+										<thead>
+											<tr>
+												<th width="1" style="text-align: center;">No</th>
+												<th width="50" style="text-align: center;">Tgl Upload</th>
+												<th style="text-align: center;">Nama File</th>
+												<th width="1" style="text-align: center;">Link</th>
+											</tr>
+										</thead>
+										
+										<tbody>
+											
+										</tbody>
+									</table>
+								</div>
+								<div class="modal-footer">
+									<button type="button" id="close_table_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
 					<?php
 						$index++;
 					    }

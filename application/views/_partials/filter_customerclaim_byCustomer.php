@@ -11,10 +11,14 @@
 										"JQueryUI":true,
 										"lengthChange": false,
 										"scrollCollapse":true,
-										// "scrollX": true,
-										"paging": false
-
+										"paging": false,
+										"initComplete": function (settings, json) {  
+    										$("#table_customer_claim").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+  										},
 									});
+		$("#table_customer_claim").on( 'column-sizing.dt', function ( e, settings ) {
+			$(".dataTables_scrollHeadInner").css( "width", "100%" );
+		});
 		let table_skeleton = $("#table_skeleton").DataTable({
 										"oLanguage": {
 											"sSearch": "Search:",
@@ -24,7 +28,6 @@
 											}
 										},
 										"lengthChange": false,
-										
 									});
         $("#ganti_customer, #ganti_customer2").change((e) => {
             let val_id_customer = $(e.target).val();
@@ -264,10 +267,10 @@
 						}
 
 						if(data[i].id_pfmea == null) {
-							see_pfmea = "<a id='modal-see-pfmea"+data[i].id_customer_claim+"' class='btn btn-info' disabled><i class='entypo-eye'></i></a>";
+							see_pfmea = "<a class='btn btn-info enable_pfmea"+data[i].id_customer_claim+"' disabled><i class='entypo-eye'></i></a>";
 						} else {
 							if(data[i].id_pfmea != null) {
-								see_pfmea  = "<a href='javascript:;' id='modal-see-pfmea"+data[i].id_customer_claim+"' class='btn btn-info'><i class='entypo-eye'></i></a>";
+								see_pfmea  = "<a href='javascript:;' id='modal_files"+data[i].id_customer_claim+"' class='btn btn-info'><i class='entypo-eye'></i></a>";
 							}
 						}
 
@@ -357,6 +360,18 @@
 									}
 								}
 								sign += 1;
+
+								let table_file_pfmea = $("#table_file_pfmea"+id_claim).DataTable({
+										"oLanguage": {
+											"sSearch": "Search:",
+											"oPaginate": {
+												"sPrevious": "Previous",
+												"sNext": "Next"
+											}
+										},
+										"lengthChange": false,
+								});
+
 								$("#table_customer_claim").on('click', '#modal-upload-ppt'+id_claim+'', function() {
 									$("#upload-ppt"+id_claim).modal('show');
 								});
@@ -369,6 +384,37 @@
 									$("#pergantian-part"+id_claim).modal('show');
 								});
 
+								$("#table_customer_claim").on('click', '#modal-pfmea'+id_claim+'', () => {
+									$("#pfmea"+id_claim).modal('show');
+								});
+
+								$("#table_customer_claim").on('click', '#modal_files'+id_claim+'', function() {
+									$.ajax({
+										type: "GET",
+										url: "<?php echo base_url('claim/customerclaim/get_pfmea_files/'); ?>"+id_claim+"",
+										dataType: "JSON",
+										beforeSend: () => {
+											table_file_pfmea.clear().draw();
+										},
+										success: (data) => {
+											for(let index in data) {
+												let nomor = parseInt(index) + 1;
+												let button_download_files = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/pfmea/')?>"+data[index].nama_file+"' class='btn btn-blue'><i class='entypo-download'></i></a>";
+												table_file_pfmea.row.add([
+													''+nomor+'',
+													''+data[index].tgl_upload+'',
+													''+data[index].nama_file+'',
+													''+button_download_files+''
+												]).draw(false);
+											}
+										},
+										error: () => {
+											alert(textStatus +" "+errorThrown);
+										}
+									});
+									$("#modal_view_files"+id_claim).modal('show');
+								});
+
 								$("#upload_file"+id_claim+"").submit(function(e) {
 									e.preventDefault();
 									$(this).ajaxSubmit({
@@ -376,13 +422,13 @@
 											$("#progress-bar"+id_claim+"").width('0%');
 										},
 										uploadProgress: (event, position, total, percentComplete) => {
-											
 											$("#progress-bar"+id_claim+"").width(percentComplete + '%');
 											$("span#progress"+id_claim+"").text(percentComplete+"%");
 										},
 										success: (data) => {
+											console.log(data)
 											let data_json = JSON.parse(data);
-											
+											console.log(data_json);
 											let select_claim = data_json.select_claim;
 											let due_date = Date.parse(data_json.due_date);
 											let dateNow = Date.parse(data_json.dateNow);
@@ -400,7 +446,6 @@
 											let data_json = JSON.parse(data.responseText);
 											let jsonResponse = data_json.select_claim;
 											let fileName = data_json.file_name;
-											
 											var opts = {
 												"closeButton": true,
 												"debug": false,
@@ -416,7 +461,7 @@
 												"hideMethod": "fadeOut"
 											};
 											function successUpload() {
-												toastr.success('FILE BERHASIL DIUPLOAD', "SUCCESS", opts);
+												toastr.success('FILE PICA BERHASIL DIUPLOAD', "SUCCESS", opts);
 												$("#download_ppt_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
 												$("#download_ppt_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ppt/'); ?>"+fileName+"");
 												if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
@@ -548,6 +593,71 @@
 										}
 									});
 								});
+
+								$("#pfmea_file"+id_claim+"").submit(function(e) {
+									e.preventDefault();
+									$(this).ajaxSubmit({
+										beforeSubmit: () => {
+											$("#progress-bar-pfmea"+id_claim+"").width('0%');
+										},
+										uploadProgress: (event, position, total, percentComplete) => {
+											$("#progress-bar-pfmea"+id_claim+"").width(percentComplete + '%');
+											$("span#progress-pfmea"+id_claim+"").text(percentComplete+"%");
+										},
+
+										success: (data) => {
+											let data_json = JSON.parse(data);
+											let select_claim = data_json.select_claim;
+											let due_date = Date.parse(data_json.due_date);
+											let dateNow = Date.parse(data_json.dateNow);
+											function closeModal() {
+												$("#pfmea"+select_claim.id_customer_claim).modal('hide');
+											}
+											setTimeout(closeModal, 1500);
+										},
+										complete: (data) => {
+											let data_json = JSON.parse(data.responseText);
+											let jsonResponse = data_json.select_claim;
+											let fileName = data_json.file_name;
+											let id_pfmea = jsonResponse.id_pfmea;
+											var opts = {
+												"closeButton": true,
+												"debug": false,
+												"positionClass": "toast-top-right",
+												"onclick": null,
+												"showDuration": "300",
+												"hideDuration": "1000",
+												"timeOut": "5000",
+												"extendedTimeOut": "1000",
+												"showEasing": "swing",
+												"hideEasing": "linear",
+												"showMethod": "fadeIn",
+												"hideMethod": "fadeOut"
+											};
+											function successUpload() {
+												toastr.success('FILE PFMEA BERHASIL DIUPLOAD', "SUCCESS", opts);
+												$(".enable_pfmea"+jsonResponse.id_customer_claim).removeAttr("disabled");
+												$(".enable_pfmea"+jsonResponse.id_customer_claim).attr("id", "modal_files"+id_pfmea+"");
+												if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
+													$("#status_claim"+jsonResponse.id_customer_claim).text("");
+													$("#status_claim"+jsonResponse.id_customer_claim).text("CLOSE");
+												}
+											}
+											function afterUpload() {
+												$("span.file-input-name").text("");
+												$("#progress-bar-pfmea"+id_claim+"").width('0%');
+												$("#nama_file_pfmea"+id_claim+"").val(null);
+											}
+											setTimeout(successUpload, 1500);
+											setTimeout(afterUpload, 2000);
+										},
+										error: function(jqXHR, textStatus, errorThrown) {
+											alert(textStatus +" "+errorThrown);
+											// $("#error_text").text(textStatus +" "+errorThrown);
+											// $("#modal-error-ajax").modal('show');;
+										}
+									});
+								});
 							}	
 						}
 
@@ -624,10 +734,10 @@
 							}
 
 							if(data[i].id_pfmea == null) {
-								see_pfmea = "<a id='modal-see-pfmea"+data[i].id_customer_claim+"' class='btn btn-info disabled'><i class='entypo-eye'></i></a>";
+								see_pfmea = "<a class='btn btn-info enable_pfmea"+data[i].id_customer_claim+"' class='btn btn-info' disabled><i class='entypo-eye'></i></a>";
 							} else {
 								if(data[i].id_pfmea != null) {
-									see_pfmea  = "<a href='javascript:;' id='modal-see-pfmea"+data[i].id_customer_claim+"' class='btn btn-info'><i class='entypo-eye'></i></a>";
+									see_pfmea  = "<a href='javascript:;' id='modal_files"+data[i].id_customer_claim+"' class='btn btn-info'><i class='entypo-eye'></i></a>";
 								}
 							}
 

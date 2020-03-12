@@ -200,6 +200,10 @@ class Customerclaim_model extends CI_Model {
 		return $result;
 	}
 
+	public function save_pfmea_file($data) {
+		$result = $this->db->insert('pfmea', $data);
+	}
+
 	
 
 	public function getClaim() {
@@ -396,6 +400,12 @@ class Customerclaim_model extends CI_Model {
 		$this->db->where('id_customer_claim', $data['id_customer_claim']);
 		$result = $this->db->update('claim_customer');
 		return $result;
+	}
+
+	public function update_id_pfmea($id_customer_claim) {
+		$this->db->set('id_pfmea', $id_customer_claim);
+		$this->db->where('id_customer_claim', $id_customer_claim);
+		$this->db->update('claim_customer');
 	}
 
 	public function max_id() {
@@ -1752,6 +1762,14 @@ class Customerclaim_model extends CI_Model {
 
 		$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
 			on $this->table.id_part = data_parts.id_part");
+		return $query->result();
+	}
+
+	public function get_files_pfmea($id_pfmea) {
+		$this->db->select("*");
+		$this->db->from("pfmea");
+		$this->db->where("id_pfmea", $id_pfmea);
+		$query = $this->db->get();
 		return $query->result();
 	}
 }

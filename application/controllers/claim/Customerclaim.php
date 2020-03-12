@@ -585,6 +585,11 @@ class Customerclaim extends CI_Controller {
 		echo json_encode($result);
 	}
 
+	public function get_pfmea_files($id_pfmea) {
+		$result = $this->customerclaim_model->get_files_pfmea($id_pfmea);
+		echo json_encode($result);
+	}
+	
 	public function testing_input() {
 		echo $this->customerclaim_model->testing();
 	}
