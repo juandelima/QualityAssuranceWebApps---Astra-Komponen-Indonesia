@@ -119,7 +119,7 @@
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
 					$("#error_text").text(textStatus +" "+errorThrown);
-					$("#modal-error-ajax").show();
+					$("#modal-error-ajax").modal('show');
 				}
 			});
 		});

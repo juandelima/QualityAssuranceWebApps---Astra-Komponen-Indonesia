@@ -75,7 +75,7 @@
     		z-index: 99999 !important;
 		}
 
-		.sidebar-menu{
+		#chat, .chat-conversation, .sidebar-menu{
 			z-index: 9999!important;
 		}
 
@@ -147,6 +147,11 @@
 
 		table.dataTable.no-footer {
     		border-bottom: 1px solid #f9f9f9 !important;
+		}
+
+		.label {
+			font-size: 13px;
+			margin-bottom: 8px;
 		}
 	</style>
 </head>
@@ -689,6 +694,111 @@
 						</div>
 					</div>
 					
+					<div class="modal fade" id="sortir-stock<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">SORTIR / REPAIR PART <b><?php echo $data->nama_part; ?></b></h4>
+								</div>
+
+								<form role="form" class="form-horizontal" id="create_sortir_stock<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="#" accept-charset="utf-8">
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-sm-2 control-label" style="text-align:left;">Tanggal</label>
+													<div class="col-sm-7">
+														<div class="input-group">
+															<input type="text" class="form-control datepicker" name="tgl_sortir" id="tgl_sortir<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
+															<div class="input-group-addon">
+																<a href="#"><i class="entypo-calendar"></i></a>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-2 control-label" style="text-align:left;">Nama Part</label>
+													<div class="col-sm-7">
+														<input type="text" class="form-control" name="nama_part_sortir" id="nama_part_sortir<?php echo $id; ?>" placeholder="4953444424" value="<?php echo $data->nama_part; ?>" required readonly>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-2 control-label" style="text-align:left;">Type</label>
+													<div class="col-sm-7">
+														<input type="text" class="form-control" name="type" id="type<?php echo $id; ?>" placeholder="problem..." value="<?php echo $data->type; ?>" required readonly>
+													</div>
+												</div>
+												<div class="form-group" style="padding: 10px;">
+													<table class="table table-bordered">
+														<thead>
+															<tr>
+																<th><b>Problem</b></th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td class="padding-sm" id="problem_part<?php echo $id; ?>">
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div class="form-group" style="padding: 10px;" style="margin-top: -10px;">
+													<table class="table table-bordered">
+														<thead>
+															<tr>
+																<th><b>Stock</b></th>
+																<th><b>Ok</b></th>
+																<th><b>Ng</b></th>
+																<th><b>Sisa</b></th>
+															</tr>
+														</thead>
+
+														<tbody>
+															<tr>
+																<td width="150">
+																	<div class="input-spinner">
+																		<button type="button" class="btn btn-success btn-sm" id="btn_min_stock<?php echo $id; ?>">-</button>
+																			<input name="stock" id="stock<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_stock<?php echo $id; ?>">+</button>
+																	</div>
+																</td>
+																<td width="150">
+																	<div class="input-spinner">
+																		<button type="button" class="btn btn-success btn-sm" id="btn_min_ok<?php echo $id; ?>">-</button>
+																		<input name="ok" id="ok<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_ok<?php echo $id; ?>">+</button>
+																	</div>
+																</td>
+																<td width="150">
+																	<div class="input-spinner">
+																		<button type="button" class="btn btn-success btn-sm" id="btn_min_ng<?php echo $id; ?>">-</button>
+																		<input name="ng" id="ng<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_ng<?php echo $id; ?>">+</button>
+																	</div>
+																</td>
+																<td width="150">
+																	<input name="sisa" id="sisa<?php echo $id; ?>" type="text" class="form-control input-sm" value="0" readonly/>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="close_sortir<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" id="simpan_sortir<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+
 					<div class="modal fade" id="pfmea<?php echo $id; ?>">
 						<div class="modal-dialog" style="width: 50%;">
 							<div class="modal-content">
@@ -817,6 +927,7 @@
 				</div>
 				<?php $this->load->view('_partials/footer.php'); ?>
 			</div>
+			<?php $this->load->view('_partials/lists_chat.php'); ?>
 	</div>
 	<link rel="stylesheet" href="<?php echo site_url('assets/js/daterangepicker/daterangepicker-bs3.css'); ?>">
 	<?php $this->load->view('_partials/js.php'); ?>
@@ -828,61 +939,6 @@
 	<script src="http://malsup.github.com/jquery.form.js"></script> 
 	<?php $this->load->view('_partials/customer_claim_chart.php'); ?>
 	<?php $this->load->view('_partials/filter_customerclaim_byCustomer.php'); ?>
-	<script>
-		// UPLOAD FILE
-		jQuery(document).ready(function($) {
-			$("#form_delivery").find("#btn_min").attr("disabled", true);
-			$("#form_delivery").find("#btn_plus").click(function add() {
-				$("#form_delivery").find("#btn_min").attr("disabled", false);
-			});
-
-			$("#form_delivery").find("#btn_min").click(function subst() {
-				let val_qty = $("#qty").val();
-				if(val_qty < 2) {
-					$("#form_delivery").find("#btn_min").attr("disabled", true);
-				}
-			});
-			$("#input_delivery").on('click', '#save_qty', function(e) {
-				e.preventDefault();
-				$.ajax({
-					url: "<?php echo base_url('claim/customerclaim/ahm_delivery'); ?>",
-					type: "POST",
-					data: $("#input_delivery").serialize(),
-					dataType: "JSON",
-					cache: false,
-					success: function(data) {
-						var opts = {
-							"closeButton": true,
-							"debug": false,
-							"positionClass": "toast-top-right",
-							"onclick": null,
-							"showDuration": "300",
-							"hideDuration": "1000",
-							"timeOut": "5000",
-							"extendedTimeOut": "1000",
-							"showEasing": "swing",
-							"hideEasing": "linear",
-							"showMethod": "fadeIn",
-							"hideMethod": "fadeOut"
-						};
-						toastr.success('DELIVERY SUKSES TERSIMPAN', "SUCCESS", opts);
-
-					},
-					complete: function() {
-						$("#tgl_deliv").val(null);
-						$("#qty").val(1);
-						$("#form_delivery").find("#btn_min").attr("disabled", true);
-						$("#form_delivery").modal('hide');
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						alert(textStatus +" "+errorThrown);
-						// $("#error_text").text(textStatus +" "+errorThrown);
-						// $("#modal-error-ajax").modal('show');;
-					}
-				});
-			});
-		});	
-
-	</script>
+	<?php $this->load->view('_partials/js_index_customer_claim.php'); ?>
 </body>
 </html>

@@ -14,7 +14,7 @@ class User_model extends CI_Model {
 		$data = $this->db->get();
 		return $data->result();
 	}
-
+	
 	public function data_dummy() {
 		date_default_timezone_set("Asia/Jakarta");
 		$data = array(

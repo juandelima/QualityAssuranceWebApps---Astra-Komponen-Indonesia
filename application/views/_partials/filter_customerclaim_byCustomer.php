@@ -202,7 +202,6 @@
 			return [year, month, day].join('-');
 		}
 
-
 		// FILTER TABLE USING AJAX
 		function load_all_customer_claim() {
 			let new_date = new Date();
@@ -241,7 +240,7 @@
 						let ofp_download;
 						let upload_pfmea = "<a href='javascript:;' id='modal-pfmea"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-upload'></i></a>";
 						let see_pfmea;
-						let sortir_stock = "<button type='button' class='btn btn-link'>Coming Soon</button>";
+						let sortir_stock;
 						if(data[i].ppt_file == null) {
 							button_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ppt_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
 						} else {
@@ -262,7 +261,15 @@
 							pergantian_part = "<a href='javascript:;' id='modal-pergantian-part"+data[i].id_customer_claim+"' class='btn btn-info btn-icon icon-left'><i class='entypo-pencil'></i> Pergantian part</a>";
 						} else {
 							if(data[i].id_pergantian_part != null) {
-								pergantian_part = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold;'></i> Sudah melakukan pergantian part";
+								pergantian_part = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i> Sudah melakukan pergantian part";
+							}
+						}
+
+						if(data[i].id_sortir_stock == null) {
+							sortir_stock = "<a href='javascript:;' id='modal-sortir-stock"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-pencil'></i></a>";
+						} else {
+							if(data[i].id_sortir_stock != null) {
+								sortir_stock = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>";
 							}
 						}
 
@@ -282,7 +289,7 @@
 							data[i].card = '-'
 						}
 						table_customer_claim.row.add([
-							''+no+'',
+							''+uniq+'',
 							''+data[i].tgl_input+'',
 							''+data[i].no_surat_claim+'',
 							''+data[i].nama_part+'',
@@ -324,6 +331,7 @@
 								let status = "status_claim"+id_claim;
 								let card = data.responseJSON[i].card;
 								let pergantian_part = "pergantian_part"+id_claim;
+								let status_sortir_stock = "status-sortir-stock"+id_claim;
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(7)").attr("id", uniqID);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(14)").attr("id", id_card);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(6)").attr("class", "proses");
@@ -332,6 +340,8 @@
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(11)").attr("class", "pica");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(9)").attr("class", "centered");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(9)").attr("id", pergantian_part);
+								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(10)").attr("class", "centered");
+								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(10)").attr("id", status_sortir_stock);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("class", "centered");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("id", status);
 								if(date_now > parse_due_date) {
@@ -388,6 +398,264 @@
 									$("#pfmea"+id_claim).modal('show');
 								});
 
+								$("#table_customer_claim").on('click', '#modal-sortir-stock'+id_claim+'', function() {
+									$.ajax({
+										type: "GET",
+										url: "<?php echo base_url('claim/customerclaim/sortir_part/'); ?>"+id_claim+"",
+										dataType: "JSON",
+										cache: false,
+										beforeSend: () => {
+											$("#problem_part"+id_claim).html("");
+										},
+										success: (data_sortir) => {
+											let mod = data_sortir.sisa;
+											if(mod != 0) {
+												let Initstock = $("#stock"+id_claim+"").val(mod);
+											} else {
+												let Initstock = $("#stock"+id_claim+"").val(0);
+											}
+											let ok = $("#ok"+id_claim+"").val();
+											let ng = $("#ng"+id_claim+"").val();
+											let sisa = $("#sisa"+id_claim+"").val();
+											let stock = $("#stock"+id_claim+"").val();
+											let keep_stock = stock;
+											let keep_value = null;
+											$("#stock"+id_claim+"").keyup((e) => {
+											    var stock_value = $(e.target).val();
+											    keep_stock = stock_value;
+											    stock = stock_value;
+											    if(parseInt(stock_value) > 0) {
+													if(ok != '0' || ng != '0') {
+														sisa = Math.abs(parseInt(stock_value) - (parseInt(ok) + parseInt(ng)));
+														if(sisa == 0) {
+															console.log("AUH AHH");
+															$("#btn_plus_ok"+id_claim+", #btn_plus_ng"+id_claim+"").attr("disabled", true);
+														} else {
+															$("#btn_min_stock"+id_claim+", #btn_plus_ok"+id_claim+", #btn_plus_ng"+id_claim+"").attr("disabled", false);
+														}
+														$("#sisa"+id_claim+"").val(sisa);
+														stock = sisa;
+													} else {
+														$("#btn_min_stock"+id_claim+", #btn_plus_ok"+id_claim+", #btn_plus_ng"+id_claim+"").attr("disabled", false);
+													}
+											    } else {
+											        $("#btn_min_stock"+id_claim+", #btn_min_ok"+id_claim+", #btn_plus_ok"+id_claim+", #btn_min_ng"+id_claim+", #btn_plus_ng"+id_claim+"").attr("disabled", true);
+											        $("#ok"+id_claim+", #ng"+id_claim+"").attr("readonly", true);
+											        $("#ok"+id_claim+"").val(0);
+											        $("#ng"+id_claim+"").val(0);
+													$("#sisa"+id_claim+"").val(0);
+											    }
+											});
+
+											if(ok === '0') {
+                								$("#btn_min_ok"+id_claim+"").attr("disabled", true);
+            								}
+
+											if(ng === '0') {
+												$("#btn_min_ng"+id_claim+"").attr("disabled", true);
+											}
+
+											if(mod != 0) {
+												$("#btn_plus_ok"+id_claim+"").click(function add() {
+												    let ok_value = $("#ok"+id_claim+"").val();
+													ok = ok_value;
+												    if(parseInt(ok_value) > 0) {
+												        sisa = parseInt(stock) - 1;
+												        stock = sisa;
+														if(sisa == 0) {
+															$("#btn_plus_ok"+id_claim+"").attr("disabled", true);
+															$("#btn_plus_ng"+id_claim+"").attr("disabled", true);
+														}
+												        $("#btn_min_ok"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+												        $("#btn_min_ok"+id_claim+"").attr("disabled", true);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    }
+												});
+
+												$("#btn_min_ok"+id_claim+"").click(function subst() {
+												    let ok_value = $("#ok"+id_claim+"").val();
+													ok = ok_value;
+													$("#btn_plus_ng"+id_claim+"").attr("disabled", false);
+												    if(parseInt(ok_value) > 0) {
+												        sisa++;
+														stock = sisa;
+														$("#btn_plus_ok"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+														
+														if(parseInt(ng) != 0) {
+															sisa = Math.abs(parseInt(sisa) - parseInt(ng));
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(sisa); 
+														} else {
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(0); 
+														}
+												        
+												        $("#btn_min_ok"+id_claim+"").attr("disabled", true);
+												    }
+												});
+												
+												$("#btn_plus_ng"+id_claim+"").click(function add() {
+												    let ng_value = $("#ng"+id_claim+"").val();
+													ng = ng_value;
+												    if(parseInt(ng_value) > 0) {
+												        sisa = parseInt(stock) - 1;
+												        stock = sisa;
+														if(sisa == 0) {
+															$("#btn_plus_ok"+id_claim+"").attr("disabled", true);
+															$("#btn_plus_ng"+id_claim+"").attr("disabled", true);
+														}
+												        $("#btn_min_ng"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+												        $("#btn_min_ng"+id_claim+"").attr("disabled", true);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    }
+												});
+
+												$("#btn_min_ng"+id_claim+"").click(function subst() {
+												    let ng_value = $("#ng"+id_claim+"").val();
+													ng = ng_value;
+													$("#btn_plus_ok"+id_claim+"").attr("disabled", false);
+												    if(parseInt(ng_value) > 0) {
+												        sisa++;
+												        stock = sisa;
+														$("#btn_plus_ng"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+														if(parseInt(ok) != 0) {
+															sisa = Math.abs(parseInt(sisa) - parseInt(ok));
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(sisa);
+														} else {
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(0);
+														}
+														$("#btn_min_ng"+id_claim+"").attr("disabled", true);
+												    }
+												});
+
+												$("#stock"+id_claim+"").attr("readonly", true);
+												$("#btn_min_stock"+id_claim+"").attr("disabled", true);
+												$("#btn_plus_stock"+id_claim+"").attr("disabled", true);
+												$("#btn_plus_ok"+id_claim+"").attr("disabled", false);
+												$("#btn_plus_ng"+id_claim+"").attr("disabled", false);
+
+											} else {
+												$("#btn_plus_ok"+id_claim+"").click(function add() {
+												    let ok_value = $("#ok"+id_claim+"").val();
+													ok = ok_value;
+												    if(parseInt(ok_value) > 0) {
+												        sisa = parseInt(stock) - 1;
+												        stock = sisa;
+														if(sisa == 0) {
+															$("#btn_plus_ok"+id_claim+"").attr("disabled", true);
+															$("#btn_plus_ng"+id_claim+"").attr("disabled", true);
+														}
+												        $("#btn_min_ok"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+												        $("#btn_min_ok"+id_claim+"").attr("disabled", true);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    }
+												});
+
+												$("#btn_min_ok"+id_claim+"").click(function subst() {
+												    let ok_value = $("#ok"+id_claim+"").val();
+													ok = ok_value;
+													$("#btn_plus_ng"+id_claim+"").attr("disabled", false);
+												    if(parseInt(ok_value) > 0) {
+												        sisa++;
+														stock = sisa;
+														$("#btn_plus_ok"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+														if(parseInt(ng) != 0) {
+															sisa = Math.abs(parseInt(sisa) - parseInt(ng));
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(sisa); 
+														} else {
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(0); 
+														}
+												        $("#btn_min_ok"+id_claim+"").attr("disabled", true);
+												    }
+												});
+												
+												$("#btn_plus_ng"+id_claim+"").click(function add() {
+												    let ng_value = $("#ng"+id_claim+"").val();
+													ng = ng_value;
+												    if(parseInt(ng_value) > 0) {
+												        sisa = parseInt(stock) - 1;
+												        stock = sisa;
+														if(sisa == 0) {
+															$("#btn_plus_ok"+id_claim+"").attr("disabled", true);
+															$("#btn_plus_ng"+id_claim+"").attr("disabled", true);
+														}
+												        $("#btn_min_ng"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+												        $("#btn_min_ng"+id_claim+"").attr("disabled", true);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    }
+												});
+
+												$("#btn_min_ng"+id_claim+"").click(function subst() {
+												    let ng_value = $("#ng"+id_claim+"").val();
+													ng = ng_value;
+													$("#btn_plus_ok"+id_claim+"").attr("disabled", false);
+												    if(parseInt(ng_value) > 0) {
+												        sisa++;
+												        stock = sisa;
+														$("#btn_plus_ng"+id_claim+"").attr("disabled", false);
+												        $("#sisa"+id_claim+"").val(sisa);
+												    } else {
+												        sisa = keep_stock;
+														if(parseInt(ok) != 0) {
+															sisa = Math.abs(parseInt(sisa) - parseInt(ok));
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(sisa);
+														} else {
+															stock = sisa;
+															$("#sisa"+id_claim+"").val(0);
+														}
+														$("#btn_min_ng"+id_claim+"").attr("disabled", true);
+												    }
+												});
+
+												$("#stock"+id_claim+"").attr("readonly", false);
+												$("#btn_min_stock"+id_claim+"").attr("disabled", true);
+												$("#btn_plus_stock"+id_claim+"").attr("disabled", false);
+												$("#btn_plus_ok"+id_claim+"").attr("disabled", true);
+												$("#btn_plus_ng"+id_claim+"").attr("disabled", true);
+											}
+											$("#ok"+id_claim+"").attr("readonly", true);
+											$("#ng"+id_claim+"").attr("readonly", true);
+											let label = ["label-primary", "label-secondary", "label-success",
+											"label-info", "label-warning", "label-danger"];
+											for(i in data_sortir.problem_part) {
+												let problem = "<div class='label "+label[Math.floor(Math.random() * label.length)]+" tooltip-primary' data-toggle='tooltip' data-placement='top' title='' data-original-title='Tooltip on top'>"+data_sortir.problem_part[i]+"</div>";
+												$("#problem_part"+id_claim).append(problem);
+											}
+
+											$("#sortir-stock"+id_claim).modal('show');
+										},
+										error: (jqXHR, textStatus, errorThrown) => {
+											alert(textStatus +" "+errorThrown);
+										}
+									});
+								});
+
 								$("#table_customer_claim").on('click', '#modal_files'+id_claim+'', function() {
 									$.ajax({
 										type: "GET",
@@ -408,7 +676,7 @@
 												]).draw(false);
 											}
 										},
-										error: () => {
+										error: (jqXHR, textStatus, errorThrown) => {
 											alert(textStatus +" "+errorThrown);
 										}
 									});
@@ -426,9 +694,7 @@
 											$("span#progress"+id_claim+"").text(percentComplete+"%");
 										},
 										success: (data) => {
-											console.log(data)
 											let data_json = JSON.parse(data);
-											console.log(data_json);
 											let select_claim = data_json.select_claim;
 											let due_date = Date.parse(data_json.due_date);
 											let dateNow = Date.parse(data_json.dateNow);
@@ -553,45 +819,105 @@
 
 								$("#simpan_pergantian"+id_claim+"").click((e) => {
 									e.preventDefault();
-									$.ajax({
-										url: "<?php echo base_url('claim/customerclaim/pergantian_part'); ?>",
-										type: "POST",
-										data: $("#upload_pergantian"+id_claim+"").serialize(),
-										dataType: "JSON",
-										cache: false,
-										success: (data) => {
-											var opts = {
-												"closeButton": true,
-												"debug": false,
-												"positionClass": "toast-top-right",
-												"onclick": null,
-												"showDuration": "300",
-												"hideDuration": "1000",
-												"timeOut": "5000",
-												"extendedTimeOut": "1000",
-												"showEasing": "swing",
-												"hideEasing": "linear",
-												"showMethod": "fadeIn",
-												"hideMethod": "fadeOut"
-											};
-											toastr.success('PERGANTIAN BERHASIL DILAKUKAN!', "SUCCESS", opts);
+									let tgl_pembayaran = $("#tgl_pembayaran"+id_claim+"").val();
+									let no_gi_451 = $("#no_gi_451"+id_claim+"").val();
+									let no_gi_945 = $("#no_gi_945"+id_claim+"").val();
+									if(tgl_pembayaran != "" && no_gi_451 != "" && no_gi_945 != "") {
+										$.ajax({
+											url: "<?php echo base_url('claim/customerclaim/pergantian_part'); ?>",
+											type: "POST",
+											data: $("#upload_pergantian"+id_claim+"").serialize(),
+											dataType: "JSON",
+											cache: false,
+											success: (data) => {
+												var opts = {
+													"closeButton": true,
+													"debug": false,
+													"positionClass": "toast-top-right",
+													"onclick": null,
+													"showDuration": "300",
+													"hideDuration": "1000",
+													"timeOut": "5000",
+													"extendedTimeOut": "1000",
+													"showEasing": "swing",
+													"hideEasing": "linear",
+													"showMethod": "fadeIn",
+													"hideMethod": "fadeOut"
+												};
+												toastr.success('PERGANTIAN PART BERHASIL DILAKUKAN!', "SUCCESS", opts);
 
-										},
-										complete: () => {
-											let status_pergantian = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold;'></i> Sudah melakukan pergantian part"
-											$("#tgl_pembayaran"+id_claim+"").val(null);
-											$("#no_gi_451"+id_claim+"").val("");
-											$("#no_gi_945"+id_claim+"").val("");
-											$("#modal-pergantian-part"+id_claim+"").remove();
-											$("#pergantian_part"+id_claim+"").html(status_pergantian);
-											$("#pergantian-part"+id_claim+"").modal('hide');
-										},
-										error: (jqXHR, textStatus, errorThrown) => {
-											alert(textStatus +" "+errorThrown);
-											// $("#error_text").text(textStatus +" "+errorThrown);
-											// $("#modal-error-ajax").modal('show');;
-										}
-									});
+											},
+											complete: () => {
+												let status_pergantian = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i> Sudah melakukan pergantian part"
+												$("#tgl_pembayaran"+id_claim+"").val(null);
+												$("#no_gi_451"+id_claim+"").val("");
+												$("#no_gi_945"+id_claim+"").val("");
+												$("#modal-pergantian-part"+id_claim+"").remove();
+												$("#pergantian_part"+id_claim+"").html(status_pergantian);
+												$("#pergantian-part"+id_claim+"").modal('hide');
+											},
+											error: (jqXHR, textStatus, errorThrown) => {
+												alert(textStatus +" "+errorThrown);
+												// $("#error_text").text(textStatus +" "+errorThrown);
+												// $("#modal-error-ajax").modal('show');;
+											}
+										});
+									} else {
+										alert("SEMUA FIELD HARUS DI ISI TERLEBIH DAHULU!!!");
+									}
+								});
+
+								$("#simpan_sortir"+id_claim+"").click((e) => {
+									e.preventDefault();
+									let tgl_sortir = $("#tgl_sortir"+id_claim+"").val();
+									let stock = $("#stock"+id_claim+"").val();
+									let ok = $("#ok"+id_claim+"").val();
+									let ng = $("#ng"+id_claim+"").val();
+									if(tgl_sortir != "" && stock != "" && ok != "" && ng != "") {
+										$.ajax({
+											url: "<?php echo base_url('claim/customerclaim/simpan_sortir/'); ?>"+id_claim+"",
+											type: "POST",
+											data: $("#create_sortir_stock"+id_claim+"").serialize(),
+											dataType: "JSON",
+											cache: false,
+											success: (data) => {
+												var opts = {
+													"closeButton": true,
+													"debug": false,
+													"positionClass": "toast-top-right",
+													"onclick": null,
+													"showDuration": "300",
+													"hideDuration": "1000",
+													"timeOut": "5000",
+													"extendedTimeOut": "1000",
+													"showEasing": "swing",
+													"hideEasing": "linear",
+													"showMethod": "fadeIn",
+													"hideMethod": "fadeOut"
+												};
+												toastr.success('SORTIR STOCK BERHASIL DILAKUKAN!', "SUCCESS", opts);
+											},
+											complete: () => {
+												let status_complete = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>"
+												$("#modal-sortir-stock"+id_claim+"").remove();
+												$("#tgl_sortir"+id_claim+"").val(null);
+												$("#type"+id_claim+"").val("");
+												$("#stock"+id_claim+"").val(0);
+												$("#ok"+id_claim+"").val(0);
+												$("#ng"+id_claim+"").val(0);
+												$("#sisa"+id_claim+"").val(0);
+												$("#status-sortir-stock"+id_claim+"").html(status_complete);
+												$("#sortir-stock"+id_claim+"").modal('hide');
+											},
+											error: (jqXHR, textStatus, errorThrown) => {
+												alert(textStatus +" "+errorThrown);
+												// $("#error_text").text(textStatus +" "+errorThrown);
+												// $("#modal-error-ajax").modal('show');;
+											}
+										});
+									} else {
+										alert("SEMUA FIELD HARUS DI ISI TERLEBIH DAHULU!!!")
+									}	
 								});
 
 								$("#pfmea_file"+id_claim+"").submit(function(e) {
@@ -677,8 +1003,8 @@
 					dataType: "JSON",
 					beforeSend: () => {
 						$("#main-table").removeClass("show-main-table");
-						$("#skeleton-table").addClass("show-skeleton-table");
 						$("#main-table").addClass("hide-main-table");
+						$("#skeleton-table").addClass("show-skeleton-table");
 						table_customer_claim.clear().draw();
 					},
 					success: (data) => {
@@ -708,7 +1034,7 @@
 							let ofp_download;
 							let upload_pfmea = "<a href='javascript:;' id='modal-pfmea"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-upload'></i></a>";
 							let see_pfmea;
-							let sortir_stock = "<button type='button' class='btn btn-link'>Coming Soon</button>";
+							let sortir_stock;
 							if(data[i].ppt_file == null) {
 								button_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ppt_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
 							} else {
@@ -729,7 +1055,15 @@
 								pergantian_part = "<a href='javascript:;' id='modal-pergantian-part"+data[i].id_customer_claim+"' class='btn btn-info btn-icon icon-left'><i class='entypo-pencil'></i> Pergantian Part</a>";
 							} else {
 								if(data[i].id_pergantian_part != null) {
-									pergantian_part  = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold;'></i> Sudah melakukan pergantian part";
+									pergantian_part  = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i> Sudah melakukan pergantian part";
+								}
+							}
+
+							if(data[i].id_sortir_stock == null) {
+								sortir_stock = "<a href='javascript:;' id='modal-sortir-stock"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-pencil'></i></a>";
+							} else {
+								if(data[i].id_sortir_stock != null) {
+									sortir_stock = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>";
 								}
 							}
 
@@ -749,7 +1083,7 @@
 								data[i].card = '-'
 							}
 							table_customer_claim.row.add([
-								''+no+'',
+								''+uniq+'',
 								''+data[i].tgl_input+'',
 								''+data[i].no_surat_claim+'',
 								''+data[i].nama_part+'',
@@ -793,6 +1127,7 @@
 								let card = data.responseJSON[i].card;
 								let status = "status_claim"+id_claim;
 								let pergantian_part = "pergantian_part"+id_claim;
+								let status_sortir_stock = "status-sortir-stock"+id_claim;
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(7)").attr("id", uniqID);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(14)").attr("id", id_card);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(6)").attr("class", "proses");
@@ -801,6 +1136,8 @@
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(11)").attr("class", "pica");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(9)").attr("class", "centered");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(9)").attr("id", pergantian_part);
+								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(10)").attr("class", "centered");
+								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(10)").attr("id", status_sortir_stock);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("class", "centered");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("id", status);
 								if(date_now > parse_due_date) {
@@ -840,7 +1177,10 @@
 								$("#table_customer_claim").on('click', '#modal-pergantian-part'+id_claim+'', function() {
 									$("#pergantian-part"+id_claim).modal('show');
 								});
-											
+								
+								$("#table_customer_claim").on('click', '#modal-sortir-stock'+id_claim+'', function() {
+									$("#sortir-stock"+id_claim).modal('show');
+								});
 							}	
 						}
 

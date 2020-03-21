@@ -593,4 +593,114 @@ class Customerclaim extends CI_Controller {
 	public function testing_input() {
 		echo $this->customerclaim_model->testing();
 	}
+
+	public function sortir_part($id_customer_claim) {
+		$get_claim = $this->customerclaim_model->model_sortir_stock($id_customer_claim);
+		$id_part = $get_claim->id_part;
+		$get_claim_by_id_part = $this->customerclaim_model->get_claim_by_id_part($id_part);
+		$get_field_visual = $this->customerclaim_model->list_field_visual();
+		$get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
+		$key_visual = [];
+		$key_non_visual = [];
+		$value_visual = ['Kotor', 'Lecet', 'Tipis', 'Meler', 'Nyerep', 'O Peel', 'Buram', 'Over Cut',
+					'Burry', 'Belang', 'Ngeflek', 'Minyak', 'Dustray', 'Cat Kelupas', 'Bintik Air', 
+					'Finishing Ng', 'Serat', 'Demotograph', 'Lifting', 'Kusam', 'Flow Mark', 'Legok',
+					'Salah Type', 'Getting', 'Part Campur', 'Sinmark', 'Gores', 'Gloss', 'Patah Depan',
+					'Patah Belakang', 'Patah Kanan', 'Patah Kiri', 'Silver', 'Burn Mark', 'Weld Line',
+					'Bubble', 'Black Dot', 'White Dot', 'Isi Tidak Set', 'Gompal', 'Salah label', 'Sobek terkena cutter',
+					'Terbentur (Sobek handling)', 'Kereta (Sobek handling)', 'Terjatuh (Sobek handling)', 'Terkena Gun (Sobek handling)',
+					'Sobek Handling', 'Sobek Staples', 'Staples Lepas', 'Keriput', 'Seaming Ng', 'Nonjol', 'Seal Lepas', 'Cover Ng',
+					'Belum Finishing', 'Foam Ng'];
+		$value_non_visual = ['Deformasi', 'Patah / Crack', 'Part Tidak Lengkap', 'Elector Mark', 'Short Shot', 'Material Asing',
+					'Pecah', 'Stay Lepas', 'Salah Ulir', 'Visual T/A', 'Ulir Ng', 'Rubber TA', 'Hole Ng'];
+		for($i = 1; $i < count($get_field_visual); $i++) {
+			$key_visual[] = json_encode($get_field_visual[$i]);
+		}
+		$label_visual = array_combine($key_visual, $value_visual);
+		for($i = 1; $i < count($get_field_non_visual); $i++) {
+			$key_non_visual[] = json_encode($get_field_non_visual[$i]);
+		}
+		$label_non_visual = array_combine($key_non_visual, $value_non_visual);
+		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
+		$merge_field_except = [];
+		for($i = 0; $i < count($mergeField); $i++) {
+			if($mergeField[$i] == "id_customer_claim") {
+				continue;
+			}
+			$merge_field_except[] = $mergeField[$i];
+		}
+		$mergeLabel = array_merge($label_visual, $label_non_visual);
+		$problem_part = [];
+		for($i = 0; $i < count($merge_field_except); $i++) {
+			$problem = $merge_field_except[$i];
+			if($get_claim->$problem > 0) {
+				$problem_part[] = $mergeLabel[json_encode($problem)];
+			}
+		}
+
+		$count_get_claim_by_id_part = count($get_claim_by_id_part);
+		for($i = 0; $i < $count_get_claim_by_id_part; $i++) {
+			if(!empty($get_claim_by_id_part[$i]->id_sortir_stock)) {
+				$id_sortir_stock = $get_claim_by_id_part[$i]->id_sortir_stock;
+				break;
+			} else {
+				$id_sortir_stock = null;
+			}
+		}
+
+		$select_sortir_stock_by_id = $this->customerclaim_model->select_sortir_stock_by_id($id_sortir_stock);
+		if(!empty($select_sortir_stock_by_id)) {
+			$sisa = $select_sortir_stock_by_id->sisa;
+		} else {
+			$sisa = 0;
+		}
+
+		$data = array(
+			'sisa' => $sisa,
+			'problem_part' => $problem_part
+		);
+		
+		echo json_encode($data);
+	}
+
+
+	public function simpan_sortir($id_customer_claim) {
+		$id_sortir_stock = 1;
+		$get_data_sortir = $this->customerclaim_model->get_data_sortir();
+		$tgl_sortir = $_POST['tgl_sortir'];
+		if(!empty($get_data_sortir)) {
+			$id_sortir_stock = $get_data_sortir->id_sortir_stock + 1;
+			$data = array(
+				'id_sortir_stock' => $id_sortir_stock,
+				'tgl' => date('Y-m-d', strtotime($tgl_sortir)),
+				'stock' => $_POST['stock'],
+				'ok' => $_POST['ok'],
+				'ng' => $_POST['ng'],
+				'sisa' => $_POST['sisa']
+			);
+			$updateData = array(
+				'id_sortir_stock' => $data['id_sortir_stock'],
+				'id_customer_claim' => $id_customer_claim
+			);
+			$result = $this->customerclaim_model->simpan_data_sortir($data);
+			$this->customerclaim_model->update_sortir_field($updateData);
+		} else {
+			$data = array(
+				'id_sortir_stock' => $id_sortir_stock,
+				'tgl' => date('Y-m-d', strtotime($tgl_sortir)),
+				'stock' => $_POST['stock'],
+				'ok' => $_POST['ok'],
+				'ng' => $_POST['ng'],
+				'sisa' => $_POST['sisa']
+			);
+			$updateData = array(
+				'id_sortir_stock' => $data['id_sortir_stock'],
+				'id_customer_claim' => $id_customer_claim
+			);
+			$result = $this->customerclaim_model->simpan_data_sortir($data);
+			$this->customerclaim_model->update_sortir_field($updateData);
+		}
+
+		echo json_encode($result);
+	}
 }

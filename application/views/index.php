@@ -22,7 +22,7 @@
 			margin: 0 auto;
 			width: 100%;
 		}
-		.sidebar-menu{
+		#chat, .chat-conversation, .sidebar-menu{
 			z-index: 9999!important;
 		}
 	</style>
@@ -258,6 +258,7 @@
 			</div>
 			<?php $this->load->view('_partials/footer.php'); ?>
 		</div>
+		<?php $this->load->view('_partials/lists_chat.php'); ?>
 	</div>
 	<?php $this->load->view('_partials/js.php'); ?>
 	<script src="<?php echo site_url('assets/js/fusioncharts.js'); ?>"></script>
@@ -265,5 +266,6 @@
 	<script src="<?php echo site_url('assets/js/fusioncharts.theme.fusion.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.jqueryplugin.min.js'); ?>"></script>
 	<?php $this->load->view('_partials/dashboard_chart.php'); ?>
+	<?php $this->load->view('_partials/chatting'); ?>
 </body>
 </html>

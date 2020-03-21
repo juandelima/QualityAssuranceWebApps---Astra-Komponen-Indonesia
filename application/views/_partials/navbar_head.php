@@ -28,6 +28,17 @@
 				<div class="col-md-6 col-sm-4 clearfix hidden-xs">
 					<ul class="list-inline links-list pull-right">
 						<li>
+							<a href="#" data-toggle="chat" data-collapse-sidebar="1" id="open_chatting">
+								<i class="entypo-chat"></i>
+								Chat
+			
+								<span class="badge badge-success chat-notifications-badge is-hidden">0</span>
+							</a>
+						</li>
+						
+						<li class="sep"></li>
+
+						<li>
 							<a href="<?php echo base_url('login/logout'); ?>">
 								Log Out <i class="entypo-logout right"></i>
 							</a>

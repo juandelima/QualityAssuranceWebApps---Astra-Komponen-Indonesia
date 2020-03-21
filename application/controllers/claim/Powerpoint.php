@@ -208,9 +208,8 @@ class Powerpoint extends CI_Controller {
 	public function upload_pfmea($id_customer_claim) {
 		$select_claim = $this->customerclaim_model->select_claim($id_customer_claim);
 		if(!empty($_FILES['file_pfmea']['name'])) {
-			$this->customerclaim_model->update_id_pfmea($id_customer_claim);
 			$filesCount = count($_FILES['file_pfmea']['name']);
-			for($i = 0; $i < $filesCount; $i++){
+			for($i = 0; $i < $filesCount; $i++) {
 				$_FILES['file']['name']     = "PFMEA ".$select_claim->nama_part." ".$_FILES['file_pfmea']['name'][$i];
                 $_FILES['file']['type']     = $_FILES['file_pfmea']['type'][$i];
                 $_FILES['file']['tmp_name'] = $_FILES['file_pfmea']['tmp_name'][$i];
@@ -240,6 +239,7 @@ class Powerpoint extends CI_Controller {
 					$this->customerclaim_model->save_pfmea_file($data);
                 }
 			}
+			$this->customerclaim_model->update_id_pfmea($id_customer_claim);
 			$select_claim_last_update = $this->customerclaim_model->select_claim($id_customer_claim);
 			$output = array(
 				'select_claim' => $select_claim_last_update,

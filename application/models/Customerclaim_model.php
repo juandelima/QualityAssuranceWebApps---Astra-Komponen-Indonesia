@@ -1772,4 +1772,41 @@ class Customerclaim_model extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
 	}
+
+	public function model_sortir_stock($id_customer_claim) {
+		$query = $this->db->query("select data_parts.*, claim_customer.*, visual.*, non_visual.* from $this->table inner join data_parts
+			on $this->table.id_part = data_parts.id_part inner join visual on $this->table.id_customer_claim = visual.id_customer_claim 
+			inner join non_visual on $this->table.id_customer_claim = non_visual.id_customer_claim
+			where claim_customer.id_customer_claim = '$id_customer_claim'");
+		return $query->row();
+	}
+
+	public function get_claim_by_id_part($id_part) {
+		$query = $this->db->query("select data_parts.*, claim_customer.*, visual.*, non_visual.* from $this->table inner join data_parts
+			on $this->table.id_part = data_parts.id_part inner join visual on $this->table.id_customer_claim = visual.id_customer_claim 
+			inner join non_visual on $this->table.id_customer_claim = non_visual.id_customer_claim
+			where claim_customer.id_part = '$id_part' order by claim_customer.id_sortir_stock desc");
+		return $query->result();
+	}
+
+	public function simpan_data_sortir($data) {
+		$this->db->insert('sortir_stock', $data);
+	}
+
+	public function update_sortir_field($data) {
+		$this->db->set('id_sortir_stock', $data['id_sortir_stock']);
+		$this->db->where('id_customer_claim', $data['id_customer_claim']);
+		$result = $this->db->update('claim_customer');
+		return $result;
+	}
+	
+	public function get_data_sortir() {
+		$query = $this->db->query("select * from sortir_stock order by id_sortir_stock desc");
+		return $query->row();
+	}
+
+	public function select_sortir_stock_by_id($id_sortir_stock) {
+		$query = $this->db->query("select * from sortir_stock where id_sortir_stock = '$id_sortir_stock'");
+		return $query->row();
+	}
 }

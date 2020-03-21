@@ -28,6 +28,7 @@ class Dashboard extends CI_Controller {
 		$this->load->model('customerclaim_model');
 		$this->load->model('listpart_model');
 		$this->load->model('delivery_model');
+		$this->load->model('user_model');
 		$this->load->helper('date');
 		$this->load->helper('url');
 	}
@@ -40,7 +41,9 @@ class Dashboard extends CI_Controller {
 		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
 		$listing_deliv = $this->delivery_model->listing_deliv();
+		$listing_user = $this->user_model->list_user();
 		$count_deliv = count($listing_deliv);
+		$count_user = count($listing_user) - 1;
 		$merge_field_except = [];
 		for($i = 0; $i < count($mergeField); $i++) {
 			if($mergeField[$i] == "id_customer_claim") {
@@ -62,7 +65,8 @@ class Dashboard extends CI_Controller {
 			"count_customer_claim" => $count_customer_claim,
 			"slug" => $slug,
 			"count_deliv" => $count_deliv,
-			"customer" => $get_customer
+			"customer" => $get_customer,
+			"count_user" => $count_user
 		);
 
 		$this->load->view('index', $data);

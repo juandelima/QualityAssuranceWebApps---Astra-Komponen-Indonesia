@@ -1036,6 +1036,7 @@
       			}
 			});
 
+			
 			$(".input-spinner").find('[type="text"]').keyup(function() {
 				var value = $(this).val();
 				var isNum = $.isNumeric(value);

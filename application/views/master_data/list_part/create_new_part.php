@@ -88,7 +88,9 @@
 					</div>
 				</div>
 			</div>
+			<?php $this->load->view('_partials/footer.php'); ?>
 		</div>
+		<?php $this->load->view('_partials/lists_chat.php'); ?>
 	</div>
 	<?php $this->load->view('_partials/js.php'); ?>
 	<script>
