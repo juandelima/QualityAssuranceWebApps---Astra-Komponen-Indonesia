@@ -53,8 +53,9 @@
 			}
 		?>
 		
-		$("#filter_chart").on('change', 'select#part', function(e) {
+		$("#select_part").change((e) => {
 			let part = $(e.target).val();
+			let select_part = $("#part").val(part);
 			let date_range = $("#date_ranges").val();
 			const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun",
 			"Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];

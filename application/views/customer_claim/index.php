@@ -153,6 +153,10 @@
 			font-size: 13px;
 			margin-bottom: 8px;
 		}
+
+		.status {
+			font-weight: bolder;
+		}
 	</style>
 </head>
 <body class="page-body skin-facebook" data-url="http://neon.dev">
@@ -213,6 +217,7 @@
 				?>
 				<form role="form" id="filter_chart" class="form-horizontal form-groups-bordered">
 					<input type="hidden" name="id_customer" id="id_customer" value=""/>
+					<input type="hidden" name="part" id="part" value=""/>
 					<div class="row" style="margin-bottom: 10px;">
 						<?php if($this->session->userdata['role'] != 'User') { ?>
 							<div class="col-sm-6">
@@ -243,27 +248,18 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-sm-3" id="choose_part">
+						<div class="col-sm-3" id="choose_status">
 							<div class="form-group">
-								<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
 								<div class="col-sm-10" style="text-align:left;">
-									<select name="part" id="part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
+									<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
 										<option></option>
-										<!-- <optgroup label="United States"> -->
-										<!-- <option value="">ALL PARTS</option> -->
-										<?php
-											foreach($customer_claim_dist as $data) {
-										?>
-											<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
-										<?php 
-											}
-										?>
-										</optgroup>
+										<?php foreach($customers as $data) { ?>
+												<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
+										<?php } ?>
 									</select>
 								</div>
 							</div>
 						</div>
-
 						<div class="col-sm-2" id="year_list">
 							<div class="form-group">
 								<!-- <label class="col-sm-2 control-label">Year</label> -->
@@ -354,7 +350,7 @@
 										</div>
 									</div>
 									<div class="panel-body" id="body_chart_part">
-										<div class="col-sm-4" id="choose_status" style="margin-bottom: 10px;">
+										<!-- <div class="col-sm-4" id="choose_status" style="margin-bottom: 10px;">
 											<div class="form-group">
 												<div class="col-sm-10" style="text-align:left;">
 													<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
@@ -365,7 +361,7 @@
 													</select>
 												</div>
 											</div>
-										</div>
+										</div> -->
 										<div id="container_partChart"></div>
 									</div>
 								</div>
@@ -387,14 +383,22 @@
 										</div>
 									</div>
 									<div class="panel-body" id="body_chart_rejection">
-										<div class="col-sm-4" id="choose_status" style="margin-bottom: 10px;">
+										<div class="col-sm-5" id="choose_part" style="margin-bottom: 10px;">
 											<div class="form-group">
+												<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
 												<div class="col-sm-10" style="text-align:left;">
-													<select name="ganti_customer2" id="ganti_customer2" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
+													<select name="select_part" id="select_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
 														<option></option>
-														<?php foreach($customers as $data) { ?>
-																<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
-														<?php } ?>
+														<!-- <optgroup label="United States"> -->
+														<!-- <option value="">ALL PARTS</option> -->
+														<?php
+															foreach($customer_claim_dist as $data) {
+														?>
+															<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
+														<?php 
+															}
+														?>
+														</optgroup>
 													</select>
 												</div>
 											</div>

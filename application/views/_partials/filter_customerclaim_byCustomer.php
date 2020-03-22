@@ -344,6 +344,7 @@
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(10)").attr("id", status_sortir_stock);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("class", "centered");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("id", status);
+								$("#status_claim"+id_claim+"").addClass("status");
 								if(date_now > parse_due_date) {
 									if(data.responseJSON[i].ppt_file != null) {
 										$("#"+uniqID).addClass("kuning");
@@ -428,7 +429,6 @@
 													if(ok != '0' || ng != '0') {
 														sisa = Math.abs(parseInt(stock_value) - (parseInt(ok) + parseInt(ng)));
 														if(sisa == 0) {
-															console.log("AUH AHH");
 															$("#btn_plus_ok"+id_claim+", #btn_plus_ng"+id_claim+"").attr("disabled", true);
 														} else {
 															$("#btn_min_stock"+id_claim+", #btn_plus_ok"+id_claim+", #btn_plus_ng"+id_claim+"").attr("disabled", false);
@@ -847,7 +847,8 @@
 												toastr.success('PERGANTIAN PART BERHASIL DILAKUKAN!', "SUCCESS", opts);
 
 											},
-											complete: () => {
+											complete: (data) => {
+												let responseJSON = data.responseJSON.select_claim;
 												let status_pergantian = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i> Sudah melakukan pergantian part"
 												$("#tgl_pembayaran"+id_claim+"").val(null);
 												$("#no_gi_451"+id_claim+"").val("");
@@ -855,6 +856,10 @@
 												$("#modal-pergantian-part"+id_claim+"").remove();
 												$("#pergantian_part"+id_claim+"").html(status_pergantian);
 												$("#pergantian-part"+id_claim+"").modal('hide');
+												if(responseJSON.ppt_file != null && responseJSON.ofp != null && responseJSON.id_pergantian_part != null && responseJSON.id_sortir_stock != null && responseJSON.id_pfmea != null) {
+													$("#status_claim"+responseJSON.id_customer_claim).text("");
+													$("#status_claim"+responseJSON.id_customer_claim).text("CLOSE");
+												}
 											},
 											error: (jqXHR, textStatus, errorThrown) => {
 												alert(textStatus +" "+errorThrown);
@@ -897,7 +902,8 @@
 												};
 												toastr.success('SORTIR STOCK BERHASIL DILAKUKAN!', "SUCCESS", opts);
 											},
-											complete: () => {
+											complete: (data) => {
+												let responseJSON = data.responseJSON.select_claim;
 												let status_complete = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>"
 												$("#modal-sortir-stock"+id_claim+"").remove();
 												$("#tgl_sortir"+id_claim+"").val(null);
@@ -908,6 +914,10 @@
 												$("#sisa"+id_claim+"").val(0);
 												$("#status-sortir-stock"+id_claim+"").html(status_complete);
 												$("#sortir-stock"+id_claim+"").modal('hide');
+												if(responseJSON.ppt_file != null && responseJSON.ofp != null && responseJSON.id_pergantian_part != null && responseJSON.id_sortir_stock != null && responseJSON.id_pfmea != null) {
+													$("#status_claim"+responseJSON.id_customer_claim).text("");
+													$("#status_claim"+responseJSON.id_customer_claim).text("CLOSE");
+												}
 											},
 											error: (jqXHR, textStatus, errorThrown) => {
 												alert(textStatus +" "+errorThrown);
@@ -1140,6 +1150,7 @@
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(10)").attr("id", status_sortir_stock);
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("class", "centered");
 								$("#table_customer_claim tr:nth-child("+sign+") td:nth-child(13)").attr("id", status);
+								$("#status_claim"+id_claim+"").addClass("status");
 								if(date_now > parse_due_date) {
 									if(data.responseJSON[i].ppt_file != null) {
 										$("#"+uniqID).addClass("kuning");

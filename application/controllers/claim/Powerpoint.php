@@ -163,9 +163,10 @@ class Powerpoint extends CI_Controller {
 				'ppt_file' => $file_name
 			);
 			$this->customerclaim_model->upload_ppt($data);
+			$select_claim_last = $this->customerclaim_model->select_claim($id_customer_claim);
 			$output = array(
 				'file_name' => $file_name,
-				'select_claim' => $select_claim,
+				'select_claim' => $select_claim_last,
 				'due_date' => $due_date,
 				'dateNow' => $dateNow
 			);
@@ -195,9 +196,10 @@ class Powerpoint extends CI_Controller {
 				'ofp' => $file_name
 			);
 			$this->customerclaim_model->upload_ofp($data);
+			$select_claim_last = $this->customerclaim_model->select_claim($id_customer_claim);
 			$output = array(
 				'file_name' => $file_name,
-				'select_claim' => $select_claim,
+				'select_claim' => $select_claim_last,
 				'due_date' => $due_date,
 				'dateNow' => $dateNow
 			);

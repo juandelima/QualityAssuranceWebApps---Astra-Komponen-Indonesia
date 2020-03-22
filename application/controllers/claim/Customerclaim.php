@@ -582,7 +582,12 @@ class Customerclaim extends CI_Controller {
 			'id_pergantian_part' => $get_last_id->id_pergantian_part
 		);
 		$this->customerclaim_model->update_pergantian_part($dataUpdate);
-		echo json_encode($result);
+		$select_claim = $this->customerclaim_model->select_claim($dataUpdate['id_customer_claim']);
+		$data = array(
+			'result' => $result,
+			'select_claim' => $select_claim,
+		);
+		echo json_encode($data);
 	}
 
 	public function get_pfmea_files($id_pfmea) {
@@ -700,7 +705,11 @@ class Customerclaim extends CI_Controller {
 			$result = $this->customerclaim_model->simpan_data_sortir($data);
 			$this->customerclaim_model->update_sortir_field($updateData);
 		}
-
-		echo json_encode($result);
+		$select_claim = $this->customerclaim_model->select_claim($id_customer_claim);
+		$data = array(
+			'result' => $result,
+			'select_claim' => $select_claim
+		);
+		echo json_encode($data);
 	}
 }
