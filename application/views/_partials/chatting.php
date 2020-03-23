@@ -18,7 +18,6 @@
                         let current_user = <?php echo $this->session->userdata('id_users'); ?>;
                         let user_status;
                         let cnt = 0;
-                        console.log(banyak_data);
                         for(i in data_users) {
                             if(current_user != data_users[i].id_users) {
                                 cnt += 1;
@@ -73,7 +72,6 @@
                     let current_user = <?php echo $this->session->userdata('id_users'); ?>;
                     let user_status;
                     let cnt = 0;
-                    console.log(banyak_data_realTime);
                     for(i in data_users) {
                         if(current_user != data_users[i].id_users) {
                             cnt += 1;

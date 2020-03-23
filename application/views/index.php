@@ -85,13 +85,23 @@
 		<div class="main-content">
 		<?php $this->load->view('_partials/navbar_head.php'); ?>
 			<div class="row">
-				<div class="col-md-12">
+				<div class="form-group" id="change_chart" style="margin-bottom: 50px;">
+					<div class="col-sm-3">
+						<select name="select_chart" id="select_chart" class="selectboxit" data-first-option="false">
+							<option>select a chart...</option>
+							<option value="1">Annual & Monthly Chart</option>
+							<option value="2">Parts & Defect Chart</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="col-md-12" id="annual_monthly">
 					<div class="panel panel-primary" id="charts_env">
 						<div class="panel-body">
 							<div class="row" style="margin-bottom: 15px;">
 								<div class="col-sm-3">
 									<form role="form" id="filter_status_claim" class="form-horizontal form-groups-bordered">
-										<div class="form-group" id="year_list">
+										<div class="form-group">
 											<div class="col-sm-10">
 												<select name="status_claim" id="status_claim" class="selectboxit" data-first-option="false">
 													<option>claim / tukar guling...</option>
@@ -106,7 +116,7 @@
 
 								<div class="col-sm-3">
 									<form role="form" id="filter_by_customer" class="form-horizontal form-groups-bordered">
-										<div class="form-group" id="year_list">
+										<div class="form-group">
 											<div class="col-sm-10">
 												<select name="by_customer" id="by_customer" class="selectboxit" data-first-option="false">
 													<option>select customer...</option>
@@ -144,7 +154,7 @@
 													<form role="form" id="filter_year" class="form-horizontal form-groups-bordered">
 														<div class="row">
 															<div class="col-sm-6">
-																<div class="form-group" id="year_list">
+																<div class="form-group">
 																	<label class="col-sm-2 control-label">From</label>
 																	<div class="col-sm-10">
 																		<input type="hidden" name="annual_status_claim" id="annual_status_claim">
@@ -166,7 +176,7 @@
 															</div>
 
 															<div class="col-sm-6">
-																<div class="form-group" id="year_list">
+																<div class="form-group">
 																	<label class="col-sm-2 control-label">To</label>
 																	<div class="col-sm-10">
 																		<select name="year_to" id="year_to" class="select2" data-allow-clear="true" data-placeholder="Select year...">
@@ -207,12 +217,12 @@
 													<form role="form" id="filter_month" class="form-horizontal form-groups-bordered">
 														<div class="row">
 															<div class="col-sm-6">
-																<div class="form-group" id="year_list">
+																<div class="form-group">
 																	<label class="col-sm-2 control-label">Year</label>
 																	<div class="col-sm-10">
 																	<input type="hidden" name="monthly_customer" id="monthly_customer">
 																	<input type="hidden" name="monthly_status_claim" id="monthly_status_claim">
-																		<select name="year" id="year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
+																		<select name="year1" id="year1" class="select2" data-allow-clear="true" data-placeholder="Select year...">
 																			<option></option>
 																			<?php
 																				$firstYear = (int)date('Y') - 9;
@@ -239,6 +249,178 @@
 						</div>
 					</div>
 				</div>
+
+				<div class="col-md-12" id="parts_defect">
+					<div class="panel panel-primary" id="charts_defect">
+						<div class="panel-body">
+							<form role="form" id="filter_chart" class="form-horizontal form-groups-bordered">
+								<input type="hidden" name="id_customer" id="id_customer" value=""/>
+								<input type="hidden" name="part" id="part" value=""/>
+								<div class="row" style="margin-bottom: 15px;">
+									<div class="col-sm-2" id="choose_status">
+										<div class="form-group">
+											<div class="col-sm-10" style="text-align:left;">
+												<select name="status_claim" id="status_claim" class="selectboxit" data-first-option="false">
+													<option>claim / tukar guling...</option>
+													<option value="" selected>All</option>
+													<option value="Claim">Claim</option>
+													<option value="Tukar Guling">Tukar Guling</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-2">
+										<div class="form-group">
+											<div class="col-sm-10" style="text-align:left;">
+												<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
+													<option></option>
+													<?php foreach($customer as $data) { ?>
+															<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
+													<?php } ?>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-2" id="year_list">
+										<div class="form-group">
+											<div class="col-sm-10">
+												<select name="year" id="year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
+													<option></option>
+													<?php
+														$firstYear = (int)date('Y') - 9;
+														$lastYear = $firstYear + 9;
+														for($i = $firstYear; $i <= $lastYear; $i++) { 
+													?>
+															<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+													<?php
+														}
+													?>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-2" id="month_list">
+										<div class="form-group">
+											<div class="col-sm-10">
+												<select name="month" id="month" class="select2" data-allow-clear="true" data-placeholder="Select month...">
+													<option></option>
+													<?php
+														$months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", 
+														"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+														for($i = 0; $i < count($months); $i++) { 
+													?>
+															<option value="<?php echo $months[$i]; ?>-<?php echo date('Y'); ?>"><?php echo $months[$i]; ?></option>
+													<?php
+														}
+													?>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-2" id="date_custome" style="display: none;">
+										<div class="form-group">
+											<label class="col-sm-2 control-label">Date</label>
+											<div class="col-sm-10">
+												<input type="hidden" name="start" id="start"/>
+												<input type="hidden" name="end" id="end"/>
+												<input type="text" id="date_ranges" class="form-control daterange"/>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-2" id="custome_range">
+										<div class="form-group" style="margin-top: 5px;">
+											<input type="checkbox" class="icheck" id="custom_date">
+											<label for="minimal-checkbox-1">Custom Range</label>
+										</div>
+									</div>
+								</div>
+							</form>
+
+							<div class="row">
+					<div class="col-md-12">
+						<ul class="nav nav-tabs">
+							<li class="active">
+								<a href="#chart_parts" data-toggle="tab">
+									<span class="visible-xs"><i class="entypo-chart-line"></i></span>
+									<span class="hidden-xs">Parts Graph</span>
+								</a>
+							</li>
+							<li>
+								<a href="#chart_rejections" data-toggle="tab">
+									<span class="visible-xs"><i class="entypo-chart-bar"></i></span>
+									<span class="hidden-xs">Rejections Graph</span>
+								</a>
+							</li>
+						</ul>
+
+						<div class="tab-content">
+							<div class="tab-pane active" id="chart_parts">
+								<div class="panel panel-primary" id="chart_part" data-collapsed="0" style="margin-top: 25px;">
+									<div class="panel-heading">
+										<div class="panel-title">REJECTIONS PART GRAPH (QTY & PPM)</div>
+										<div class="panel-options">
+											<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
+											<a href="#" data-rel="reload" id="reloading_chart_part" class="loaded">
+												<!-- <i class="entypo-arrows-ccw"></i> -->
+											</a>
+											<a href="#" data-rel="reload" id="reset_part" class="loaded">
+												<i class="entypo-arrows-ccw"></i>
+											</a>
+										</div>
+									</div>
+									<div class="panel-body" id="body_chart_part">
+										<div id="container_partChart"></div>
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-pane" id="chart_rejections">
+								<div class="panel panel-primary" data-collapsed="0" style="margin-top: 25px;">
+									<div class="panel-heading">
+										<div class="panel-title">REJECTIONS GRAPH (QTY & PPM)</div>
+										<div class="panel-options">
+											<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
+											<a href="#" data-rel="reload" id="reloading" class="loaded">
+												<!-- <i class="entypo-arrows-ccw"></i> -->
+											</a>
+
+											<a href="#" data-rel="reload" id="reset_rejection" class="loaded">
+												<i class="entypo-arrows-ccw"></i>
+											</a>
+										</div>
+									</div>
+									<div class="panel-body" id="body_chart_rejection">
+										<div class="col-sm-5" id="choose_part" style="margin-bottom: 10px;">
+											<div class="form-group">
+												<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
+												<div class="col-sm-10" style="text-align:left;">
+													<select name="select_part" id="select_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
+														<option></option>
+														<!-- <optgroup label="United States"> -->
+														<!-- <option value="">ALL PARTS</option> -->
+														<?php
+															foreach($customer_claim_dist as $data) {
+														?>
+															<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
+														<?php 
+															}
+														?>
+														</optgroup>
+													</select>
+												</div>
+											</div>
+										</div>
+										<div id="container"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+						</div>
+					</div>														
+				</div>
+
 			</div>
 			<div class="modal fade" id="modal-error-ajax">
 				<div class="modal-dialog" style="width: 50%;">
@@ -261,11 +443,14 @@
 		<?php $this->load->view('_partials/lists_chat.php'); ?>
 	</div>
 	<?php $this->load->view('_partials/js.php'); ?>
+	<link rel="stylesheet" href="<?php echo site_url('assets/js/daterangepicker/daterangepicker-bs3.css'); ?>">
 	<script src="<?php echo site_url('assets/js/fusioncharts.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.maps.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.theme.fusion.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.jqueryplugin.min.js'); ?>"></script>
 	<?php $this->load->view('_partials/dashboard_chart.php'); ?>
+	<?php $this->load->view('_partials/customer_claim_chart.php'); ?>
 	<?php $this->load->view('_partials/chatting'); ?>
+	<?php $this->load->view('_partials/change_chart'); ?>
 </body>
 </html>

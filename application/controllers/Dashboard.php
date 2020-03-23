@@ -44,6 +44,21 @@ class Dashboard extends CI_Controller {
 		$listing_user = $this->user_model->list_user();
 		$count_deliv = count($listing_deliv);
 		$count_user = count($listing_user) - 1;
+		$customers = $this->customer_model->customer_list();
+		// $get_customer = $this->customerclaim_model->get_customer();
+		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
+		$get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
+		$get_customer_claim_sort_by_date = $this->customerclaim_model->get_customer_claim_sort_by_date();
+		$count_customer_claim = count($get_customer_claim);
+		if(!empty($get_customer_claim_sort_by_date)) {
+			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
+			$getEnd = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date) - 1]->tgl_input;
+			$start = date('Y-m-d', strtotime($getStart));
+			$end = date('Y-m-d', strtotime($getEnd));
+		} else {
+			$start = null;
+			$end = null;
+		}
 		$merge_field_except = [];
 		for($i = 0; $i < count($mergeField); $i++) {
 			if($mergeField[$i] == "id_customer_claim") {
@@ -66,9 +81,26 @@ class Dashboard extends CI_Controller {
 			"slug" => $slug,
 			"count_deliv" => $count_deliv,
 			"customer" => $get_customer,
-			"count_user" => $count_user
+			"count_user" => $count_user,
+			'customers' => $customers,
+			'customer_claim' => $get_customer_claim,
+			'customer_claim_dist' => $get_customer_claim_distinct,
+			'count_customer_claim' => $count_customer_claim,
+			'start' => $start,
+			'end' => $end,
+			'slug' => $slug
 		);
 
+		// $data = array(
+		// 	'customers' => $customers,
+		// 	'customer' => $get_customer,
+		// 	'customer_claim' => $get_customer_claim,
+		// 	'customer_claim_dist' => $get_customer_claim_distinct,
+		// 	'count_customer_claim' => $count_customer_claim,
+		// 	'start' => $start,
+		// 	'end' => $end,
+		// 	'slug' => $slug
+		// );
 		$this->load->view('index', $data);
 	}
 
@@ -78,7 +110,7 @@ class Dashboard extends CI_Controller {
 		$count_customer_claim = count($get_customer_claim);
 		$count_deliv = count($listing_deliv);
 		$dataMonth = array();
-		$getYear = $_GET['year'];
+		$getYear = $_GET['year1'];
 		if($getYear != NULL) {
 			$year = $getYear;
 		} else {

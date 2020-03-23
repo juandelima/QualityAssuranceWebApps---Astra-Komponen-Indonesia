@@ -485,6 +485,170 @@
 
 			});
 
+			$("#ganti_customer, #ganti_customer2").change((e) => {
+            let val_id_customer = $(e.target).val();
+            let set_Id_Customer = $("#id_customer").val(val_id_customer);
+            let idCustomer = $("#id_customer").val();
+            $("#date_ranges").val(null);
+			$("#start").val(null);
+			$("#end").val(null);
+			let part = $("#part").val();
+			let year = $("#year").val();
+			let nama_customer = $("#ganti_customer option:selected").text();
+			let month = $("#month option:selected").text();
+			let date_range = $("#date_ranges").val();
+			if(nama_customer != "") {
+				nama_customer = "("+nama_customer+")";
+			} else {
+				nama_customer = "";
+			}
+			if(date_range != "") {
+				if(year != "" && month != "") {
+					caption = year+" - "+month;
+				} else if(year != "") {
+					caption = year;
+				} else if(month != "") {
+					caption = month;
+				} else {
+					caption = caption = formart_start+" - "+formart_end;
+				}
+			} else {
+				if(year != "" && month != "") {
+					caption = year+" - "+month;
+				} else if(year != "") {
+					caption = year;
+				} else if(month != "") {
+					caption = month;
+				} else {
+					caption = "<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>";
+				}
+			}
+
+			$.ajax({
+				type: "GET",
+				url: "<?php echo base_url('claim/customerclaim/filter_chart'); ?>",
+				data: $("#filter_chart").serialize(),
+				dataType: "JSON",
+				cache: false,
+				beforeSend: function(data_filter) {
+					$("#reloading").trigger('click');
+				},
+				success: function(data_filter) {
+					FusionCharts.ready(function() {
+						const chartData = [];
+						let obj = data_filter.result;
+						for(let key in obj) {
+							if(obj[key] > 0) {
+								let initData = {
+								    "label": key,
+									"value": obj[key],
+								}
+								chartData.push(initData);
+							}
+						}
+
+						let label;
+						if(chartData.length > 10) {
+							label = "rotate";
+						} else {
+							label = "wrap";
+						}
+						var revenueChart = new FusionCharts({
+							type: 'column2d',
+							renderAt: 'container',
+							width: '100%',
+							height: '490',
+							dataFormat: 'json',
+							dataSource: {
+                                "chart": {
+                                    "caption": "REJECTIONS "+part+" - QTY "+nama_customer,
+                                    "subCaption": caption,
+                                    "xAxisname": "Rejection Name",
+                                    "pYAxisName": "QTY",
+                                    "sYAxisName": "",
+                                    "numberPrefix": "",
+                                    "theme": "fusion",
+                                    "showValues": "0",
+                                    "exportenabled": "1",
+                                    "exportfilename": "Customer Claim Chart",
+                                    "labelDisplay": label,
+                                },
+                                "data": chartData
+						    }
+						}).render();
+					});
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					$("#error_text").text(textStatus +" "+errorThrown);
+					$("#modal-error-ajax").modal('show');
+				}
+			});
+
+			$.ajax({
+				type: "GET",
+				url: "<?php echo base_url('claim/customerclaim/chart_per_part'); ?>",
+				data: $("#filter_chart").serialize(),
+				dataType: "JSON",
+				cache: false,
+				beforeSend: function() {
+					$("#reloading_chart_part").trigger('click');
+				},
+				success: function(data_filter) {
+					FusionCharts.ready(function() {
+						const chartDataPart = [];
+						let obj = data_filter.result;
+						for(let key in obj) {
+							let defect = parseInt(obj[key]);
+							if(obj[key] > 0) {
+								let initData = {
+									"label": key,
+									"value": obj[key],
+								}
+								let dataValue = {
+									"value": obj[key],
+								}
+								chartDataPart.push(initData);
+							}
+						}
+						let label;
+						if(chartDataPart.length > 6) {
+							label = "rotate";
+						} else {
+							label = "wrap";
+						}
+						var revenueChart = new FusionCharts({
+							type: 'column2d',
+							renderAt: 'container_partChart',
+							width: '100%',
+							height: '490',
+							dataFormat: 'json',
+							dataSource: {
+								"chart": {
+                                    "caption": "ALL REJECTION PARTS - QTY "+nama_customer,
+                                    "subCaption": caption,
+                                    "xAxisname": "Part Name",
+                                    "pYAxisName": "QTY",
+                                    "sYAxisName": "",
+                                    "numberPrefix": "",
+                                    "theme": "fusion",
+                                    "showValues": "0",
+                                    "exportenabled": "1",
+                                    "exportfilename": "Customer Claim Chart",
+                                    "labelDisplay": label,
+                                    "palettecolors": "#29c3be"
+							    },
+							    "data":chartDataPart		
+							}
+						}).render();
+					});
+				},
+				error: function(jqXHR, textStatus, errorThrown) {
+					$("#error_text").text(textStatus +" "+errorThrown);
+					$("#modal-error-ajax").modal('show');
+				}
+				});
+			});
+		
 			$(".applyBtn").click(function() {
 				$("#year").val(null);
 				$("#month").val(null);

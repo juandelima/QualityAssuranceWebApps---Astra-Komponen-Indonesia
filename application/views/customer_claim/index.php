@@ -314,7 +314,6 @@
 								<label for="minimal-checkbox-1">Custom Range</label>
 							</div>
 						</div>
-						
 					</div>
 				</form>
 				<div class="row">
@@ -350,18 +349,6 @@
 										</div>
 									</div>
 									<div class="panel-body" id="body_chart_part">
-										<!-- <div class="col-sm-4" id="choose_status" style="margin-bottom: 10px;">
-											<div class="form-group">
-												<div class="col-sm-10" style="text-align:left;">
-													<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
-														<option></option>
-														<?php foreach($customers as $data) { ?>
-																<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
-														<?php } ?>
-													</select>
-												</div>
-											</div>
-										</div> -->
 										<div id="container_partChart"></div>
 									</div>
 								</div>

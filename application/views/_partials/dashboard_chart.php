@@ -24,6 +24,7 @@
 			// }
 		});
 
+		
 		$("#filter_year").on('change', 'select#year_to', function(e) {
 			let year_from = $('#year_from').val();
 			let year_to = $(e.target).val();
@@ -124,7 +125,7 @@
 			});
 		});
 
-		$("#filter_month").on('change', 'select#year', function(e) {
+		$("#filter_month").on('change', 'select#year1', function(e) {
 			let year = $(e.target).val();
 			if(year == "" || year == null) {
 				year ="<?php echo $year[count($year) - 1]; ?>";
@@ -229,7 +230,7 @@
 				caption_year = year_from+" - "+year_to;
 			}
 
-			let year = $("#year").val();
+			let year = $("#year1").val();
 			let caption;
 			if(year != "") {
 				caption = year;
@@ -347,7 +348,7 @@
 				caption_year = year_from+" - "+year_to;
 			}
 
-			let year = $("#year").val();
+			let year = $("#year1").val();
 			let caption;
 			if(year != "") {
 				caption = year;
@@ -681,7 +682,7 @@
 			let year_now = get_year_from + 9;
 			$("#monthly_customer").val(null);
 			$("#monthly_status_claim").val(null);
-			$("#year").val(year_now);
+			$("#year1").val(year_now);
 			start_monthly_chart();
 		});
 
@@ -698,7 +699,7 @@
 					caption_year = year_from+" - "+year_to;
 				}
 
-				let year = $("#year").val();
+				let year = $("#year1").val();
 				let caption;
 				
 				if(year != "") {
@@ -905,11 +906,10 @@
 					caption_year = year_from+" - "+year_to;
 				}
 
-				let year = $("#year").val();
+				let year = $("#year1").val();
 				let caption;
 				if(year != "") {
 					caption = year;
-					console.log(year);
 				} else {
 					caption = "<?php echo $year[count($year) - 1]; ?>";
 				}
