@@ -25,6 +25,10 @@
 		#chat, .chat-conversation, .sidebar-menu{
 			z-index: 9999!important;
 		}
+
+		/* .daterangepicker {
+			left: 800.903px!important;
+		} */
 	</style>
 </head>
 <body class="page-body skin-facebook" data-url="http://neon.dev">
@@ -91,6 +95,7 @@
 							<option>select a chart...</option>
 							<option value="1">Annual & Monthly Chart</option>
 							<option value="2">Parts & Defect Chart</option>
+							<option value="3">Daily Chart</option>
 						</select>
 					</div>
 				</div>
@@ -103,11 +108,27 @@
 									<form role="form" id="filter_status_claim" class="form-horizontal form-groups-bordered">
 										<div class="form-group">
 											<div class="col-sm-10">
-												<select name="status_claim" id="status_claim" class="selectboxit" data-first-option="false">
+												<select name="status_claim" id="status_claim1" class="selectboxit" data-first-option="false">
 													<option>claim / tukar guling...</option>
 													<option value="">All</option>
 													<option value="Claim">Claim</option>
 													<option value="Tukar Guling">Tukar Guling</option>
+												</select>
+											</div>
+										</div>
+									</form>
+								</div>
+
+								<div class="col-sm-3">
+									<form role="form" id="filter_proses" class="form-horizontal form-groups-bordered">
+										<div class="form-group">
+											<div class="col-sm-10">
+												<select name="proses" id="proses1" class="selectboxit" data-first-option="false">
+													<option>proses...</option>
+													<option value="" selected>Semua Proses</option>
+													<?php foreach($proses as $data) { ?>
+														<option value="<?php echo $data->proses; ?>"><?php echo $data->proses; ?></option>
+													<?php } ?>
 												</select>
 											</div>
 										</div>
@@ -157,6 +178,7 @@
 																<div class="form-group">
 																	<label class="col-sm-2 control-label">From</label>
 																	<div class="col-sm-10">
+																		<input type="hidden" name="annual_proses" id="annual_proses">
 																		<input type="hidden" name="annual_status_claim" id="annual_status_claim">
 																		<input type="hidden" name="annual_customer" id="annual_customer">
 																		<select name="year_from" id="year_from" class="select2" data-allow-clear="true" data-placeholder="Select year...">
@@ -220,6 +242,7 @@
 																<div class="form-group">
 																	<label class="col-sm-2 control-label">Year</label>
 																	<div class="col-sm-10">
+																	<input type="hidden" name="monthly_proses" id="monthly_proses">
 																	<input type="hidden" name="monthly_customer" id="monthly_customer">
 																	<input type="hidden" name="monthly_status_claim" id="monthly_status_claim">
 																		<select name="year1" id="year1" class="select2" data-allow-clear="true" data-placeholder="Select year...">
@@ -269,7 +292,20 @@
 											</div>
 										</div>
 									</div>
-									<div class="col-sm-2">
+									<div class="col-sm-2" id="choose_proses">
+										<div class="form-group">
+											<div class="col-sm-10" style="text-align:left;">
+												<select name="proses" id="proses" class="selectboxit" data-first-option="false">
+													<option>proses</option>
+													<option value="" selected>Semua Proses</option>
+													<?php foreach($proses as $data) { ?>
+														<option value="<?php echo $data->proses; ?>"><?php echo $data->proses; ?></option>
+													<?php } ?>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-2" id="choose_customer">
 										<div class="form-group">
 											<div class="col-sm-10" style="text-align:left;">
 												<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
@@ -337,86 +373,86 @@
 							</form>
 
 							<div class="row">
-					<div class="col-md-12">
-						<ul class="nav nav-tabs">
-							<li class="active">
-								<a href="#chart_parts" data-toggle="tab">
-									<span class="visible-xs"><i class="entypo-chart-line"></i></span>
-									<span class="hidden-xs">Parts Graph</span>
-								</a>
-							</li>
-							<li>
-								<a href="#chart_rejections" data-toggle="tab">
-									<span class="visible-xs"><i class="entypo-chart-bar"></i></span>
-									<span class="hidden-xs">Rejections Graph</span>
-								</a>
-							</li>
-						</ul>
+								<div class="col-md-12">
+									<ul class="nav nav-tabs">
+										<li class="active">
+											<a href="#chart_parts" data-toggle="tab">
+												<span class="visible-xs"><i class="entypo-chart-line"></i></span>
+												<span class="hidden-xs">Parts Chart</span>
+											</a>
+										</li>
+										<li>
+											<a href="#chart_rejections" data-toggle="tab">
+												<span class="visible-xs"><i class="entypo-chart-bar"></i></span>
+												<span class="hidden-xs">Defects Graph</span>
+											</a>
+										</li>
+									</ul>
 
-						<div class="tab-content">
-							<div class="tab-pane active" id="chart_parts">
-								<div class="panel panel-primary" id="chart_part" data-collapsed="0" style="margin-top: 25px;">
-									<div class="panel-heading">
-										<div class="panel-title">REJECTIONS PART GRAPH (QTY & PPM)</div>
-										<div class="panel-options">
-											<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
-											<a href="#" data-rel="reload" id="reloading_chart_part" class="loaded">
-												<!-- <i class="entypo-arrows-ccw"></i> -->
-											</a>
-											<a href="#" data-rel="reload" id="reset_part" class="loaded">
-												<i class="entypo-arrows-ccw"></i>
-											</a>
-										</div>
-									</div>
-									<div class="panel-body" id="body_chart_part">
-										<div id="container_partChart"></div>
-									</div>
-								</div>
-							</div>
-
-							<div class="tab-pane" id="chart_rejections">
-								<div class="panel panel-primary" data-collapsed="0" style="margin-top: 25px;">
-									<div class="panel-heading">
-										<div class="panel-title">REJECTIONS GRAPH (QTY & PPM)</div>
-										<div class="panel-options">
-											<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
-											<a href="#" data-rel="reload" id="reloading" class="loaded">
-												<!-- <i class="entypo-arrows-ccw"></i> -->
-											</a>
-
-											<a href="#" data-rel="reload" id="reset_rejection" class="loaded">
-												<i class="entypo-arrows-ccw"></i>
-											</a>
-										</div>
-									</div>
-									<div class="panel-body" id="body_chart_rejection">
-										<div class="col-sm-5" id="choose_part" style="margin-bottom: 10px;">
-											<div class="form-group">
-												<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
-												<div class="col-sm-10" style="text-align:left;">
-													<select name="select_part" id="select_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
-														<option></option>
-														<!-- <optgroup label="United States"> -->
-														<!-- <option value="">ALL PARTS</option> -->
-														<?php
-															foreach($customer_claim_dist as $data) {
-														?>
-															<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
-														<?php 
-															}
-														?>
-														</optgroup>
-													</select>
+									<div class="tab-content">
+										<div class="tab-pane active" id="chart_parts">
+											<div class="panel panel-primary" id="chart_part" data-collapsed="0" style="margin-top: 25px;">
+												<div class="panel-heading">
+													<div class="panel-title">REJECTIONS PART CHART (QTY)</div>
+													<div class="panel-options">
+														<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
+														<a href="#" data-rel="reload" id="reloading_chart_part" class="loaded">
+															<!-- <i class="entypo-arrows-ccw"></i> -->
+														</a>
+														<a href="#" data-rel="reload" id="reset_part" class="loaded">
+															<i class="entypo-arrows-ccw"></i>
+														</a>
+													</div>
+												</div>
+												<div class="panel-body" id="body_chart_part">
+													<div id="container_partChart"></div>
 												</div>
 											</div>
 										</div>
-										<div id="container"></div>
+
+										<div class="tab-pane" id="chart_rejections">
+											<div class="panel panel-primary" data-collapsed="0" style="margin-top: 25px;">
+												<div class="panel-heading">
+													<div class="panel-title">DEFECTS CHART (QTY)</div>
+													<div class="panel-options">
+														<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
+														<a href="#" data-rel="reload" id="reloading" class="loaded">
+															<!-- <i class="entypo-arrows-ccw"></i> -->
+														</a>
+
+														<a href="#" data-rel="reload" id="reset_rejection" class="loaded">
+															<i class="entypo-arrows-ccw"></i>
+														</a>
+													</div>
+												</div>
+												<div class="panel-body" id="body_chart_rejection">
+													<div class="col-sm-5" id="choose_part" style="margin-bottom: 10px;">
+														<div class="form-group">
+															<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
+															<div class="col-sm-10" style="text-align:left;">
+																<select name="select_part" id="select_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
+																	<option></option>
+																	<!-- <optgroup label="United States"> -->
+																	<!-- <option value="">ALL PARTS</option> -->
+																	<?php
+																		foreach($select_part_distinct as $data) {
+																	?>
+																		<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
+																	<?php 
+																		}
+																	?>
+																	</optgroup>
+																</select>
+															</div>
+														</div>
+													</div>
+													<div id="container"></div>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					</div>
-				</div>
 						</div>
 					</div>														
 				</div>

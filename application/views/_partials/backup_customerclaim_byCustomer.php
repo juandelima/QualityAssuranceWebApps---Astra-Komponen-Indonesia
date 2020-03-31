@@ -203,7 +203,7 @@
 		}
 
 
-
+		
 		// FILTER TABLE USING AJAX
 		function load_all_customer_claim() {
 			let new_date = new Date();
@@ -235,8 +235,8 @@
 						let due_date = `${year}-${month}-${day}`;
 						let date_now = Date.parse(dateNow);
 						let parse_due_date = Date.parse(due_date);
-						let ofp_upload = "<a href='javascript:;' id='modal-upload-ofp"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-upload'></i></a>";
-						let button_upload = "<a href='javascript:;' id='modal-upload-ppt"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-upload'></i></a>";
+						let ofp_upload = "<a href='javascript:;' id='modal-upload-ofp"+data[i].id_customer_claim+"' class='btn btn-blue btn-icon icon-left'> Upload<i class='entypo-upload'></i></a>";
+						let button_upload = "<a href='javascript:;' id='modal-upload-ppt"+data[i].id_customer_claim+"' class='btn btn-blue btn-icon icon-left'> Upload<i class='entypo-upload'></i></a>";
 						let pergantian_part;
 						let button_download;
 						let ofp_download;
@@ -244,22 +244,18 @@
 						let see_pfmea;
 						let sortir_stock;
 						if(data[i].ppt_file == null) {
-							// button_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ppt_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
-							button_download = "<a class='btn btn-success enable_pica"+data[i].id_customer_claim+"' id='download_ppt_file"+data[i].id_customer_claim+"' disabled><i class='entypo-eye'></i></a>";
+							button_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ppt_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
 						} else {
 							if(data[i].ppt_file != null) {
-								// button_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ppt/')?>"+data[i].ppt_file+"' class='btn btn-success btn-icon icon-left' download='PART - "+data[i].nama_part+"' id='download_ppt_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
-								button_download  = "<a href='javascript:;' id='download_ppt_file"+data[i].id_customer_claim+"' class='btn btn-success'><i class='entypo-eye'></i></a>";
+								button_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ppt/')?>"+data[i].ppt_file+"' class='btn btn-success btn-icon icon-left' download='PART - "+data[i].nama_part+"' id='download_ppt_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
 							}		
 						}
 
 						if(data[i].ofp == null) {
-							// ofp_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ofp_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
-							ofp_download = "<a class='btn btn-red enable_ofp"+data[i].id_customer_claim+"' id='download_ofp_file"+data[i].id_customer_claim+"' disabled><i class='entypo-eye'></i></a>";
+							ofp_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ofp_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
 						} else {
 							if(data[i].ofp != null) {
-								// ofp_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ofp/')?>"+data[i].ofp+"' class='btn btn-success btn-icon icon-left' download='OFP - "+data[i].nama_part+"' id='download_ofp_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
-								ofp_download  = "<a href='javascript:;' id='download_ofp_file"+data[i].id_customer_claim+"' class='btn btn-red'><i class='entypo-eye'></i></a>";
+								ofp_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ofp/')?>"+data[i].ofp+"' class='btn btn-success btn-icon icon-left' download='OFP - "+data[i].nama_part+"' id='download_ofp_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
 							}		
 						}
 
@@ -294,7 +290,6 @@
 						if(data[i].card == "#N/A") {
 							data[i].card = '-'
 						}
-
 						table_customer_claim.row.add([
 							''+uniq+'',
 							''+data[i].tgl_input+'',
@@ -380,28 +375,6 @@
 								sign += 1;
 
 								let table_file_pfmea = $("#table_file_pfmea"+id_claim).DataTable({
-										"oLanguage": {
-											"sSearch": "Search:",
-											"oPaginate": {
-												"sPrevious": "Previous",
-												"sNext": "Next"
-											}
-										},
-										"lengthChange": false,
-								});
-								
-								let table_file_pica = $("#table_file_pica"+id_claim).DataTable({
-										"oLanguage": {
-											"sSearch": "Search:",
-											"oPaginate": {
-												"sPrevious": "Previous",
-												"sNext": "Next"
-											}
-										},
-										"lengthChange": false,
-								});
-
-								let table_file_ofp = $("#table_file_ofp"+id_claim).DataTable({
 										"oLanguage": {
 											"sSearch": "Search:",
 											"oPaginate": {
@@ -685,61 +658,6 @@
 									});
 								});
 
-								$("#table_customer_claim").on('click', '#download_ofp_file'+id_claim+'', () => {
-									$.ajax({
-										type: "GET",
-										url: "<?php echo base_url('claim/customerclaim/get_ofp_files/'); ?>"+id_claim+"",
-										dataType: "JSON",
-										beforeSend: () => {
-											table_file_ofp.clear().draw();
-										},
-										success: (data) => {
-											for(let index in data) {
-												let nomor = parseInt(index) + 1;
-												let button_download_files = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ofp/')?>"+data[index].nama_file+"' class='btn btn-blue'><i class='entypo-download'></i></a>";
-												table_file_ofp.row.add([
-													''+nomor+'',
-													''+data[index].tgl_upload+'',
-													''+data[index].nama_file+'',
-													''+button_download_files+''
-												]).draw(false);
-											}
-										},
-										error: (jqXHR, textStatus, errorThrown) => {
-											alert(textStatus +" "+errorThrown);
-										}
-									});
-									$("#modal_view_ofp_files"+id_claim).modal('show');
-								});
-								
-
-								$("#table_customer_claim").on('click', '#download_ppt_file'+id_claim+'', () => {
-									$.ajax({
-										type: "GET",
-										url: "<?php echo base_url('claim/customerclaim/get_pica_files/'); ?>"+id_claim+"",
-										dataType: "JSON",
-										beforeSend: () => {
-											table_file_pica.clear().draw();
-										},
-										success: (data) => {
-											for(let index in data) {
-												let nomor = parseInt(index) + 1;
-												let button_download_files = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/pica/')?>"+data[index].nama_file+"' class='btn btn-blue'><i class='entypo-download'></i></a>";
-												table_file_pica.row.add([
-													''+nomor+'',
-													''+data[index].tgl_upload+'',
-													''+data[index].nama_file+'',
-													''+button_download_files+''
-												]).draw(false);
-											}
-										},
-										error: (jqXHR, textStatus, errorThrown) => {
-											alert(textStatus +" "+errorThrown);
-										}
-									});
-									$("#modal_view_pica_files"+id_claim).modal('show');
-								});
-
 								$("#table_customer_claim").on('click', '#modal_files'+id_claim+'', function() {
 									$.ajax({
 										type: "GET",
@@ -795,6 +713,7 @@
 										complete: (data) => {
 											let data_json = JSON.parse(data.responseText);
 											let jsonResponse = data_json.select_claim;
+											let fileName = data_json.file_name;
 											var opts = {
 												"closeButton": true,
 												"debug": false,
@@ -812,6 +731,7 @@
 											function successUpload() {
 												toastr.success('FILE PICA BERHASIL DIUPLOAD', "SUCCESS", opts);
 												$("#download_ppt_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
+												$("#download_ppt_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ppt/'); ?>"+fileName+"");
 												if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
 													$("#status_claim"+jsonResponse.id_customer_claim).text("");
 													$("#status_claim"+jsonResponse.id_customer_claim).text("CLOSE");
@@ -849,6 +769,8 @@
 										success: (data) => {
 											let data_json = JSON.parse(data);
 											let select_claim = data_json.select_claim;
+											let due_date = Date.parse(data_json.due_date);
+											let dateNow = Date.parse(data_json.dateNow);
 											function closeModal() {
 												$("#upload-ofp"+select_claim.id_customer_claim).modal('hide');
 											}
@@ -857,6 +779,7 @@
 										complete: (data) => {
 											let data_json = JSON.parse(data.responseText);
 											let jsonResponse = data_json.select_claim;
+											let fileName = data_json.file_name;
 											var opts = {
 												"closeButton": true,
 												"debug": false,
@@ -874,6 +797,7 @@
 											function successUpload() {
 												toastr.success('FILE OFP BERHASIL DIUPLOAD', "SUCCESS", opts);
 												$("#download_ofp_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
+												$("#download_ofp_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ofp/'); ?>"+fileName+"");
 												if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
 													$("#status_claim"+jsonResponse.id_customer_claim).text("");
 													$("#status_claim"+jsonResponse.id_customer_claim).text("CLOSE");
@@ -1115,33 +1039,27 @@
 							let due_date = `${year}-${month}-${day}`;
 							let date_now = Date.parse(dateNow);
 							let parse_due_date = Date.parse(due_date);
-
-							let ofp_upload = "<a href='javascript:;' id='modal-upload-ofp"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-upload'></i></a>";
-							let button_upload = "<a href='javascript:;' id='modal-upload-ppt"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-upload'></i></a>";
+							let ofp_upload = "<a href='javascript:;' id='modal-upload-ofp"+data[i].id_customer_claim+"' class='btn btn-blue btn-icon icon-left'> Upload<i class='entypo-upload'></i></a>";
+							let button_upload = "<a href='javascript:;' id='modal-upload-ppt"+data[i].id_customer_claim+"' class='btn btn-blue btn-icon icon-left'> Upload<i class='entypo-upload'></i></a>";
 							let pergantian_part;
 							let button_download;
 							let ofp_download;
 							let upload_pfmea = "<a href='javascript:;' id='modal-pfmea"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-upload'></i></a>";
-							
 							let see_pfmea;
 							let sortir_stock;
 							if(data[i].ppt_file == null) {
-							// button_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ppt_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
-							button_download = "<a class='btn btn-success enable_pica"+data[i].id_customer_claim+"' id='download_ppt_file"+data[i].id_customer_claim+"' disabled><i class='entypo-eye'></i></a>";
+								button_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ppt_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
 							} else {
 								if(data[i].ppt_file != null) {
-									// button_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ppt/')?>"+data[i].ppt_file+"' class='btn btn-success btn-icon icon-left' download='PART - "+data[i].nama_part+"' id='download_ppt_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
-									button_download  = "<a href='javascript:;' id='download_ppt_file"+data[i].id_customer_claim+"' class='btn btn-success'><i class='entypo-eye'></i></a>";
+									button_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ppt/')?>"+data[i].ppt_file+"' class='btn btn-success btn-icon icon-left' download='PART - "+data[i].nama_part+"' id='download_ppt_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
 								}		
 							}
 
 							if(data[i].ofp == null) {
-								// ofp_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ofp_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
-								ofp_download = "<a class='btn btn-red enable_ofp"+data[i].id_customer_claim+"' id='download_ofp_file"+data[i].id_customer_claim+"' disabled><i class='entypo-eye'></i></a>";
+								ofp_download = "<a disabled class='btn btn-success btn-icon icon-left' id='download_ofp_file"+data[i].id_customer_claim+"'> Download<i class='entypo-download'></i></a>";
 							} else {
 								if(data[i].ofp != null) {
-									// ofp_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ofp/')?>"+data[i].ofp+"' class='btn btn-success btn-icon icon-left' download='OFP - "+data[i].nama_part+"' id='download_ofp_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
-									ofp_download  = "<a href='javascript:;' id='download_ofp_file"+data[i].id_customer_claim+"' class='btn btn-red'><i class='entypo-eye'></i></a>";
+									ofp_download = "<a target='_blank' href='<?php echo base_url('assets/claim_customer/ofp/')?>"+data[i].ofp+"' class='btn btn-success btn-icon icon-left' download='OFP - "+data[i].nama_part+"' id='download_ofp_file"+data[i].id_customer_claim+"'>Download <i class='entypo-download'></i></a>";
 								}		
 							}
 

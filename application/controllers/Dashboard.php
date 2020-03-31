@@ -47,8 +47,10 @@ class Dashboard extends CI_Controller {
 		$customers = $this->customer_model->customer_list();
 		// $get_customer = $this->customerclaim_model->get_customer();
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
-		$get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
+		// $get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
+		$select_part_distinct = $this->customerclaim_model->select_part_distinct();
 		$get_customer_claim_sort_by_date = $this->customerclaim_model->get_customer_claim_sort_by_date();
+		$get_proses = $this->customerclaim_model->get_proses();
 		$count_customer_claim = count($get_customer_claim);
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
@@ -84,11 +86,12 @@ class Dashboard extends CI_Controller {
 			"count_user" => $count_user,
 			'customers' => $customers,
 			'customer_claim' => $get_customer_claim,
-			'customer_claim_dist' => $get_customer_claim_distinct,
+			'select_part_distinct' => $select_part_distinct,
 			'count_customer_claim' => $count_customer_claim,
 			'start' => $start,
 			'end' => $end,
-			'slug' => $slug
+			'slug' => $slug,
+			'proses' => $get_proses
 		);
 
 		// $data = array(
@@ -137,6 +140,13 @@ class Dashboard extends CI_Controller {
 			$status_claim = null;
 		}
 
+		$monthly_proses = $_GET['monthly_proses'];
+		if($monthly_proses != null) {
+			$proses = $monthly_proses;
+		} else {
+			$proses = null;
+		}
+
 		$monthly_customer = $_GET['monthly_customer'];
 		if($monthly_customer != null) {
 			$customer = $monthly_customer;
@@ -148,7 +158,7 @@ class Dashboard extends CI_Controller {
 		$ppm = [];
 		for($i = 0; $i < count($months); $i++) {
 			$month = date("m", strtotime($months[$i]));
-			$rejection_per_year_month = $this->customerclaim_model->montly_rejection($year, $month, $status_claim, $customer);
+			$rejection_per_year_month = $this->customerclaim_model->montly_rejection($year, $month, $status_claim, $customer, $proses);
 			$get_deliv_montly = $this->delivery_model->monthly_ppm($year, $month);
 			$count_chart_rejection_claim_month = count($rejection_per_year_month);
 			$sumByMonth = 0;
@@ -199,6 +209,7 @@ class Dashboard extends CI_Controller {
 		$count_merge_field = count($merge_field_except);
 		$annual_status_claim = $_GET['annual_status_claim'];
 		$annual_customer = $_GET['annual_customer'];
+		$annual_proses = $_GET['annual_proses'];
 		$get_year_from = $_GET['year_from'];
 		$get_year_to = $_GET['year_to'];
 		if($annual_status_claim != NULL) {
@@ -207,6 +218,11 @@ class Dashboard extends CI_Controller {
 			$status_claim = null;
 		}
 
+		if($annual_proses != NULL) {
+			$proses = $annual_proses;
+		} else {
+			$proses = null;
+		}
 		if($annual_customer != NULL) {
 			$customer = $annual_customer;
 		} else {
@@ -224,7 +240,7 @@ class Dashboard extends CI_Controller {
 		$dataYear = array();
 		$ppm = [];
 		for($i = $year_from; $i <= $year_to; $i++) {
-			$chart_rejection_claim = $this->customerclaim_model->rejection_per_year_month($i, $status_claim, $customer);
+			$chart_rejection_claim = $this->customerclaim_model->rejection_per_year_month($i, $status_claim, $customer, $proses);
 			$count_chart_rejection_claim = count($chart_rejection_claim);
 			$get_deliv_annual = $this->delivery_model->annual_ppm($i);
 			$sumByYear = 0;

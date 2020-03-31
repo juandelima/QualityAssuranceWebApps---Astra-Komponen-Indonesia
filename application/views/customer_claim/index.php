@@ -128,6 +128,7 @@
 			display: none;
 		}
 
+		
 		.show-main-table {
 			display: block;
 		}
@@ -235,169 +236,7 @@
 							</div>
 						<?php } ?>
 					</div>
-					<div class="row">
-						<div class="col-sm-2" id="choose_status">
-							<div class="form-group">
-								<div class="col-sm-10" style="text-align:left;">
-									<select name="status_claim" id="status_claim" class="selectboxit" data-first-option="false">
-										<option>claim / tukar guling...</option>
-										<option value="" selected>All</option>
-										<option value="Claim">Claim</option>
-										<option value="Tukar Guling">Tukar Guling</option>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-3" id="choose_status">
-							<div class="form-group">
-								<div class="col-sm-10" style="text-align:left;">
-									<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
-										<option></option>
-										<?php foreach($customers as $data) { ?>
-												<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
-										<?php } ?>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-2" id="year_list">
-							<div class="form-group">
-								<!-- <label class="col-sm-2 control-label">Year</label> -->
-								<div class="col-sm-10">
-									<select name="year" id="year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
-										<option></option>
-										<?php
-											$firstYear = (int)date('Y') - 9;
-											$lastYear = $firstYear + 9;
-											for($i = $firstYear; $i <= $lastYear; $i++) { 
-										?>
-												<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-										<?php
-											}
-										?>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-2" id="month_list">
-							<div class="form-group">
-								<!-- <label class="col-sm-2 control-label">Month</label> -->
-								<div class="col-sm-10">
-									<select name="month" id="month" class="select2" data-allow-clear="true" data-placeholder="Select month...">
-										<option></option>
-										<?php
-											 $months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", 
-											"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-											for($i = 0; $i < count($months); $i++) { 
-										?>
-												<option value="<?php echo $months[$i]; ?>-<?php echo date('Y'); ?>"><?php echo $months[$i]; ?></option>
-										<?php
-											}
-										?>
-									</select>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-2" id="date_custome" style="display: none;">
-							<div class="form-group">
-								<label class="col-sm-2 control-label">Date</label>
-								<div class="col-sm-10">
-									<input type="hidden" name="start" id="start"/>
-									<input type="hidden" name="end" id="end"/>
-									<input type="text" id="date_ranges" class="form-control daterange"/>
-								</div>
-							</div>
-						</div>
-						<div class="col-sm-2" id="custome_range">
-							<div class="form-group" style="margin-top: 5px;">
-								<input type="checkbox" class="icheck" id="custom_date">
-								<label for="minimal-checkbox-1">Custom Range</label>
-							</div>
-						</div>
-					</div>
 				</form>
-				<div class="row">
-					<div class="col-md-12">
-						<ul class="nav nav-tabs">
-							<li class="active">
-								<a href="#chart_parts" data-toggle="tab">
-									<span class="visible-xs"><i class="entypo-chart-line"></i></span>
-									<span class="hidden-xs">Parts Graph</span>
-								</a>
-							</li>
-							<li>
-								<a href="#chart_rejections" data-toggle="tab">
-									<span class="visible-xs"><i class="entypo-chart-bar"></i></span>
-									<span class="hidden-xs">Rejections Graph</span>
-								</a>
-							</li>
-						</ul>
-
-						<div class="tab-content">
-							<div class="tab-pane active" id="chart_parts">
-								<div class="panel panel-primary" id="chart_part" data-collapsed="0" style="margin-top: 25px;">
-									<div class="panel-heading">
-										<div class="panel-title">REJECTIONS PART GRAPH (QTY & PPM)</div>
-										<div class="panel-options">
-											<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
-											<a href="#" data-rel="reload" id="reloading_chart_part" class="loaded">
-												<!-- <i class="entypo-arrows-ccw"></i> -->
-											</a>
-											<a href="#" data-rel="reload" id="reset_part" class="loaded">
-												<i class="entypo-arrows-ccw"></i>
-											</a>
-										</div>
-									</div>
-									<div class="panel-body" id="body_chart_part">
-										<div id="container_partChart"></div>
-									</div>
-								</div>
-							</div>
-
-							<div class="tab-pane" id="chart_rejections">
-								<div class="panel panel-primary" data-collapsed="0" style="margin-top: 25px;">
-									<div class="panel-heading">
-										<div class="panel-title">REJECTIONS GRAPH (QTY & PPM)</div>
-										<div class="panel-options">
-											<a href="#" id="part_chart" data-rel="collapse"><i class="entypo-down-open"></i></a>
-											<a href="#" data-rel="reload" id="reloading" class="loaded">
-												<!-- <i class="entypo-arrows-ccw"></i> -->
-											</a>
-
-											<a href="#" data-rel="reload" id="reset_rejection" class="loaded">
-												<i class="entypo-arrows-ccw"></i>
-											</a>
-										</div>
-									</div>
-									<div class="panel-body" id="body_chart_rejection">
-										<div class="col-sm-5" id="choose_part" style="margin-bottom: 10px;">
-											<div class="form-group">
-												<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
-												<div class="col-sm-10" style="text-align:left;">
-													<select name="select_part" id="select_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
-														<option></option>
-														<!-- <optgroup label="United States"> -->
-														<!-- <option value="">ALL PARTS</option> -->
-														<?php
-															foreach($customer_claim_dist as $data) {
-														?>
-															<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
-														<?php 
-															}
-														?>
-														</optgroup>
-													</select>
-												</div>
-											</div>
-										</div>
-										<div id="container"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
 				<form role="form" id="filter_table" class="form-horizontal form-groups-bordered" style="margin-top: 20px;">
 					<div class="row">
 						<div class="col-sm-3">
@@ -528,7 +367,7 @@
 								
 							</table>
 						</div>
-						<div id="main-table">
+						<div id="main-table" class="hide-main-table">
 							<table class="table table-bordered nowrap" id="table_customer_claim">
 								<thead>
 									<tr>
@@ -560,6 +399,7 @@
 						foreach($customer_claim as $data) {
 							$id = $data->id_customer_claim;
 					?>
+					
 					<div class="modal fade" id="upload-ppt<?php echo $id; ?>">
 						<div class="modal-dialog" style="width: 50%;">
 							<div class="modal-content">
@@ -572,9 +412,9 @@
 										<div class="row" id="spinners">
 											<div class="col-md-12">
 												<div class="form-group">
-													<label class="col-sm-3 control-label">File PPT</label>
+													<label class="col-sm-3 control-label">PICA File</label>
 													<div class="col-sm-5">
-														<input type="file" id="nama_file<?php echo $id; ?>" name="ppt_file" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
+														<input required type="file" id="nama_file<?php echo $id; ?>" name="ppt_file[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
 													</div>
 												</div>
 											</div>
@@ -595,6 +435,39 @@
 							</div> 
 						</div>
 					</div>
+					
+
+					<div class="modal fade" id="modal_view_pica_files<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 90%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">PICA FILES - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<div class="modal-body">
+									<table class="table table-bordered" id="table_file_pica<?php echo $id; ?>">
+										<thead>
+											<tr>
+												<th width="1" style="text-align: center;">No</th>
+												<th width="50" style="text-align: center;">Tgl Upload</th>
+												<th style="text-align: center;">Nama File</th>
+												<th width="1" style="text-align: center;">Link</th>
+											</tr>
+										</thead>
+										
+										<tbody>
+											
+										</tbody>
+									</table>
+								</div>
+								<div class="modal-footer">
+									<button type="button" id="close_table_pica<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
 
 					<div class="modal fade" id="upload-ofp<?php echo $id; ?>">
 						<div class="modal-dialog" style="width: 50%;">
@@ -610,7 +483,7 @@
 												<div class="form-group">
 													<label class="col-sm-3 control-label">File</label>
 													<div class="col-sm-5">
-														<input type="file" id="nama_file_ofp<?php echo $id; ?>" name="nama_file_ofp" accept="*" class="form-control file2 inline btn btn-primary" required data-label="<i class='glyphicon glyphicon-file'></i> Browse" />
+														<input required type="file" id="nama_file_ofp<?php echo $id; ?>" name="nama_file_ofp[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
 													</div>
 												</div>
 											</div>
@@ -631,6 +504,37 @@
 							</div> 
 						</div>
 					</div>
+
+					<div class="modal fade" id="modal_view_ofp_files<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 90%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">OFP FILES - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<div class="modal-body">
+									<table class="table table-bordered" id="table_file_ofp<?php echo $id; ?>">
+										<thead>
+											<tr>
+												<th width="1" style="text-align: center;">No</th>
+												<th width="50" style="text-align: center;">Tgl Upload</th>
+												<th style="text-align: center;">Nama File</th>
+												<th width="1" style="text-align: center;">Link</th>
+											</tr>
+										</thead>
+										
+										<tbody>
+											
+										</tbody>
+									</table>
+								</div>
+								<div class="modal-footer">
+									<button type="button" id="close_table_ofp<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
 
 					<div class="modal fade" id="pergantian-part<?php echo $id; ?>">
 						<div class="modal-dialog" style="width: 50%;">
@@ -927,8 +831,7 @@
 	<script src="<?php echo site_url('assets/js/fusioncharts.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.theme.fusion.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.jqueryplugin.min.js'); ?>"></script>
-	<script src="http://malsup.github.com/jquery.form.js"></script> 
-	<?php $this->load->view('_partials/customer_claim_chart.php'); ?>
+	<script src="http://malsup.github.com/jquery.form.js"></script>
 	<?php $this->load->view('_partials/filter_customerclaim_byCustomer.php'); ?>
 	<?php $this->load->view('_partials/js_index_customer_claim.php'); ?>
 </body>

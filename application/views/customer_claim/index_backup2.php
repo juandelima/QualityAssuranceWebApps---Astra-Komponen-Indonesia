@@ -41,6 +41,7 @@
 			background-repeat: no-repeat;
 			animation: loading 1s infinite;
 		}
+	
 
 		.col-sm-1 {
 			width: 45px;
@@ -74,7 +75,7 @@
     		z-index: 99999 !important;
 		}
 
-		.sidebar-menu{
+		#chat, .chat-conversation, .sidebar-menu{
 			z-index: 9999!important;
 		}
 
@@ -143,6 +144,19 @@
 			text-align: center;
 			font-weight: bolder;
 		}
+
+		table.dataTable.no-footer {
+    		border-bottom: 1px solid #f9f9f9 !important;
+		}
+
+		.label {
+			font-size: 13px;
+			margin-bottom: 8px;
+		}
+
+		.status {
+			font-weight: bolder;
+		}
 	</style>
 </head>
 <body class="page-body skin-facebook" data-url="http://neon.dev">
@@ -203,6 +217,7 @@
 				?>
 				<form role="form" id="filter_chart" class="form-horizontal form-groups-bordered">
 					<input type="hidden" name="id_customer" id="id_customer" value=""/>
+					<input type="hidden" name="part" id="part" value=""/>
 					<div class="row" style="margin-bottom: 10px;">
 						<?php if($this->session->userdata['role'] != 'User') { ?>
 							<div class="col-sm-6">
@@ -233,27 +248,18 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-sm-3" id="choose_part">
+						<div class="col-sm-3" id="choose_status">
 							<div class="form-group">
-								<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
 								<div class="col-sm-10" style="text-align:left;">
-									<select name="part" id="part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
+									<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
 										<option></option>
-										<!-- <optgroup label="United States"> -->
-										<!-- <option value="">ALL PARTS</option> -->
-										<?php
-											foreach($customer_claim_dist as $data) {
-										?>
-											<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
-										<?php 
-											}
-										?>
-										</optgroup>
+										<?php foreach($customers as $data) { ?>
+												<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
+										<?php } ?>
 									</select>
 								</div>
 							</div>
 						</div>
-
 						<div class="col-sm-2" id="year_list">
 							<div class="form-group">
 								<!-- <label class="col-sm-2 control-label">Year</label> -->
@@ -308,7 +314,6 @@
 								<label for="minimal-checkbox-1">Custom Range</label>
 							</div>
 						</div>
-						
 					</div>
 				</form>
 				<div class="row">
@@ -344,18 +349,6 @@
 										</div>
 									</div>
 									<div class="panel-body" id="body_chart_part">
-										<div class="col-sm-4" id="choose_status" style="margin-bottom: 10px;">
-											<div class="form-group">
-												<div class="col-sm-10" style="text-align:left;">
-													<select name="ganti_customer" id="ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
-														<option></option>
-														<?php foreach($customers as $data) { ?>
-																<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
-														<?php } ?>
-													</select>
-												</div>
-											</div>
-										</div>
 										<div id="container_partChart"></div>
 									</div>
 								</div>
@@ -377,14 +370,22 @@
 										</div>
 									</div>
 									<div class="panel-body" id="body_chart_rejection">
-										<div class="col-sm-4" id="choose_status" style="margin-bottom: 10px;">
+										<div class="col-sm-5" id="choose_part" style="margin-bottom: 10px;">
 											<div class="form-group">
+												<!-- <label class="col-sm-1 control-label" style="text-align:left;">Part</label> -->
 												<div class="col-sm-10" style="text-align:left;">
-													<select name="ganti_customer2" id="ganti_customer2" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
+													<select name="select_part" id="select_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
 														<option></option>
-														<?php foreach($customers as $data) { ?>
-																<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
-														<?php } ?>
+														<!-- <optgroup label="United States"> -->
+														<!-- <option value="">ALL PARTS</option> -->
+														<?php
+															foreach($customer_claim_dist as $data) {
+														?>
+															<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
+														<?php 
+															}
+														?>
+														</optgroup>
 													</select>
 												</div>
 											</div>
@@ -528,7 +529,7 @@
 							</table>
 						</div>
 						<div id="main-table">
-							<table class="table table-bordered display nowrap" id="table_customer_claim">
+							<table class="table table-bordered nowrap" id="table_customer_claim">
 								<thead>
 									<tr>
 										<th width="1" style="text-align: center;">No</th>
@@ -683,7 +684,173 @@
 							</div> 
 						</div>
 					</div>
+					
+					<div class="modal fade" id="sortir-stock<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">SORTIR / REPAIR PART <b><?php echo $data->nama_part; ?></b></h4>
+								</div>
 
+								<form role="form" class="form-horizontal" id="create_sortir_stock<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="#" accept-charset="utf-8">
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-md-12">
+												<div class="form-group">
+													<label class="col-sm-2 control-label" style="text-align:left;">Tanggal</label>
+													<div class="col-sm-7">
+														<div class="input-group">
+															<input type="text" class="form-control datepicker" name="tgl_sortir" id="tgl_sortir<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
+															<div class="input-group-addon">
+																<a href="#"><i class="entypo-calendar"></i></a>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-2 control-label" style="text-align:left;">Nama Part</label>
+													<div class="col-sm-7">
+														<input type="text" class="form-control" name="nama_part_sortir" id="nama_part_sortir<?php echo $id; ?>" placeholder="4953444424" value="<?php echo $data->nama_part; ?>" required readonly>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-2 control-label" style="text-align:left;">Type</label>
+													<div class="col-sm-7">
+														<input type="text" class="form-control" name="type" id="type<?php echo $id; ?>" placeholder="problem..." value="<?php echo $data->type; ?>" required readonly>
+													</div>
+												</div>
+												<div class="form-group" style="padding: 10px;">
+													<table class="table table-bordered">
+														<thead>
+															<tr>
+																<th><b>Problem</b></th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td class="padding-sm" id="problem_part<?php echo $id; ?>">
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div class="form-group" style="padding: 10px;" style="margin-top: -10px;">
+													<table class="table table-bordered">
+														<thead>
+															<tr>
+																<th><b>Stock</b></th>
+																<th><b>Ok</b></th>
+																<th><b>Ng</b></th>
+																<th><b>Sisa</b></th>
+															</tr>
+														</thead>
+
+														<tbody>
+															<tr>
+																<td width="150">
+																	<div class="input-spinner">
+																		<button type="button" class="btn btn-success btn-sm" id="btn_min_stock<?php echo $id; ?>">-</button>
+																			<input name="stock" id="stock<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_stock<?php echo $id; ?>">+</button>
+																	</div>
+																</td>
+																<td width="150">
+																	<div class="input-spinner">
+																		<button type="button" class="btn btn-success btn-sm" id="btn_min_ok<?php echo $id; ?>">-</button>
+																		<input name="ok" id="ok<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_ok<?php echo $id; ?>">+</button>
+																	</div>
+																</td>
+																<td width="150">
+																	<div class="input-spinner">
+																		<button type="button" class="btn btn-success btn-sm" id="btn_min_ng<?php echo $id; ?>">-</button>
+																		<input name="ng" id="ng<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_ng<?php echo $id; ?>">+</button>
+																	</div>
+																</td>
+																<td width="150">
+																	<input name="sisa" id="sisa<?php echo $id; ?>" type="text" class="form-control input-sm" value="0" readonly/>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="close_sortir<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" id="simpan_sortir<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<div class="modal fade" id="pfmea<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 50%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">PFMEA - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<form role="form" class="form-horizontal" id="pfmea_file<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="<?php echo base_url('claim/powerpoint/upload_pfmea/'.$id); ?>" accept-charset="utf-8">
+									<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
+									<div class="modal-body">
+										<div class="row">
+											<div class="col-md-12" style="margin-bottom: 10px;">
+												<input required type="file" id="nama_file_pfmea<?php echo $id; ?>" name="file_pfmea[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+											</div>
+											<div class="col-md-12">
+												<div class="progress progress-striped active">
+													<div id="progress-bar-pfmea<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+														<span id="progress-pfmea<?php echo $id; ?>"></span>
+													</div>
+												</div>
+											</div> 
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" id="close_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+										<button type="submit" class="btn btn-primary">Simpan</button>
+									</div>
+								</form>
+							</div> 
+						</div>
+					</div>
+					
+					<div class="modal fade" id="modal_view_files<?php echo $id; ?>">
+						<div class="modal-dialog" style="width: 90%;">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title">PFMEA FILES - <?php echo $data->nama_part; ?></h4>
+								</div>
+								<div class="modal-body">
+									<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>">
+										<thead>
+											<tr>
+												<th width="1" style="text-align: center;">No</th>
+												<th width="50" style="text-align: center;">Tgl Upload</th>
+												<th style="text-align: center;">Nama File</th>
+												<th width="1" style="text-align: center;">Link</th>
+											</tr>
+										</thead>
+										
+										<tbody>
+											
+										</tbody>
+									</table>
+								</div>
+								<div class="modal-footer">
+									<button type="button" id="close_table_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
 					<?php
 						$index++;
 					    }
@@ -751,6 +918,7 @@
 				</div>
 				<?php $this->load->view('_partials/footer.php'); ?>
 			</div>
+			<?php $this->load->view('_partials/lists_chat.php'); ?>
 	</div>
 	<link rel="stylesheet" href="<?php echo site_url('assets/js/daterangepicker/daterangepicker-bs3.css'); ?>">
 	<?php $this->load->view('_partials/js.php'); ?>
@@ -762,251 +930,6 @@
 	<script src="http://malsup.github.com/jquery.form.js"></script> 
 	<?php $this->load->view('_partials/customer_claim_chart.php'); ?>
 	<?php $this->load->view('_partials/filter_customerclaim_byCustomer.php'); ?>
-	<script>
-		// UPLOAD FILE
-		jQuery(document).ready(function($) {
-			$("#form_delivery").find("#btn_min").attr("disabled", true);
-			$("#form_delivery").find("#btn_plus").click(function add() {
-				$("#form_delivery").find("#btn_min").attr("disabled", false);
-			});
-
-			$("#form_delivery").find("#btn_min").click(function subst() {
-				let val_qty = $("#qty").val();
-				if(val_qty < 2) {
-					$("#form_delivery").find("#btn_min").attr("disabled", true);
-				}
-			});
-			$("#input_delivery").on('click', '#save_qty', function(e) {
-				e.preventDefault();
-				$.ajax({
-					url: "<?php echo base_url('claim/customerclaim/ahm_delivery'); ?>",
-					type: "POST",
-					data: $("#input_delivery").serialize(),
-					dataType: "JSON",
-					cache: false,
-					success: function(data) {
-						var opts = {
-							"closeButton": true,
-							"debug": false,
-							"positionClass": "toast-top-right",
-							"onclick": null,
-							"showDuration": "300",
-							"hideDuration": "1000",
-							"timeOut": "5000",
-							"extendedTimeOut": "1000",
-							"showEasing": "swing",
-							"hideEasing": "linear",
-							"showMethod": "fadeIn",
-							"hideMethod": "fadeOut"
-						};
-						toastr.success('DELIVERY SUKSES TERSIMPAN', "SUCCESS", opts);
-
-					},
-					complete: function() {
-						$("#tgl_deliv").val(null);
-						$("#qty").val(1);
-						$("#form_delivery").find("#btn_min").attr("disabled", true);
-						$("#form_delivery").modal('hide');
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						alert(textStatus +" "+errorThrown);
-						// $("#error_text").text(textStatus +" "+errorThrown);
-						// $("#modal-error-ajax").modal('show');;
-					}
-				});
-			});
-			<?php
-				$index = 0;
-				foreach($customer_claim as $data) {
-					$id = $data->id_customer_claim;
-			?>
-					$("#upload_file<?php echo $id; ?>").submit(function(e) {
-						e.preventDefault();
-						$(this).ajaxSubmit({
-							beforeSubmit: () => {
-								$('#progress-bar<?php echo $id; ?>').width('0%');
-							},
-							uploadProgress: (event, position, total, percentComplete) => {
-								console.log(percentComplete);
-								$("#progress-bar<?php echo $id; ?>").width(percentComplete + '%');
-								$("span#progress<?php echo $id; ?>").text(percentComplete+"%");
-							},
-							success: (data) => {
-								let data_json = JSON.parse(data);
-								console.log(data_json);
-								let select_claim = data_json.select_claim;
-								let due_date = Date.parse(data_json.due_date);
-								let dateNow = Date.parse(data_json.dateNow);
-								function closeModal() {
-									if(dateNow > due_date) {
-										$("#status_color<?php echo $id; ?>").addClass('kuning');
-									} else {
-										$("#status_color<?php echo $id; ?>").addClass('hijau');
-									}
-									$("#upload-ppt"+select_claim.id_customer_claim).modal('hide');
-								}
-								setTimeout(closeModal, 1500);
-							},
-							complete: (data) => {
-								let data_json = JSON.parse(data.responseText);
-								let jsonResponse = data_json.select_claim;
-								let fileName = data_json.file_name;
-								console.log(jsonResponse);
-								var opts = {
-									"closeButton": true,
-									"debug": false,
-									"positionClass": "toast-top-right",
-									"onclick": null,
-									"showDuration": "300",
-									"hideDuration": "1000",
-									"timeOut": "5000",
-									"extendedTimeOut": "1000",
-									"showEasing": "swing",
-									"hideEasing": "linear",
-									"showMethod": "fadeIn",
-									"hideMethod": "fadeOut"
-								};
-								function successUpload() {
-									toastr.success('FILE BERHASIL DIUPLOAD', "SUCCESS", opts);
-									$("#download_ppt_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
-									$("#download_ppt_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ppt/'); ?>"+fileName+"");
-									if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
-										$("#status_claim"+jsonResponse.id_customer_claim).text("");
-										$("#status_claim"+jsonResponse.id_customer_claim).text("CLOSE");
-									}
-								}
-								function afterUpload() {
-									$("span.file-input-name").text("");
-									$('#progress-bar<?php echo $id; ?>').width('0%');
-									$('#nama_file<?php echo $id; ?>').val(null);
-								}
-								setTimeout(successUpload, 1500);
-								setTimeout(afterUpload, 2000);
-								$('#upload-ppt<?php echo $id; ?>').unbind();
-							},
-							error: function(jqXHR, textStatus, errorThrown) {
-								alert(textStatus +" "+errorThrown);
-								// $("#error_text").text(textStatus +" "+errorThrown);
-								// $("#modal-error-ajax").modal('show');;
-							}
-						});
-					});
-
-
-					$("#upload_ofpfile<?php echo $id; ?>").submit(function(e) {
-						e.preventDefault();
-						$(this).ajaxSubmit({
-							beforeSubmit: () => {
-								$('#progress-bar-ofp<?php echo $id; ?>').width('0%');
-							},
-							uploadProgress: (event, position, total, percentComplete) => {
-								console.log(percentComplete);
-								$("#progress-bar-ofp<?php echo $id; ?>").width(percentComplete + '%');
-								$("span#progress-ofp<?php echo $id; ?>").text(percentComplete+"%");
-							},
-							success: (data) => {
-								console.log(data);
-								let data_json = JSON.parse(data);
-								console.log(data_json);
-								let select_claim = data_json.select_claim;
-								let due_date = Date.parse(data_json.due_date);
-								let dateNow = Date.parse(data_json.dateNow);
-								function closeModal() {
-									$("#upload-ofp"+select_claim.id_customer_claim).modal('hide');
-								}
-								setTimeout(closeModal, 1500);
-							},
-							complete: (data) => {
-								let data_json = JSON.parse(data.responseText);
-								let jsonResponse = data_json.select_claim;
-								let fileName = data_json.file_name;
-								console.log(jsonResponse);
-								var opts = {
-									"closeButton": true,
-									"debug": false,
-									"positionClass": "toast-top-right",
-									"onclick": null,
-									"showDuration": "300",
-									"hideDuration": "1000",
-									"timeOut": "5000",
-									"extendedTimeOut": "1000",
-									"showEasing": "swing",
-									"hideEasing": "linear",
-									"showMethod": "fadeIn",
-									"hideMethod": "fadeOut"
-								};
-								function successUpload() {
-									toastr.success('FILE OFP BERHASIL DIUPLOAD', "SUCCESS", opts);
-									$("#download_ofp_file"+jsonResponse.id_customer_claim).removeAttr("disabled");
-									$("#download_ofp_file"+jsonResponse.id_customer_claim).attr("href", "<?php echo base_url('assets/claim_customer/ofp/'); ?>"+fileName+"");
-									if(jsonResponse.ppt_file != null && jsonResponse.ofp != null && jsonResponse.id_pergantian_part != null && jsonResponse.id_sortir_stock != null && jsonResponse.id_pfmea != null) {
-										$("#status_claim"+jsonResponse.id_customer_claim).text("");
-										$("#status_claim"+jsonResponse.id_customer_claim).text("CLOSE");
-									}
-								}
-								function afterUpload() {
-									$("span.file-input-name").text("");
-									$('#progress-bar-ofp<?php echo $id; ?>').width('0%');
-									$('#nama_file_ofp<?php echo $id; ?>').val(null);
-								}
-								setTimeout(successUpload, 1500);
-								setTimeout(afterUpload, 2000);
-							},
-							error: function(jqXHR, textStatus, errorThrown) {
-								alert(textStatus +" "+errorThrown);
-								// $("#error_text").text(textStatus +" "+errorThrown);
-								// $("#modal-error-ajax").modal('show');;
-							}
-						});
-					});
-
-					$("#simpan_pergantian<?php echo $id; ?>").click((e) => {
-						e.preventDefault();
-						$.ajax({
-							url: "<?php echo base_url('claim/customerclaim/pergantian_part'); ?>",
-							type: "POST",
-							data: $("#upload_pergantian<?php echo $id; ?>").serialize(),
-							dataType: "JSON",
-							cache: false,
-							success: (data) => {
-								var opts = {
-									"closeButton": true,
-									"debug": false,
-									"positionClass": "toast-top-right",
-									"onclick": null,
-									"showDuration": "300",
-									"hideDuration": "1000",
-									"timeOut": "5000",
-									"extendedTimeOut": "1000",
-									"showEasing": "swing",
-									"hideEasing": "linear",
-									"showMethod": "fadeIn",
-									"hideMethod": "fadeOut"
-								};
-								toastr.success('PERGANTIAN BERHASIL DILAKUKAN!', "SUCCESS", opts);
-
-							},
-							complete: () => {
-								let status_pergantian = "<i id='ganti-part<?php echo $id; ?>' class='entypo-check' style='color: #21bf73; font-weight: bold;'></i> Sudah melakukan pergantian part"
-								$("#tgl_pembayaran<?php echo $id; ?>").val(null);
-								$("#no_gi_451<?php echo $id; ?>").val("");
-								$("#no_gi_945<?php echo $id; ?>").val("");
-								$("#modal-pergantian-part<?php echo $id; ?>").remove();
-								$("#pergantian_part<?php echo $id; ?>").html(status_pergantian);
-								$("#pergantian-part<?php echo $id; ?>").modal('hide');
-							},
-							error: (jqXHR, textStatus, errorThrown) => {
-								alert(textStatus +" "+errorThrown);
-								// $("#error_text").text(textStatus +" "+errorThrown);
-								// $("#modal-error-ajax").modal('show');;
-							}
-						});
-					});
-			<?php 
-				}
-			?>
-		});	
-
-	</script>
+	<?php $this->load->view('_partials/js_index_customer_claim.php'); ?>
 </body>
 </html>

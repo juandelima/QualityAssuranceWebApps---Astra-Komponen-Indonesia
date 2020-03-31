@@ -4,10 +4,12 @@
 			if ($(this).is(':checked')) {
 				$("#year_list").css("display", "none");
 				$("#month_list").css("display", "none");
+				$("#choose_customer").css("display", "none");
 				$("#date_custome").css("display", "block");
 			} else {
 				$("#year_list").css("display", "block");
 				$("#month_list").css("display", "block");
+				$("#choose_customer").css("display", "block");
 				$("#date_custome").css("display", "none");
 			}
 		});
@@ -53,6 +55,7 @@
 			}
 		?>
 		
+
 		$("#select_part").change((e) => {
 			let part = $(e.target).val();
 			let select_part = $("#part").val(part);
@@ -156,6 +159,11 @@
 					}
 				});
 
+			});
+
+			$("#proses").change((e) => {
+				let proses = $(e.target).val();
+				console.log(proses);
 			});
 
 			$("#filter_chart").on('change', 'select#year', function(e) {
@@ -318,6 +326,177 @@
 				});
 
 			});
+
+			$("#filter_chart").on('change', 'select#proses', function(e) {
+				$("#date_ranges").val(null);
+				$("#start").val(null);
+				$("#end").val(null);
+				let proses = $("#proses").val();
+				let part = $("#part").val();
+				let year = $("#year").val();
+				let month = $("#month option:selected").text();
+				let date_range = $("#date_ranges").val();
+				const months = ["Jan", "Feb", "Mar","Apr", "May", "Jun",
+				"Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+				var start = $("[name=daterangepicker_start]").val();
+				var end = $("[name=daterangepicker_end]").val();
+				var start_date = new Date(start);
+				var end_date = new Date(end);
+				var formart_start = start_date.getDate()+" "+months[start_date.getMonth()]+" "+start_date.getFullYear();
+				var formart_end = end_date.getDate()+" "+months[end_date.getMonth()]+" "+end_date.getFullYear();
+				if(date_range != "") {
+					if(year != "" && month != "" && proses != "") {
+						caption = proses+" ("+year+" - "+month+")";
+					} else if(year != "") {
+						caption = year;
+					} else if(month != "") {
+						caption = month;
+					} else {
+						caption = formart_start+" - "+formart_end;
+					}
+				} else {
+					if(year != "" && month != "" && proses != "") {
+						caption = proses+" ("+year+" - "+month+")";
+					} else if(year != "" && proses != "") {
+						caption = proses+" - "+year;
+					} else if(month != "" && proses != "") {
+						caption = proses + " (<?php echo date("Y", strtotime($start)); ?> "+month+" - "+"<?php echo date("Y", strtotime($end)); ?> "+month+")";
+					} else if(year != "") {
+						caption = year;
+					} else if(month != "") {
+						caption = "<?php echo date("Y", strtotime($start)); ?> "+month+" - "+"<?php echo date("Y", strtotime($end)); ?> "+month;
+					} else {
+						caption = proses +" (<?php echo date("d M Y", strtotime($start)).' - '.date("d M Y", strtotime($end)); ?>)";
+					}
+				}
+
+				$.ajax({
+					type: "GET",
+					url: "<?php echo base_url('claim/customerclaim/filter_chart'); ?>",
+					data: $("#filter_chart").serialize(),
+					dataType: "JSON",
+					cache: false,
+					beforeSend: function(data_filter) {
+						$("#reloading").trigger('click');
+					},
+					success: function(data_filter) {
+						FusionCharts.ready(function() {
+							const chartData = [];
+							let obj = data_filter.result;
+							for(let key in obj) {
+								if(obj[key] > 0) {
+									let initData = {
+										"label": key,
+										"value": obj[key],
+									}
+									chartData.push(initData);
+								}
+							}
+
+							let label;
+							if(chartData.length > 10) {
+								label = "rotate";
+							} else {
+								label = "wrap";
+							}
+							var revenueChart = new FusionCharts({
+								type: 'column2d',
+								renderAt: 'container',
+								width: '100%',
+								height: '490',
+								dataFormat: 'json',
+								dataSource: {
+								"chart": {
+									"caption": "REJECTIONS "+part+" - QTY",
+									"subCaption": caption,
+									"xAxisname": "Rejection Name",
+									"pYAxisName": "QTY",
+									"sYAxisName": "",
+									"numberPrefix": "",
+									"theme": "fusion",
+									"showValues": "0",
+									"exportenabled": "1",
+									"exportfilename": "Customer Claim Chart",
+									"labelDisplay": label,
+								},
+								"data": chartData
+								}
+							}).render();
+						});
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						$("#error_text").text(textStatus +" "+errorThrown);
+						$("#modal-error-ajax").modal('show');
+					}
+				});
+
+				$.ajax({
+					type: "GET",
+					url: "<?php echo base_url('claim/customerclaim/chart_per_part'); ?>",
+					data: $("#filter_chart").serialize(),
+					dataType: "JSON",
+					cache: false,
+					beforeSend: function() {
+						$("#reloading_chart_part").trigger('click');
+					},
+					success: function(data_filter) {
+						FusionCharts.ready(function() {
+							const chartDataPart = [];
+							let obj = data_filter.result;
+							for(let key in obj) {
+								let defect = parseInt(obj[key]);
+								if(obj[key] > 0) {
+									let initData = {
+										"label": key,
+										"value": obj[key],
+									}
+									let dataValue = {
+										"value": obj[key],
+									}
+									chartDataPart.push(initData);
+								}
+							}
+							let label;
+							if(chartDataPart.length > 6) {
+								label = "rotate";
+							} else {
+								label = "wrap";
+							}
+							var revenueChart = new FusionCharts({
+								type: 'column2d',
+								renderAt: 'container_partChart',
+								width: '100%',
+								height: '490',
+								dataFormat: 'json',
+								dataSource: {
+									"chart": {
+										"caption": "ALL REJECTION PARTS - QTY",
+										"subCaption": caption,
+										"xAxisname": "Part Name",
+										"pYAxisName": "QTY",
+										"sYAxisName": "",
+										"numberPrefix": "",
+										"theme": "fusion",
+										"showValues": "0",
+										"exportenabled": "1",
+										"exportfilename": "Customer Claim Chart",
+										"labelDisplay": label,
+										"palettecolors": "#29c3be"
+									},
+									"data":chartDataPart
+									
+								}
+							}).render();
+						});
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						$("#error_text").text(textStatus +" "+errorThrown);
+						$("#modal-error-ajax").modal('show');
+					}
+				});
+
+			});
+
 
 			$("#filter_chart").on('change', 'select#month', function(e) {
 				console.log("test");
@@ -484,6 +663,7 @@
 				});
 
 			});
+
 
 			$("#ganti_customer, #ganti_customer2").change((e) => {
             let val_id_customer = $(e.target).val();

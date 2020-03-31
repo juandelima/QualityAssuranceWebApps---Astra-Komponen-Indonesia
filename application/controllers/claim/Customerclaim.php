@@ -116,6 +116,7 @@ class Customerclaim extends CI_Controller {
 		$getMonth = $_GET['month'];
 		$getStart = $_GET['start'];
 		$getEnd = $_GET['end'];
+		$proses = $_GET['proses'];
 		$getIdCustomer = $_GET['id_customer'];
 
 		if($getIdCustomer != null) {
@@ -148,6 +149,12 @@ class Customerclaim extends CI_Controller {
 			$month = null;
 		}
 
+		if($proses != null) {
+			$proses = $proses;
+		} else {
+			$proses = null;
+		}
+
 		if($getStart != null && $getEnd != null) {
 			$start = date('Y-m-d', strtotime($getStart));
 			$end = date('Y-m-d', strtotime($getEnd));
@@ -156,7 +163,7 @@ class Customerclaim extends CI_Controller {
 			$end = null;
 		}
 
-		$chart_rejection_claim = $this->customerclaim_model->chart_rejection_claim($start, $end, $part, $year, $month, $status, $id_customer);
+		$chart_rejection_claim = $this->customerclaim_model->chart_rejection_claim($start, $end, $part, $year, $month, $status, $proses, $id_customer);
 		$chart_rejection_claim2 = array();
 		$count_merge_field_except = count($merge_field_except);
 		if(!empty($chart_rejection_claim)) {
@@ -190,6 +197,7 @@ class Customerclaim extends CI_Controller {
 		$getMonth = $_GET['month'];
 		$getStart = $_GET['start'];
 		$getEnd = $_GET['end'];
+		$proses = $_GET['proses'];
 		$getIdCustomer = $_GET['id_customer'];
 		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
 		$merge_field_except = [];
@@ -224,6 +232,12 @@ class Customerclaim extends CI_Controller {
 			$month = null;
 		}
 
+		if($proses != null) {
+			$proses = $proses;
+		} else {
+			$proses = null;
+		}
+
 		if($getStart != null && $getEnd != null) {
 			$start = date('Y-m-d', strtotime($getStart));
 			$end = date('Y-m-d', strtotime($getEnd));
@@ -234,14 +248,14 @@ class Customerclaim extends CI_Controller {
 		// echo json_encode($_GET);
 		
 		$result_chart_part = array();
-		$chart_part_claim = $this->customerclaim_model->chart_part_claim($start, $end, $year, $month, $status, $id_customer);
+		$chart_part_claim = $this->customerclaim_model->chart_part_claim($start, $end, $year, $month, $status, $proses, $id_customer);
 		// print_r($chart_part_claim);
 		if(!empty($chart_part_claim)) {
 			$count_chart_part_claim = count($chart_part_claim);
 			for($i = 0; $i < $count_chart_part_claim; $i++) {
 				// echo $i."<br/>";
 				$nama_part = $chart_part_claim[$i]->nama_part;
-				$filter_part = $this->customerclaim_model->filter_part($nama_part, $start, $end, $year, $month, $status, $id_customer);
+				$filter_part = $this->customerclaim_model->filter_part($nama_part, $start, $end, $year, $month, $status, $proses, $id_customer);
 				$count_filter_part = count($filter_part);
 				$count_merge_field_except = count($merge_field_except);
 				$sum = 0;
@@ -590,10 +604,20 @@ class Customerclaim extends CI_Controller {
 		echo json_encode($data);
 	}
 
+	public function get_ofp_files($id_ofp) {
+		$result = $this->customerclaim_model->get_files_ofp($id_ofp);
+		echo json_encode($result);
+	}
+	
+	public function get_pica_files($id_pica) {
+		$result = $this->customerclaim_model->get_files_pica($id_pica);
+		echo json_encode($result);
+	}
 	public function get_pfmea_files($id_pfmea) {
 		$result = $this->customerclaim_model->get_files_pfmea($id_pfmea);
 		echo json_encode($result);
 	}
+
 	
 	public function testing_input() {
 		echo $this->customerclaim_model->testing();

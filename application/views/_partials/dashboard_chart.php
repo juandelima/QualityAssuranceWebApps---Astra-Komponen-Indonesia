@@ -687,8 +687,8 @@
 		});
 
 		function filter_status_claim() {
-			$("#filter_status_claim").on('change', "#status_claim", function() {
-				let status_claim = $("#status_claim").val();
+			$("#filter_status_claim").on('change', "#status_claim1", function() {
+				let status_claim = $("#status_claim1").val();
 				// console.log(status_claim);
 				let year_from = $('#year_from').val();
 				let year_to = $('#year_to').val();
@@ -892,6 +892,212 @@
 			});
 		}
 
+		function filter_proses() {
+			$("#filter_proses").on('change', "#proses1", () => {
+				let proses = $("#proses1").val();
+
+				let year_from = $('#year_from').val();
+				let year_to = $('#year_to').val();
+				let caption_year;
+				if(year_from == "" && year_to == "") {
+					caption_year = "<?php echo $year[0]; ?> - <?php echo $year[count($year) - 1]; ?>";
+				} else {
+					caption_year = year_from+" - "+year_to;
+				}
+
+				let year = $("#year1").val();
+				let caption;
+				if(year != "") {
+					caption = year;
+				} else {
+					caption = "<?php echo $year[count($year) - 1]; ?>";
+				}
+
+				$("#annual_proses").val(proses);
+				$("#monthly_proses").val(proses);
+
+				// ANNUAL FILTER
+				$.ajax({
+					type: "GET",
+					url: "<?php echo base_url('dashboard/filter_by_year'); ?>",
+					data: $("#filter_year").serialize(),
+					dataType: "JSON",
+					cache: false,
+					beforeSend: function() {
+						$("#reloading_year").trigger("click");
+					},
+
+					success: function(data_year) {
+						function load_chart_annual() {
+							FusionCharts.ready(function() {
+								const chartDataYear = [];
+								const chartValueYear = [];
+								const chartPpmYear = [];
+								let ppm;
+								let obj = data_year.dataYears;
+								let index = 0;
+								let caption;
+								for(let key in obj) {
+									let defect = parseInt(obj[key]);
+									let dataLabel = {
+										"label": key,
+									}
+									let dataValue = {
+										"value": obj[key],	
+									}
+									if(data_year.ppm[index] > 0) {
+										ppm = (defect / parseInt(data_year.ppm[index])) * 1000000;
+									} else {
+										ppm = 0;
+									}
+									
+									let dataPpm = {
+										"value": ppm,
+									}
+									chartDataYear.push(dataLabel);
+									chartValueYear.push(dataValue);
+									chartPpmYear.push(dataPpm);
+									index += 1;
+								}
+								var revenueChart = new FusionCharts({
+									type: 'mscombidy2d',
+									renderAt: 'container_year',
+									width: '100%',
+									height: '380',
+									dataFormat: 'json',
+									dataSource: {
+									"chart": {
+										"caption": "Annual Rejection Graph - QTY & PPM",
+										"subCaption": caption_year,
+										"xAxisname": "Year",
+										"pYAxisName": "QTY",
+										"sYAxisName": "PPM",
+										"numberPrefix": "",
+										"theme": "fusion",
+										"showValues": "0",
+										"exportenabled": "1",
+										"exportfilename": "Annual Rejection Graph - QTY & PPM",
+										"labelDisplay": "rotate",
+										"lineColor": "#fc3c3c",
+										"palettecolors": "#29c3be"
+									},
+									"categories": [{
+										"category": chartDataYear
+									}],
+									"dataset": [{
+										"seriesName": "Total annual rejection",
+										"showValues": "0",
+										"exportenabled": "1",
+										"exportfilename": "Annual Rejection Graph - QTY & PPM",
+										"numberSuffix": "",
+										"data": chartValueYear
+									}, {
+										"seriesName": "PPM",
+										"parentYAxis": "S",
+										"renderAs": "line",
+										"data": chartPpmYear
+									}]
+									}
+								}).render();
+							});
+						}
+						load_chart_annual();
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						$("#error_text").text(textStatus +" "+errorThrown);
+						$("#modal-error-ajax").modal('show');
+					}
+				});
+
+				// MONTHLY FILTER
+				$.ajax({
+					type: "GET",
+					url: "<?php echo base_url('dashboard/filter_by_month'); ?>",
+					data: $("#filter_month").serialize(),
+					dataType: "JSON",
+					cache: false,
+					beforeSend: function(data_filter) {
+						$("#reloading_month").trigger("click");
+					},
+					success: function(data_filter) {
+						function load_data_monthly() {
+							FusionCharts.ready(function() {
+								const chartDataMonth = [];
+								const chartValueMonth = [];
+								const chartPpmMonth = [];
+								let obj = data_filter.dataMonthly;
+								let index = 0;
+								let ppm;
+								for(let key in obj) {
+									// console.log(index);
+									let defect = parseInt(obj[key]);
+									
+									let dataLabel = {
+										"label": key,
+									}
+									let dataValue = {
+										"value": obj[key],	
+									}
+									if(data_filter.ppm[index] > 0) {
+										ppm = (defect / parseInt(data_filter.ppm[index])) * 1000000;
+									} else {
+										ppm = 0;
+									}
+									let dataPpm = {
+										"value": ppm,
+									}
+									index += 1;
+									chartDataMonth.push(dataLabel);
+									chartValueMonth.push(dataValue);
+									chartPpmMonth.push(dataPpm);
+								}
+								var revenueChart = new FusionCharts({
+									type: 'mscombidy2d',
+									renderAt: 'container_month',
+									width: '100%',
+									height: '380',
+									dataFormat: 'json',
+									dataSource: {
+									"chart": {
+										"caption": "Monthly Rejection Graph - QTY & PPM",
+										"subCaption": caption,
+										"xAxisname": "Month",
+										"pYAxisName": "QTY",
+										"sYAxisName": "PPM",
+										"numberPrefix": "",
+										"theme": "fusion",
+										"showValues": "0",
+										"exportenabled": "1",
+										"exportfilename": "Monthly Rejection Graph - QTY & PPM",
+										"labelDisplay": "rotate",
+										"animation": "1" 
+									},
+									"categories": [{
+										"category": chartDataMonth
+									}],
+									"dataset": [{
+										"seriesName": "Total monthly rejection",
+										"showValues": "0",
+										"exportenabled": "1",
+										"exportfilename": "Monthly Rejection Graph - QTY & PPM",
+										"numberSuffix": "",
+										"data": chartValueMonth
+									}, {
+										"seriesName": "PPM",
+										"parentYAxis": "S",
+										"renderAs": "line",
+										"data": chartPpmMonth
+									}]
+									}
+								}).render();
+							});
+						}
+						load_data_monthly();
+					},
+				});
+				
+			});
+		}
 		function filter_by_customer() {
 			$("#filter_by_customer").on('change', "#by_customer", function() {
 				let customer = $("#by_customer").val();
@@ -1101,5 +1307,6 @@
 
 		filter_status_claim();
 		filter_by_customer();
+		filter_proses();
 });
 </script>
