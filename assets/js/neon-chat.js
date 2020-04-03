@@ -81,15 +81,12 @@ var neonChat = neonChat || {
 			// Texarea
 			$textarea.keydown(function(e)
 			{
-				if(e.keyCode == 13 && !e.shiftKey)
-				{
+				if(e.keyCode == 13 && !e.shiftKey) {
+					
 					e.preventDefault();
 					neonChat.submitMessage();
 					return false;
-				}
-				else
-				if(e.keyCode == 27)
-				{
+				} else if(e.keyCode == 27) {
 					neonChat.close();
 				}
 			});
@@ -254,9 +251,7 @@ var neonChat = neonChat || {
 		submitMessage: function() // Submit whats on textarea
 		{
 			var msg = $.trim($textarea.val());
-
 			$textarea.val('');
-
 			if(this.isOpen && this.$current_user)
 			{
 				var id = this.$current_user.uniqueId().attr('id');
@@ -886,6 +881,7 @@ var neonChat = neonChat || {
 	// Set Cursor
 	$conversation_body.on('click', function()
 	{
+		console.log('AU AH');
 		$textarea.focus();
 	});
 
