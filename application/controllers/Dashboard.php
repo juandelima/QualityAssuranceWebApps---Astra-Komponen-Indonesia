@@ -234,7 +234,7 @@ class Dashboard extends CI_Controller {
 			$year_to = $get_year_to;
 		} else {
 			$year_from = (int)date('Y') - 9;
-			$year_to = $year_from + 9;;
+			$year_to = $year_from + 9;
 		}
 
 		$dataYear = array();
@@ -271,5 +271,100 @@ class Dashboard extends CI_Controller {
 		echo json_encode($data);
 	}
 
-	
+	public function filter_by_daily() {
+		$get_field_visual = $this->customerclaim_model->list_field_visual();
+		$get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
+		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
+		$listing_deliv = $this->delivery_model->listing_deliv();
+		$count_customer_claim = count($get_customer_claim);
+		$count_deliv = count($listing_deliv);
+		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
+		$merge_field_except = [];
+		for($i = 0; $i < count($mergeField); $i++) {
+			if($mergeField[$i] == "id_customer_claim") {
+				continue;
+			}
+			$merge_field_except[] = $mergeField[$i];
+		}
+		$count_merge_field = count($merge_field_except);
+		$status = $_GET['status_claim'];
+		$customer = $_GET['ganti_customer'];
+		$proses = $_GET['proses'];
+		$daily_year = $_GET['daily_year'];
+		$daily_month = $_GET['daily_month'];
+		if($status != null) {
+			$status = $status;
+		} else {
+			$status = null;
+		}
+
+		if($proses != null) {
+			$proses = $proses;
+		} else {
+			$proses = null;
+		}
+
+		if($customer != null) {
+			$customer = $customer;
+		} else {
+			$customer = null;
+		}
+
+		if($daily_year != null) {
+			$tahun = $daily_year;
+		} else {
+			$tahun = date('Y');
+		}
+
+		if($daily_month != null) {
+			$current_month = intval(date('m', strtotime($daily_month)));
+		} else {
+			$current_month = intval(date('m'));
+		}
+
+		$previous_month = $current_month;
+		$daily = [];
+		$dailyPpm = [];
+		for($tgl = 0; $tgl <= 30; $tgl++) {
+			if($previous_month != $current_month) {
+				break;
+			}
+			$dailySum = 0;
+			$year_month = strtotime("$tahun-$current_month");
+			$fullDate = date("Y-m-d", strtotime("+$tgl day", $year_month));
+			$day = date('d', strtotime($fullDate));
+			$current_month = intval(date("m", strtotime("+$tgl day", $year_month)));
+			if($current_month == $previous_month) {
+				$daily_filter = $this->customerclaim_model->daily_filter($fullDate, $status, $customer, $proses);
+				$daily_ppm = $this->delivery_model->daily_ppm($fullDate);
+				$count_daily_filter = count($daily_filter);
+				for($i = 0; $i < $count_daily_filter; $i++) {
+					if(!empty($daily_filter[$i])) {
+						for($j = 0; $j < $count_merge_field; $j++) { 
+							$field = $merge_field_except[$j];
+							if($daily_filter[$i]->$field > 0) {
+								$dailySum += $daily_filter[$i]->$field;
+							}
+						}
+					}
+				}
+				if($daily_ppm->total_qty != null) {
+					$ppm = $daily_ppm->total_qty;
+				} else {
+					$ppm = 0;
+				}
+				$daily[$day] = $dailySum;
+				$dailyPpm[] = $ppm;
+			}
+		}
+		$data = array(
+			"daily" => $daily,
+			"dailyPpm" => $dailyPpm,
+			"tahun" => $tahun,
+			"bulan" => date("M"),
+			"count_customer_claim" => $count_customer_claim,
+			"count_deliv" => $count_deliv
+		);
+		echo json_encode($data);
+	}
 }

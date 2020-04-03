@@ -20,31 +20,24 @@ class Delivery_model extends CI_Model {
 	}
 
 	public function monthly_ppm($tahun, $bulan) {
-		// $array_select = array(
-		// 	'SUM(qty) as total_qty',
-		// );
-		// $this->db->select($array_select);
-		// $this->db->from($this->table);
-		// $this->db->where('YEAR(tgl_delivery)', $tahun);
-		// $this->db->where('MONTH(tgl_delivery)', $bulan);
-		// $query = $this->db->get();
-		// return $query->row();
 		$query = $this->db->query("select sum(qty) as total_qty from $this->table where extract(YEAR from tgl_delivery
 		) = $tahun and extract(MONTH from tgl_delivery) = $bulan");
 		return $query->row();
 	}
 
 	public function annual_ppm($tahun) {
-		// $array_select = array(
-		// 	'SUM(qty) as total_qty',
-		// );
-		// $this->db->select($array_select);
-		// $this->db->from($this->table);
-		// $this->db->where('YEAR(tgl_delivery)', $tahun);
-		// $query = $this->db->get();
-		// return $query->row();
 		$query = $this->db->query("select sum(qty) as total_qty from $this->table where extract(YEAR from tgl_delivery
 		) = $tahun");
+		return $query->row();
+	}
+
+	public function daily_ppm($tanggal) {
+		$year = date('Y', strtotime($tanggal));
+		$month = date('m', strtotime($tanggal));
+		$day = date('d', strtotime($tanggal));
+		$query = $this->db->query("select sum(qty) as total_qty from $this->table where extract(YEAR from tgl_delivery
+		) = $year AND extract(MONTH from tgl_delivery) = $month AND extract(DAY from tgl_delivery) = $day
+		ORDER BY STR_TO_DATE(tgl_delivery,'%d-%m-%Y') ASC");
 		return $query->row();
 	}
 

@@ -161,11 +161,6 @@
 
 			});
 
-			$("#proses").change((e) => {
-				let proses = $(e.target).val();
-				console.log(proses);
-			});
-
 			$("#filter_chart").on('change', 'select#year', function(e) {
 				$("#date_ranges").val(null);
 				$("#start").val(null);
@@ -499,7 +494,6 @@
 
 
 			$("#filter_chart").on('change', 'select#month', function(e) {
-				console.log("test");
 				$("#date_ranges").val(null);
 				$("#start").val(null);
 				$("#end").val(null);
@@ -1356,7 +1350,6 @@
 					let part = $("#part").val();
 					let year = $("#year").val();
 					let status = $($(this)).val();
-					console.log(status);
 					let month = $("#month option:selected").text();
 					let date_range = $("#date_ranges").val();
 					if(date_range != "") {

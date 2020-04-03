@@ -1,27 +1,13 @@
 <script>
-	jQuery.noConflict
-	var fusionCharts = jQuery.noConflict();
-	fusionCharts(document).ready(function($) {
+	jQuery(document).ready(function($) {
 		$("#filter_year").on('change', 'select#year_from', function(e) {
-			// $("#year_to").empty();
 			let year_from = new Date();
 			let get_year_from = year_from.getFullYear() - 9;
 			let year_now = get_year_from + 9;
 			let year_to = $(e.target).val();
-			// for(let year_from_ = get_year_from; year_from_ <= year_now; year_from_++) {
-			// 	$("#year_to").append("<option value='"+year_from_+"'>"+year_from_+"</option>");
-			// }
-
 			for(let year_from_disable = get_year_from; year_from_disable <= year_to; year_from_disable++) {
 				$("#year_to option:contains("+year_from_disable+")").attr("disabled","disabled");
 			}
-
-			// if(year_to === "" || year_to === null) {
-			// 	$("#year_to").val(null);
-			// 	for(let year_from_del = get_year_from; year_from_del <= year_now; year_from_del++) {
-			// 		$("#year_to option[value="+year_from_del+"]").remove();
-			// 	}
-			// }
 		});
 
 		
@@ -148,7 +134,6 @@
 							let index = 0;
 							let ppm;
 							for(let key in obj) {
-								// console.log(index);
 								let defect = parseInt(obj[key]);
 								
 								let dataLabel = {
@@ -249,8 +234,6 @@
 				success: function(data_filter) {
 					let customer_claim_monthly = data_filter.count_customer_claim_monthly;
 					let get_count_deliv = data_filter.count_deliv;
-					// console.log(monthly_count_customer_claim);
-					// console.log(customer_claim_monthly);
 					if(monthly_count_customer_claim != customer_claim_monthly || monthly_count_deliv != get_count_deliv) {
 						monthly_count_customer_claim = customer_claim_monthly;
 						monthly_count_deliv = get_count_deliv;
@@ -262,7 +245,6 @@
 							let index = 0;
 							let ppm;
 							for(let key in obj) {
-								// console.log(index);
 								let defect = parseInt(obj[key]);
 								
 								let dataLabel = {
@@ -465,7 +447,6 @@
 					$("#reloading_year").trigger("click");
 				},
 				success: function(data_year) {
-					// console.log(data_year.ppm);
 					function load_chart_annual() {
 						FusionCharts.ready(function() {
 							const chartDataYear = [];
@@ -558,7 +539,6 @@
 					$("#reloading_month").trigger("click");
 				},
 				success: function(data_filter) {
-					// console.log(data_filter.ppm);
 					function load_data_monthly() {
 						FusionCharts.ready(function() {
 							const chartDataMonth = [];
@@ -568,7 +548,6 @@
 							let index = 0;
 							let ppm;
 							for(let key in obj) {
-								// console.log(index);
 								let defect = parseInt(obj[key]);
 								
 								let dataLabel = {
@@ -667,7 +646,6 @@
 			let year_from = new Date();
 			let get_year_from = year_from.getFullYear() - 9;
 			let year_now = get_year_from + 9;
-			// console.log(year_now);
 			$("#annual_customer").val(null);
 			$("#annual_status_claim").val(null);
 			$("#year_from").val(get_year_from);
@@ -689,7 +667,6 @@
 		function filter_status_claim() {
 			$("#filter_status_claim").on('change', "#status_claim1", function() {
 				let status_claim = $("#status_claim1").val();
-				// console.log(status_claim);
 				let year_from = $('#year_from').val();
 				let year_to = $('#year_to').val();
 				let caption_year;
@@ -823,7 +800,6 @@
 								let index = 0;
 								let ppm;
 								for(let key in obj) {
-									// console.log(index);
 									let defect = parseInt(obj[key]);
 									
 									let dataLabel = {
@@ -1029,7 +1005,6 @@
 								let index = 0;
 								let ppm;
 								for(let key in obj) {
-									// console.log(index);
 									let defect = parseInt(obj[key]);
 									
 									let dataLabel = {
@@ -1236,7 +1211,6 @@
 								let index = 0;
 								let ppm;
 								for(let key in obj) {
-									// console.log(index);
 									let defect = parseInt(obj[key]);
 									
 									let dataLabel = {

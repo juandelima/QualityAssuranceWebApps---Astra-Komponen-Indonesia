@@ -93,9 +93,9 @@
 					<div class="col-sm-3">
 						<select name="select_chart" id="select_chart" class="selectboxit" data-first-option="false">
 							<option>select a chart...</option>
+							<option value="3">Daily Chart</option>
 							<option value="1">Annual & Monthly Chart</option>
 							<option value="2">Parts & Defect Chart</option>
-							<option value="3">Daily Chart</option>
 						</select>
 					</div>
 				</div>
@@ -457,7 +457,116 @@
 					</div>														
 				</div>
 
+				<div class="col-md-12" id="daily">
+					<div class="panel panel-primary" id="daily_chart">
+						<div class="panel-body">
+							<form role="form" id="filter_daily_chart" class="form-horizontal form-groups-bordered">
+								<input type="hidden" id="d_year" name="daily_year">
+								<input type="hidden" id="d_month" name="daily_month">
+								<div class="row" style="margin-bottom: 15px;">
+									<div class="col-sm-3" id="daily_choose_status">
+										<div class="form-group">
+											<div class="col-sm-10" style="text-align:left;">
+												<select name="status_claim" id="daily_status_claim" class="selectboxit" data-first-option="false">
+													<option>claim / tukar guling...</option>
+													<option value="" selected>All</option>
+													<option value="Claim">Claim</option>
+													<option value="Tukar Guling">Tukar Guling</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-3" id="daily_choose_proses">
+										<div class="form-group">
+											<div class="col-sm-10" style="text-align:left;">
+												<select name="proses" id="daily_proses" class="selectboxit" data-first-option="false">
+													<option>proses</option>
+													<option value="" selected>Semua Proses</option>
+													<?php foreach($proses as $data) { ?>
+														<option value="<?php echo $data->proses; ?>"><?php echo $data->proses; ?></option>
+													<?php } ?>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="col-sm-3" id="daily_choose_customer">
+										<div class="form-group">
+											<div class="col-sm-10" style="text-align:left;">
+												<select name="ganti_customer" id="daily_ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
+													<option></option>
+													<?php foreach($customer as $data) { ?>
+															<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
+													<?php } ?>
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="panel panel-primary">
+										<div class="panel-heading">
+											<div class="panel-title">Daily Chart</div>
+											<div class="panel-options">
+												<a href="#" data-rel="reload" id="reloading_daily" class="loaded">
+													<!-- <i class="entypo-arrows-ccw"></i> -->
+												</a>
+												<a href="#" data-rel="reload" id="reset_daily" class="loaded">
+													<i class="entypo-arrows-ccw"></i>
+												</a>
+											</div>
+										</div>
+
+										<div class="panel-body" id="daily_body_chart">
+											<div class="row" style="margin-bottom: 10px;">
+												<div class="col-sm-4" id="year_daily_list">
+													<div class="form-group">
+														<div class="col-sm-10">
+															<select name="year" id="year_daily" class="select2" data-allow-clear="true" data-placeholder="Select year...">
+																<option></option>
+																<?php
+																	$firstYear = (int)date('Y') - 9;
+																	$lastYear = $firstYear + 9;
+																	for($i = $firstYear; $i <= $lastYear; $i++) { 
+																?>
+																		<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+																<?php
+																	}
+																?>
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="col-sm-4" id="month_daily_list">
+													<div class="form-group">
+														<div class="col-sm-10">
+															<select name="month" id="month_daily" class="select2" data-allow-clear="true" data-placeholder="Select month...">
+																<option></option>
+																<?php
+																	$months = ["Jan", "Feb", "Mar","Apr", "May", "Jun", 
+																	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+																	for($i = 0; $i < count($months); $i++) { 
+																?>
+																		<option value="<?php echo $i+1; ?>"><?php echo $months[$i]; ?></option>
+																<?php
+																	}
+																?>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div id="daily_container"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
+
 			<div class="modal fade" id="modal-error-ajax">
 				<div class="modal-dialog" style="width: 50%;">
 					<div class="modal-content">
@@ -487,6 +596,8 @@
 	<?php $this->load->view('_partials/dashboard_chart.php'); ?>
 	<?php $this->load->view('_partials/customer_claim_chart.php'); ?>
 	<?php $this->load->view('_partials/chatting'); ?>
-	<?php $this->load->view('_partials/change_chart'); ?>
+	<script src="<?php echo site_url('assets/js/chart/change_chart.js'); ?>"></script>
+	<script src="<?php echo site_url('assets/js/chart/daily_chart.js'); ?>"></script>
+	<?php $this->load->view('_partials/daily_chart'); ?>
 </body>
 </html>

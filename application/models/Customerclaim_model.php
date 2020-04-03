@@ -2760,4 +2760,75 @@ class Customerclaim_model extends CI_Model {
 		$query = $this->db->query("select * from sortir_stock where id_sortir_stock = '$id_sortir_stock'");
 		return $query->row();
 	}
+
+	public function daily_filter($tanggal, $status, $customer, $proses) {
+		$year = date('Y', strtotime($tanggal));
+		$month = date('m', strtotime($tanggal));
+		$day = date('d', strtotime($tanggal));
+		if($customer != null and $status != null and $proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.customer = '$customer' AND claim_customer.status_claim = '$status' AND data_parts.proses = '$proses' ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		} elseif($customer != null and $status != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.customer = '$customer' AND claim_customer.status_claim = '$status' ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		} elseif($proses != null and $status != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' AND claim_customer.status_claim = '$status' ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		} elseif($proses != null and $customer != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' AND data_parts.customer = '$customer' ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		} elseif ($customer != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.customer = '$customer' ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		} elseif ($proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		} elseif ($status != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND claim_customer.status_claim = '$status' ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		} else {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day ORDER BY STR_TO_DATE(claim_customer.tgl_input,'%d-%m-%Y') ASC");
+			return $query->result();
+		}
+	}
 }
