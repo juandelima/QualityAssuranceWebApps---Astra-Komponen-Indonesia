@@ -593,11 +593,12 @@
 	<script src="<?php echo site_url('assets/js/fusioncharts.maps.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.theme.fusion.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/fusioncharts.jqueryplugin.min.js'); ?>"></script>
-	<?php $this->load->view('_partials/dashboard_chart.php'); ?>
-	<?php $this->load->view('_partials/customer_claim_chart.php'); ?>
-	<?php $this->load->view('_partials/chatting'); ?>
 	<script src="<?php echo site_url('assets/js/chart/change_chart.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/chart/daily_chart.js'); ?>"></script>
-	<?php $this->load->view('_partials/daily_chart'); ?>
+	<script src="<?php echo site_url('assets/js/chart/annual_monthly_chart.js'); ?>"></script>
+	<script src="<?php echo site_url('assets/js/chart/detail_chart.js'); ?>"></script>
+	<script src="<?php echo site_url('assets/js/chatting/chat.js'); ?>"></script>
+	<?php $this->load->view('_partials/chatting'); ?>
+	<?php $this->load->view('_partials/dashboard_chart.php'); ?>
 </body>
 </html>

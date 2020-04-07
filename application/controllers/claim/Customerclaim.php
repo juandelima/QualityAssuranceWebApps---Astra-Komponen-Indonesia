@@ -573,7 +573,7 @@ class Customerclaim extends CI_Controller {
 		}
 	}
 
-	public function ahm_delivery() {
+	public function save_delivery() {
 		
 		$tgl = $_POST['tgl_deliv'];
 		$qty = $_POST['qty'];

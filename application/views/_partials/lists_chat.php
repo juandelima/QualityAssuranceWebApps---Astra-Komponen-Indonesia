@@ -14,14 +14,13 @@
 			<a href="#"><span class="user-status is-offline"></span><em>Rodrigo E. Lozano</em></a> -->
 		</div>
     </div>
-
-    <!-- conversation template -->
+    
 	<div class="chat-conversation">
-        <div class="conversation-header">
+        <div class="conversation-header" id="conversation">
             <a href="#" class="conversation-close"><i class="entypo-cancel"></i></a>
-            <span class="user-status status"></span>
+            <!-- <span class="user-status"></span> -->
             <span class="display-name"></span>
-            <small class="status_login"></small>
+            <!-- <small class="status_login"></small> -->
         </div>
 
         <ul class="conversation-body">

@@ -827,12 +827,9 @@
 	<link rel="stylesheet" href="<?php echo site_url('assets/js/daterangepicker/daterangepicker-bs3.css'); ?>">
 	<?php $this->load->view('_partials/js.php'); ?>
 	<script src="<?php echo site_url('assets/js/icheck/icheck.min.js'); ?>"></script>
-	<script src="<?php echo site_url('assets/js/data.js'); ?>"></script>
-	<script src="<?php echo site_url('assets/js/fusioncharts.js'); ?>"></script>
-	<script src="<?php echo site_url('assets/js/fusioncharts.theme.fusion.js'); ?>"></script>
-	<script src="<?php echo site_url('assets/js/fusioncharts.jqueryplugin.min.js'); ?>"></script>
 	<script src="http://malsup.github.com/jquery.form.js"></script>
-	<?php $this->load->view('_partials/filter_customerclaim_byCustomer.php'); ?>
-	<?php $this->load->view('_partials/js_index_customer_claim.php'); ?>
+	<script src="<?php echo site_url('assets/js/customer_claim/delivery.js'); ?>"></script>
+	<script src="<?php echo site_url('assets/js/customer_claim/filter_customer_claim.js'); ?>"></script>
+	<?php $this->load->view('_partials/customer_claim.php'); ?>
 </body>
 </html>
