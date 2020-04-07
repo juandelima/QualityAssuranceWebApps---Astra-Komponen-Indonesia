@@ -35,7 +35,13 @@ class Simple_login {
 					'updated_at' => date('Y-m-d H:i:s')
 				);
 
+				$update_statusOnline = array(
+					'id_users' => $user->id_users,
+					"online" => "1",
+				);
+
 				$this->CI->user_model->update($update_LastLogin);
+				$this->CI->user_model->update_status_online($update_statusOnline);
 				$this->CI->session->set_flashdata('success','<b>Selamat Datang '.$user->full_name.' :)</b>');
 				redirect(base_url('dashboard'), 'refresh');
 			} else {
@@ -60,7 +66,13 @@ class Simple_login {
 	}
 
 	public function logout() {
-        //membuang semua session yang telah di set pada saat login
+		//membuang semua session yang telah di set pada saat login
+		$id_user = $this->CI->session->userdata('id_users');
+		$update_statusOnline = array(
+			'id_users' => $id_user,
+			"online" => "0",
+		);
+		$this->CI->user_model->update_status_online($update_statusOnline);
         $this->CI->session->unset_userdata('id_users');
         $this->CI->session->unset_userdata('username');
         $this->CI->session->unset_userdata('full_name');

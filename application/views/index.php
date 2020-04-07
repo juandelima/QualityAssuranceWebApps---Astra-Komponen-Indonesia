@@ -501,6 +501,23 @@
 											</div>
 										</div>
 									</div>
+
+									<div class="col-sm-3" id="daily_choose_part">
+										<div class="form-group">
+											<div class="col-sm-10" style="text-align:left;">
+												<select name="ganti_part" id="daily_ganti_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
+													<option></option>
+													<?php
+														foreach($select_part_distinct as $data) {
+													?>
+														<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
+													<?php 
+														}
+													?>
+												</select>
+											</div>
+										</div>
+									</div>
 								</div>
 							</form>
 							<div class="row">
@@ -512,7 +529,7 @@
 												<a href="#" data-rel="reload" id="reloading_daily" class="loaded">
 													<!-- <i class="entypo-arrows-ccw"></i> -->
 												</a>
-												<a href="#" data-rel="reload" id="reset_daily" class="loaded">
+												<a href="#" data-rel="reload" id="refresh_daily" class="loaded">
 													<i class="entypo-arrows-ccw"></i>
 												</a>
 											</div>

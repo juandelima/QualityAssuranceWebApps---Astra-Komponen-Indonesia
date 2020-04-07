@@ -47,8 +47,8 @@ class Dashboard extends CI_Controller {
 		$customers = $this->customer_model->customer_list();
 		// $get_customer = $this->customerclaim_model->get_customer();
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
-		// $get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
-		$select_part_distinct = $this->customerclaim_model->select_part_distinct();
+		$get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
+		// $select_part_distinct = $this->customerclaim_model->select_part_distinct();
 		$get_customer_claim_sort_by_date = $this->customerclaim_model->get_customer_claim_sort_by_date();
 		$get_proses = $this->customerclaim_model->get_proses();
 		$count_customer_claim = count($get_customer_claim);
@@ -86,7 +86,7 @@ class Dashboard extends CI_Controller {
 			"count_user" => $count_user,
 			'customers' => $customers,
 			'customer_claim' => $get_customer_claim,
-			'select_part_distinct' => $select_part_distinct,
+			'select_part_distinct' => $get_customer_claim_distinct,
 			'count_customer_claim' => $count_customer_claim,
 			'start' => $start,
 			'end' => $end,
@@ -278,6 +278,30 @@ class Dashboard extends CI_Controller {
 		$listing_deliv = $this->delivery_model->listing_deliv();
 		$count_customer_claim = count($get_customer_claim);
 		$count_deliv = count($listing_deliv);
+		$key_visual = [];
+		$key_non_visual = [];
+		$value_visual = ['Kotor', 'Lecet', 'Tipis', 'Meler', 'Nyerep', 'O Peel', 'Buram', 'Over Cut',
+					'Burry', 'Belang', 'Ngeflek', 'Minyak', 'Dustray', 'Cat Kelupas', 'Bintik Air', 
+					'Finishing Ng', 'Serat', 'Demotograph', 'Lifting', 'Kusam', 'Flow Mark', 'Legok',
+					'Salah Type', 'Getting', 'Part Campur', 'Sinmark', 'Gores', 'Gloss', 'Patah Depan',
+					'Patah Belakang', 'Patah Kanan', 'Patah Kiri', 'Silver', 'Burn Mark', 'Weld Line',
+					'Bubble', 'Black Dot', 'White Dot', 'Isi Tidak Set', 'Gompal', 'Salah label', 'Sobek terkena cutter',
+					'Terbentur (Sobek handling)', 'Kereta (Sobek handling)', 'Terjatuh (Sobek handling)', 'Terkena Gun (Sobek handling)',
+					'Sobek Handling', 'Sobek Staples', 'Staples Lepas', 'Keriput', 'Seaming Ng', 'Nonjol', 'Seal Lepas', 'Cover Ng',
+					'Belum Finishing', 'Foam Ng'];
+		$value_non_visual = ['Deformasi', 'Patah / Crack', 'Part Tidak Lengkap', 'Elector Mark', 'Short Shot', 'Material Asing',
+					'Pecah', 'Stay Lepas', 'Salah Ulir', 'Visual T/A', 'Ulir Ng', 'Rubber TA', 'Hole Ng'];
+		
+		for($i = 1; $i < count($get_field_visual); $i++) {
+			$key_visual[] = json_encode($get_field_visual[$i]);
+		}
+		$label_visual = array_combine($key_visual, $value_visual);
+
+		for($i = 1; $i < count($get_field_non_visual); $i++) {
+			$key_non_visual[] = json_encode($get_field_non_visual[$i]);
+		}
+		$label_non_visual = array_combine($key_non_visual, $value_non_visual);
+
 		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
 		$merge_field_except = [];
 		for($i = 0; $i < count($mergeField); $i++) {
@@ -286,9 +310,11 @@ class Dashboard extends CI_Controller {
 			}
 			$merge_field_except[] = $mergeField[$i];
 		}
+		$mergeLabel = array_merge($label_visual, $label_non_visual);
 		$count_merge_field = count($merge_field_except);
 		$status = $_GET['status_claim'];
 		$customer = $_GET['ganti_customer'];
+		$part = $_GET['ganti_part'];
 		$proses = $_GET['proses'];
 		$daily_year = $_GET['daily_year'];
 		$daily_month = $_GET['daily_month'];
@@ -310,6 +336,12 @@ class Dashboard extends CI_Controller {
 			$customer = null;
 		}
 
+		if($part != null) {
+			$part = $part;
+		} else {
+			$part = null;
+		}
+
 		if($daily_year != null) {
 			$tahun = $daily_year;
 		} else {
@@ -325,17 +357,20 @@ class Dashboard extends CI_Controller {
 		$previous_month = $current_month;
 		$daily = [];
 		$dailyPpm = [];
+		$linked = [];
+		$defects = [];
 		for($tgl = 0; $tgl <= 30; $tgl++) {
 			if($previous_month != $current_month) {
 				break;
 			}
+			$temp = [];
 			$dailySum = 0;
 			$year_month = strtotime("$tahun-$current_month");
 			$fullDate = date("Y-m-d", strtotime("+$tgl day", $year_month));
 			$day = date('d', strtotime($fullDate));
 			$current_month = intval(date("m", strtotime("+$tgl day", $year_month)));
 			if($current_month == $previous_month) {
-				$daily_filter = $this->customerclaim_model->daily_filter($fullDate, $status, $customer, $proses);
+				$daily_filter = $this->customerclaim_model->daily_filter($fullDate, $status, $customer, $proses, $part);
 				$daily_ppm = $this->delivery_model->daily_ppm($fullDate);
 				$count_daily_filter = count($daily_filter);
 				for($i = 0; $i < $count_daily_filter; $i++) {
@@ -344,8 +379,10 @@ class Dashboard extends CI_Controller {
 							$field = $merge_field_except[$j];
 							if($daily_filter[$i]->$field > 0) {
 								$dailySum += $daily_filter[$i]->$field;
+								$temp[$mergeLabel[json_encode($field)]] = $daily_filter[$i]->$field;
 							}
 						}
+						arsort($temp);
 					}
 				}
 				if($daily_ppm->total_qty != null) {
@@ -354,13 +391,17 @@ class Dashboard extends CI_Controller {
 					$ppm = 0;
 				}
 				$daily[$day] = $dailySum;
+				$linked[] = "$day";
 				$dailyPpm[] = $ppm;
+				$defects[] = $temp;
 			}
 		}
 		$data = array(
 			"daily" => $daily,
 			"dailyPpm" => $dailyPpm,
 			"tahun" => $tahun,
+			"linked" => $linked,
+			"defects" => $defects,
 			"bulan" => date("M"),
 			"count_customer_claim" => $count_customer_claim,
 			"count_deliv" => $count_deliv

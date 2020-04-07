@@ -46,6 +46,12 @@ class User_model extends CI_Model {
 		$this->db->update($this->table);
 	}
 
+	public function update_status_online($data) {
+		$this->db->set('online', $data['online']);
+		$this->db->where('id_users', $data['id_users']);
+		$this->db->update($this->table);
+	}
+
 	public function get_username($username) {
 		$this->db->where('username', $username);  
         $query = $this->db->get($this->table);  

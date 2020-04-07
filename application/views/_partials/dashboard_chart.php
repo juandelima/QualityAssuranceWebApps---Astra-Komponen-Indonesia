@@ -10,6 +10,6 @@
 		let date_end = "<?php echo date("Y", strtotime($end)); ?> ";
 		annual_monthly_chart(root_url, last_year, full_year, count_customer_claim, count_deliv);
 		detail_chart(root_url, full_date, date_start, date_end, count_customer_claim);
-		daily_chart(root_url);
+		daily_chart(root_url, count_customer_claim);
 	});
 </script>
