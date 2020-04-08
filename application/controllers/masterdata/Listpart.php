@@ -9,6 +9,7 @@ class Listpart extends CI_Controller {
 		$this->load->helper('text');
 		$this->load->model('customer_model');
 		$this->load->model('listpart_model');
+		$this->load->model('user_model');
 		$this->load->database();
 		$this->load->helper('url');
 	}
@@ -23,10 +24,13 @@ class Listpart extends CI_Controller {
 
 	public function index() {
 		$slug = $this->uri->segment(2);
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$get_data_part = $this->listpart_model->get_data_part();
 		$data = array(
 			'listpart' => $get_data_part,
-			'slug' => $slug
+			'slug' => $slug,
+			'count_user' => $count_user
 		);
 		$this->load->view('master_data/list_part/new_part', $data);
 	}
@@ -121,22 +125,33 @@ class Listpart extends CI_Controller {
 	
 
 	public function create_new_part() {
+		$session_role = $this->session->userdata['role'];
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$slug = $this->uri->segment(3);
+		if($session_role != 'Super Admin' and $session_role != 'Admin') {
+			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
+			redirect(base_url(), 'refresh');
+		}
 		$data = array(
-			'slug' => $slug
+			'slug' => $slug,
+			'count_user' => $count_user
 		);
 		$this->load->view('master_data/list_part/create_new_part', $data);
 	}
 
 	public function create() {
 		$session_role = $this->session->userdata['role'];
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
 			redirect(base_url(), 'refresh');
 		}
 		$customer_model = $this->customer_model->customer_list();
 		$data = array(
-			'customer' => $customer_model
+			'customer' => $customer_model,
+			'count_user' => $count_user
 		);
 		$this->load->view('master_data/list_part/create', $data);
 	}
@@ -193,6 +208,8 @@ class Listpart extends CI_Controller {
 	}
 
 	public function edit($id_part) {
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$session_role = $this->session->userdata['role'];
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
@@ -235,6 +252,7 @@ class Listpart extends CI_Controller {
 		$get_data = array(
 			'part' => $listpart,
 			'customer' => $customer_model,
+			'count_user' => $count_user
 		);		
 
 		$this->load->view('master_data/list_part/edit', $get_data);

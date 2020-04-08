@@ -128,6 +128,7 @@ function daily_chart(root_url, count_customer_claim) {
                     $("#reloading_daily").trigger("click");
                 },
                 success: (data_daily) => {
+                    console.log(data_daily);
                     function load_chart_daily() {
                         FusionCharts.ready(() => {
                             const chartValueDaily = [];

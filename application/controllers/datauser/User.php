@@ -17,6 +17,8 @@ class User extends CI_Controller {
 	
 	public function index() {
 		$session_role = $this->session->userdata['role'];
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
 			redirect(base_url(), 'refresh');
@@ -25,12 +27,15 @@ class User extends CI_Controller {
 		$data_user = $this->user_model->list_user();
 		$data = array(
 			'users' => $data_user,
-			'slug' => $slug
+			'slug' => $slug,
+			'count_user' => $count_user
 		);
 		$this->load->view('user/index', $data);
 	}
 
 	public function create() {
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$session_role = $this->session->userdata['role'];
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
@@ -38,7 +43,8 @@ class User extends CI_Controller {
 		}
 		$slug = $this->uri->segment(3);
 		$data = array(
-			'slug' => $slug
+			'slug' => $slug,
+			'count_user' => $count_user
 		);
 		$this->load->view('user/create', $data);
 	}
@@ -128,7 +134,7 @@ class User extends CI_Controller {
 				'password' => password_hash($this->input->post('password'), PASSWORD_DEFAULT),
 				'role' => $this->input->post('role'),
 				'created_at' => date('Y-m-d H:i:s'),
-				'updated_at' => date('Y-m-d H:i:s')
+				'updated_at' => date('Y-m-d H:i:s'),
 			);
 			$this->user_model->save($data);
 			// $get_user = $this->user_model->list_user();
@@ -144,6 +150,8 @@ class User extends CI_Controller {
 	}
 
 	public function edit_profile($id_user) {
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
 		$session_id = $this->session->userdata['id_users'];
@@ -245,12 +253,15 @@ class User extends CI_Controller {
 
 		$get_data = array(
 			'user' => $user,
-			'slug' => $slug
+			'slug' => $slug,
+			'count_user' => $count_user
 		);
 		$this->load->view('user/edit_profile', $get_data);	
 	}
 
 	public function edit($id_user) {
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
 		$session_role = $this->session->userdata['role'];
@@ -345,7 +356,8 @@ class User extends CI_Controller {
 
 		$get_data = array(
 			'user' => $user,
-			'slug' => $slug
+			'slug' => $slug,
+			'count_user' => $count_user
 		);
 		$this->load->view('user/edit', $get_data);		
 	}

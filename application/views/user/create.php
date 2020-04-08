@@ -114,6 +114,8 @@
 		<?php $this->load->view('_partials/lists_chat.php'); ?>
 	</div>
 	<?php $this->load->view('_partials/js.php'); ?>
+	<script src="<?php echo site_url('assets/js/chatting/chat.js'); ?>"></script>
+	<?php $this->load->view('_partials/chatting'); ?>
 	<script>
 		jQuery(document).ready( function($) {
 			$('#show').click(function(){

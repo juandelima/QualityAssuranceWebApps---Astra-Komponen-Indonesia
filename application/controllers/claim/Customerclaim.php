@@ -9,6 +9,7 @@ class Customerclaim extends CI_Controller {
 		$this->load->model('customerclaim_model');
 		$this->load->model('listpart_model');
 		$this->load->model('delivery_model');
+		$this->load->model('user_model');
 		$this->load->helper('date');
 		$this->load->helper('url');
 	}
@@ -20,6 +21,8 @@ class Customerclaim extends CI_Controller {
 		$get_customer_claim = $this->customerclaim_model->get_customer_claim();
 		$get_customer_claim_distinct = $this->customerclaim_model->get_customer_claim_distinct();
 		$get_customer_claim_sort_by_date = $this->customerclaim_model->get_customer_claim_sort_by_date();
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$count_customer_claim = count($get_customer_claim);
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
@@ -39,13 +42,16 @@ class Customerclaim extends CI_Controller {
 			'count_customer_claim' => $count_customer_claim,
 			'start' => $start,
 			'end' => $end,
-			'slug' => $slug
+			'slug' => $slug,
+			'count_user' => $count_user
 		);
 		$this->load->view('customer_claim/index', $data);
 	} 
 	
 
  	public function create_customerclaim() {
+		$listing_user = $this->user_model->list_user();
+		$count_user = count($listing_user) - 1;
 		$session_role = $this->session->userdata['role'];
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
@@ -70,7 +76,8 @@ class Customerclaim extends CI_Controller {
 			'listpart' => $listpart_model,
 			'non_visual_field' => $merge_field_filter,
 			'slug' => $slug,
-			'list_customer' => $list_customer
+			'list_customer' => $list_customer,
+			'count_user' => $count_user
 		);
 		$this->load->view('customer_claim/tambah', $data);
 	}

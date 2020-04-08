@@ -379,12 +379,26 @@ class Dashboard extends CI_Controller {
 							$field = $merge_field_except[$j];
 							if($daily_filter[$i]->$field > 0) {
 								$dailySum += $daily_filter[$i]->$field;
-								$temp[$mergeLabel[json_encode($field)]] = $daily_filter[$i]->$field;
 							}
 						}
-						arsort($temp);
 					}
 				}
+
+				for($i = 0; $i < $count_merge_field; $i++) {
+					$defectSum = 0;
+					for($j = 0; $j < $count_daily_filter; $j++) {
+						if(!empty($daily_filter[$j])) {
+							$field = $merge_field_except[$i];
+							if($daily_filter[$j]->$field > 0) {
+								$defectSum += $daily_filter[$j]->$field;
+								$temp[$mergeLabel[json_encode($field)]] = $defectSum;
+							}
+						}
+					}
+					arsort($temp);
+				}
+
+
 				if($daily_ppm->total_qty != null) {
 					$ppm = $daily_ppm->total_qty;
 				} else {

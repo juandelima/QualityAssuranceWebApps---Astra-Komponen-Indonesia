@@ -416,6 +416,8 @@
 	<?php $this->load->view('_partials/js.php'); ?>
 	<?php $this->load->view('_partials/js_add_customerclaim.php'); ?>
 	<?php $this->load->view('_partials/js_customer_non_ahm.php'); ?>
+	<script src="<?php echo site_url('assets/js/chatting/chat.js'); ?>"></script>
+	<?php $this->load->view('_partials/chatting'); ?>
 </body>
 </html>
 

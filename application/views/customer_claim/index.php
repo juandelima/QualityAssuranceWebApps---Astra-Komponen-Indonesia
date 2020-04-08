@@ -158,6 +158,44 @@
 		.status {
 			font-weight: bolder;
 		}
+
+		.modal-dialog {
+			width: 80%;
+		}
+
+		/* 
+		##Device = Tablets, Ipads (landscape)
+		##Screen = B/w 768px to 1024px
+		*/
+
+		@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+			.modal-dialog {
+				width: 90%!important;
+			}
+		
+		}
+
+		/* 
+		##Device = Low Resolution Tablets, Mobiles (Landscape)
+		##Screen = B/w 481px to 767px
+		*/
+
+		@media (min-width: 481px) and (max-width: 767px) {
+			.modal-dialog {
+				width: 90%!important;
+			}
+		}
+
+		/* 
+		##Device = Most of the Smartphones Mobiles (Portrait)
+		##Screen = B/w 320px to 479px
+		*/
+
+		@media (min-width: 320px) and (max-width: 480px) {
+			.modal-dialog {
+				width: 90%!important;
+			}
+		}
 	</style>
 </head>
 <body class="page-body skin-facebook" data-url="http://neon.dev">
@@ -401,7 +439,7 @@
 					?>
 					
 					<div class="modal fade" id="upload-ppt<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 50%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -438,7 +476,7 @@
 					
 
 					<div class="modal fade" id="modal_view_pica_files<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 90%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -470,7 +508,7 @@
 
 
 					<div class="modal fade" id="upload-ofp<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 50%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -506,7 +544,7 @@
 					</div>
 
 					<div class="modal fade" id="modal_view_ofp_files<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 90%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -537,7 +575,7 @@
 
 
 					<div class="modal fade" id="pergantian-part<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 50%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -590,7 +628,7 @@
 					</div>
 					
 					<div class="modal fade" id="sortir-stock<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 50%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -627,7 +665,7 @@
 													</div>
 												</div>
 												<div class="form-group" style="padding: 10px;">
-													<table class="table table-bordered">
+													<table class="table table-bordered" id="table_sortir_problem<?php echo $id; ?>">
 														<thead>
 															<tr>
 																<th><b>Problem</b></th>
@@ -642,7 +680,7 @@
 													</table>
 												</div>
 												<div class="form-group" style="padding: 10px;" style="margin-top: -10px;">
-													<table class="table table-bordered">
+													<table class="table table-bordered" id="table_sortir_stock<?php echo $id; ?>">
 														<thead>
 															<tr>
 																<th><b>Stock</b></th>
@@ -695,7 +733,7 @@
 					</div>
 
 					<div class="modal fade" id="pfmea<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 50%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -727,7 +765,7 @@
 					</div>
 					
 					<div class="modal fade" id="modal_view_files<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 90%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -761,7 +799,7 @@
 					?>
 				</div>
 				<div class="modal fade" id="form_delivery">
-						<div class="modal-dialog" style="width: 50%;">
+						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -805,7 +843,7 @@
 						</div>
 					</div>
 				<div class="modal fade" id="modal-error-ajax">
-					<div class="modal-dialog" style="width: 50%;">
+					<div class="modal-dialog">
 						<div class="modal-content">
 							<div class="modal-body">						
 								<div class="row">
@@ -827,9 +865,11 @@
 	<link rel="stylesheet" href="<?php echo site_url('assets/js/daterangepicker/daterangepicker-bs3.css'); ?>">
 	<?php $this->load->view('_partials/js.php'); ?>
 	<script src="<?php echo site_url('assets/js/icheck/icheck.min.js'); ?>"></script>
-	<script src="http://malsup.github.com/jquery.form.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.js"></script>
 	<script src="<?php echo site_url('assets/js/customer_claim/delivery.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/customer_claim/filter_customer_claim.js'); ?>"></script>
 	<?php $this->load->view('_partials/customer_claim.php'); ?>
+	<script src="<?php echo site_url('assets/js/chatting/chat.js'); ?>"></script>
+	<?php $this->load->view('_partials/chatting'); ?>
 </body>
 </html>

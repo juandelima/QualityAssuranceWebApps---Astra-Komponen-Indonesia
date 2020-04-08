@@ -41,6 +41,12 @@ function customer_claim_table(root_url) {
                                                 }
                                             },
                                             "lengthChange": false,
+                                            "JQueryUI":true,
+                                            "scrollCollapse":true,
+                                            "paging": false,
+                                            "initComplete": function (settings, json) {  
+                                                $("#table_skeleton").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                                            },
                                         });
         
 
@@ -239,6 +245,13 @@ function customer_claim_table(root_url) {
                                                 }
                                             },
                                             "lengthChange": false,
+                                            "JQueryUI":true,
+                                            "scrollCollapse":true,
+                                            "paging": false,
+                                            "initComplete": function (settings, json) {  
+                                                $("#table_file_pfmea"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                                            },
+                                            
                                     });
                                     
                                     let table_file_pica = $("#table_file_pica"+id_claim).DataTable({
@@ -250,6 +263,12 @@ function customer_claim_table(root_url) {
                                                 }
                                             },
                                             "lengthChange": false,
+                                            "JQueryUI":true,
+                                            "scrollCollapse":true,
+                                            "paging": false,
+                                            "initComplete": function (settings, json) {  
+                                                $("#table_file_pica"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                                            },
                                     });
 
                                     let table_file_ofp = $("#table_file_ofp"+id_claim).DataTable({
@@ -261,6 +280,46 @@ function customer_claim_table(root_url) {
                                                 }
                                             },
                                             "lengthChange": false,
+                                            "JQueryUI":true,
+                                            "scrollCollapse":true,
+                                            "paging": false,
+                                            "initComplete": function (settings, json) {  
+                                                $("#table_file_ofp"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                                            },
+                                    });
+
+                                    let table_sortir_problem = $("#table_sortir_problem"+id_claim).DataTable({
+                                        "oLanguage": {
+                                            "sSearch": "Search:",
+                                            "oPaginate": {
+                                                "sPrevious": "Previous",
+                                                "sNext": "Next"
+                                            }
+                                        },
+                                        "lengthChange": false,
+                                        "JQueryUI":true,
+                                        "scrollCollapse":true,
+                                        "paging": false,
+                                        "initComplete": function (settings, json) {  
+                                            $("#table_sortir_problem"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                                        },
+                                    });
+
+                                    let table_sortir_stock = $("#table_sortir_stock"+id_claim).DataTable({
+                                        "oLanguage": {
+                                            "sSearch": "Search:",
+                                            "oPaginate": {
+                                                "sPrevious": "Previous",
+                                                "sNext": "Next"
+                                            }
+                                        },
+                                        "lengthChange": false,
+                                        "JQueryUI":true,
+                                        "scrollCollapse":true,
+                                        "paging": false,
+                                        "initComplete": function (settings, json) {  
+                                            $("#table_sortir_stock"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                                        },
                                     });
 
                                     $("#table_customer_claim").on('click', '#modal-upload-ppt'+id_claim+'', function() {
