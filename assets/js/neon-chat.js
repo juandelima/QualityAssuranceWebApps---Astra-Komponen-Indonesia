@@ -34,7 +34,7 @@ var neonChat = neonChat || {
 
 
 	$.extend(neonChat, {
-
+		
 		init: function()
 		{
 			// Implement Unique ID in case it doesn't exists
@@ -81,12 +81,15 @@ var neonChat = neonChat || {
 			// Texarea
 			$textarea.keydown(function(e)
 			{
-				if(e.keyCode == 13 && !e.shiftKey) {
-					
+				if(e.keyCode == 13 && !e.shiftKey)
+				{
 					e.preventDefault();
 					neonChat.submitMessage();
 					return false;
-				} else if(e.keyCode == 27) {
+				}
+				else
+				if(e.keyCode == 27)
+				{
 					neonChat.close();
 				}
 			});
@@ -251,13 +254,14 @@ var neonChat = neonChat || {
 		submitMessage: function() // Submit whats on textarea
 		{
 			var msg = $.trim($textarea.val());
-			$textarea.val('');
+
+			// $textarea.val('');
 			if(this.isOpen && this.$current_user)
 			{
 				var id = this.$current_user.uniqueId().attr('id');
 
 				this.pushMessage(id, msg.replace( /<.*?>/g, '' ), $chat.data('current-user'), new Date());
-				this.renderMessages(id);
+				// this.renderMessages(id);
 			}
 		},
 
@@ -577,7 +581,7 @@ var neonChat = neonChat || {
 				user.$el.find('.badge').html('0').addClass('is-hidden');
 			}
 		},
-
+		
 		// Groups
 		createGroup: function(name, prepend)
 		{
@@ -643,7 +647,7 @@ var neonChat = neonChat || {
 			if($group && $group.length)
 			{
 				var status = this.statuses[status],
-					$user = $('<a href="#"><span class="user-status '+ status.class +'"></span> <em>'+ display_name +'</em> <span class="badge badge-info is-hidden>0</span></a>');
+					$user = $('<a href="#"><span class="user-status '+ status.class +'"></span> <em>'+ display_name +'</em> <span class="badge badge-info is-hidden">0</span></a>');
 
 				if(user_id)
 				{
@@ -881,7 +885,6 @@ var neonChat = neonChat || {
 	// Set Cursor
 	$conversation_body.on('click', function()
 	{
-		console.log('AU AH');
 		$textarea.focus();
 	});
 

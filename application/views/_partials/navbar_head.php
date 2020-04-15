@@ -28,7 +28,7 @@
 				<div class="col-md-6 col-sm-4 clearfix hidden-xs">
 					<ul class="list-inline links-list pull-right">
 						<li>
-							<a href="#" data-toggle="chat" data-collapse-sidebar="1" id="open_chatting">
+							<a href="#" data-toggle="chat" data-collapse-sidebar="1">
 								<i class="entypo-chat"></i>
 								Chat
 			

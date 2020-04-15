@@ -163,7 +163,12 @@
 				}
 			},
 			"pageLength": 6,
-			"lengthChange": false
+			"lengthChange": false,
+			"JQueryUI":true,
+            "scrollCollapse":true,
+            "initComplete": function (settings, json) {  
+                $("#table-1").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+            },
 		});
 	});
 </script>

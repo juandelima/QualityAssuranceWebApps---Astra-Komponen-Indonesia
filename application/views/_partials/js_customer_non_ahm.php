@@ -11,6 +11,11 @@
 			},
             "pageLength": 10,
 			"lengthChange": false,
+            "JQueryUI":true,
+            "scrollCollapse":true,
+            "initComplete": function (settings, json) {  
+                $("#table-non-ahm").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+            },
 		});
 		
         $("#search_part_nonahm").hide();
@@ -452,7 +457,12 @@
                             "sPrevious": "Previous",
                             "sNext": "Next"
                         }
-                    }
+					},
+					"JQueryUI":true,
+           	 		"scrollCollapse":true,
+					"initComplete": function (settings, json) {  
+						$("#parts_table_nonahm"+loop_nonahm).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+					},
 			    });
 
 				$("#visual-"+loop_nonahm).DataTable({
@@ -463,7 +473,12 @@
 							"sNext": "Next"
 						}
 					},
-					"pageLength": 56
+					"pageLength": 56,
+					"JQueryUI":true,
+           	 		"scrollCollapse":true,
+					"initComplete": function (settings, json) {  
+						$("#visual-"+loop_nonahm).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+					},
 				});
 				$("#non_visual_"+loop_nonahm).DataTable({
 					"oLanguage": {
@@ -473,7 +488,12 @@
 							"sNext": "Next"
 						}
 					},
-					"pageLength": 56
+					"pageLength": 56,
+					"JQueryUI":true,
+           	 		"scrollCollapse":true,
+					"initComplete": function (settings, json) {  
+						$("#non_visual_"+loop_nonahm).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+					},
 				});
 
                 $("#add_form_part").on('click', '#modal_parts_non_ahm_'+loop_nonahm, function() {

@@ -105,6 +105,14 @@
 						</a>
 					</li>
 				<?php } ?>
+				<?php if($this->session->userdata['role'] != 'User' || $this->session->userdata['role'] != 'Admin') { ?>
+					<li <?php if($slug == 'aktivitas') { ?>class="active"<?php } ?>>
+						<a href="<?php echo base_url('aktivitas'); ?>">
+							<i class="entypo-retweet"></i>
+							<span class="title">Aktivitas User</span>
+						</a>
+					</li>
+				<?php } ?>
 				<li>
 					<a href="<?php echo base_url('login/logout'); ?>">
 						<i class="entypo-logout"></i>

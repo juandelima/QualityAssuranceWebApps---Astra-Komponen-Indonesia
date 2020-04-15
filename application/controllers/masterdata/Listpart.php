@@ -10,6 +10,7 @@ class Listpart extends CI_Controller {
 		$this->load->model('customer_model');
 		$this->load->model('listpart_model');
 		$this->load->model('user_model');
+		$this->load->model('aktivitas_model');
 		$this->load->database();
 		$this->load->helper('url');
 	}
@@ -27,10 +28,13 @@ class Listpart extends CI_Controller {
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
 		$get_data_part = $this->listpart_model->get_data_part();
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		$data = array(
 			'listpart' => $get_data_part,
 			'slug' => $slug,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('master_data/list_part/new_part', $data);
 	}
@@ -87,7 +91,15 @@ class Listpart extends CI_Controller {
 				'created_at' => $created_at,
 				'updated_at' => $updated_at
 			);
-
+			$id_user = $this->session->userdata('id_users');
+			$nama_part = $data2["nama_part"];
+			$data_aktivitas = array(
+				"id_user" => $id_user,
+				"aktivitas" => "telah menambahkan $nama_part sebagai part terbaru",
+				"tgl" => date("Y-m-d"),
+				"jam" => date("H:i:s")
+			);
+			$this->aktivitas_model->save_aktivitas($data_aktivitas);
 			$this->listpart_model->save_new_part($data);
 			$this->listpart_model->save_part($data2);
 			$this->session->set_flashdata('sukses', 'DATA BARU PART BERHASIL TERSIMPAN');
@@ -144,6 +156,8 @@ class Listpart extends CI_Controller {
 		$session_role = $this->session->userdata['role'];
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
 			redirect(base_url(), 'refresh');
@@ -151,7 +165,8 @@ class Listpart extends CI_Controller {
 		$customer_model = $this->customer_model->customer_list();
 		$data = array(
 			'customer' => $customer_model,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('master_data/list_part/create', $data);
 	}
@@ -211,6 +226,8 @@ class Listpart extends CI_Controller {
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
 		$session_role = $this->session->userdata['role'];
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
 			redirect(base_url(), 'refresh');
@@ -252,7 +269,8 @@ class Listpart extends CI_Controller {
 		$get_data = array(
 			'part' => $listpart,
 			'customer' => $customer_model,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);		
 
 		$this->load->view('master_data/list_part/edit', $get_data);

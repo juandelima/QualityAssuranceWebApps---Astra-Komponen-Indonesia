@@ -8,6 +8,7 @@ class Powerpoint extends CI_Controller {
 		$this->load->model('customer_model');
 		$this->load->model('customerclaim_model');
 		$this->load->model('listpart_model');
+		$this->load->model('aktivitas_model');
 		$this->load->library('upload');
 	}
 
@@ -51,6 +52,14 @@ class Powerpoint extends CI_Controller {
 			}
 			$this->customerclaim_model->update_id_pica($id_customer_claim);
 			$select_claim_last_update = $this->customerclaim_model->select_claim($id_customer_claim);
+			$id_user = $this->session->userdata('id_users');
+			$data_aktivitas = array(
+				"id_user" => $id_user,
+				"aktivitas" => "telah mengupload file pica sebanyak $filesCount file pada part $select_claim_last_update->nama_part",
+				"tgl" => date("Y-m-d"),
+				"jam" => date("H:i:s")
+			);
+			$this->aktivitas_model->save_aktivitas($data_aktivitas);
 			$output = array(
 				'select_claim' => $select_claim_last_update,
 				'due_date' => $due_date,
@@ -97,6 +106,14 @@ class Powerpoint extends CI_Controller {
 			}
 			$this->customerclaim_model->update_id_ofp($id_customer_claim);
 			$select_claim_last_update = $this->customerclaim_model->select_claim($id_customer_claim);
+			$id_user = $this->session->userdata('id_users');
+			$data_aktivitas = array(
+				"id_user" => $id_user,
+				"aktivitas" => "telah mengupload file OFP sebanyak $filesCount file pada part $select_claim_last_update->nama_part",
+				"tgl" => date("Y-m-d"),
+				"jam" => date("H:i:s")
+			);
+			$this->aktivitas_model->save_aktivitas($data_aktivitas);
 			$output = array(
 				'select_claim' => $select_claim_last_update,
 			);
@@ -141,6 +158,14 @@ class Powerpoint extends CI_Controller {
 			}
 			$this->customerclaim_model->update_id_pfmea($id_customer_claim);
 			$select_claim_last_update = $this->customerclaim_model->select_claim($id_customer_claim);
+			$id_user = $this->session->userdata('id_users');
+			$data_aktivitas = array(
+				"id_user" => $id_user,
+				"aktivitas" => "telah mengupload file PFMEA sebanyak $filesCount file pada part $select_claim_last_update->nama_part",
+				"tgl" => date("Y-m-d"),
+				"jam" => date("H:i:s")
+			);
+			$this->aktivitas_model->save_aktivitas($data_aktivitas);
 			$output = array(
 				'select_claim' => $select_claim_last_update,
 			);

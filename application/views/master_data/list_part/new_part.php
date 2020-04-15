@@ -132,7 +132,11 @@
 			},
 			"pageLength": 10,
 			"lengthChange": false,
-			// "scrollX": true
+			"JQueryUI":true,
+            "scrollCollapse":true,
+            "initComplete": function (settings, json) {  
+                $("#table-1").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+            },
 		});
 	});
 </script>

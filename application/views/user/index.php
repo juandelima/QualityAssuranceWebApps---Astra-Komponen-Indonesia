@@ -1,3 +1,6 @@
+<?php
+	$this->simple_login->cek_login();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,7 +172,12 @@
 					"sPrevious": "Previous",
 					"sNext": "Next"
 				}
-			}
+			},
+			"JQueryUI":true,
+            "scrollCollapse":true,
+            "initComplete": function (settings, json) {  
+                $("#table-1").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+            },
 		});
 	});
 </script>

@@ -170,7 +170,7 @@
 
 		@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
 			.modal-dialog {
-				width: 90%!important;
+				width: 95%!important;
 			}
 		
 		}
@@ -182,7 +182,7 @@
 
 		@media (min-width: 481px) and (max-width: 767px) {
 			.modal-dialog {
-				width: 90%!important;
+				width: 95%!important;
 			}
 		}
 
@@ -193,7 +193,7 @@
 
 		@media (min-width: 320px) and (max-width: 480px) {
 			.modal-dialog {
-				width: 90%!important;
+				width: 95%!important;
 			}
 		}
 	</style>
@@ -402,7 +402,6 @@
 									</tr>
 									<?php } ?>
 								</tbody>
-								
 							</table>
 						</div>
 						<div id="main-table" class="hide-main-table">
@@ -628,7 +627,7 @@
 					</div>
 					
 					<div class="modal fade" id="sortir-stock<?php echo $id; ?>">
-						<div class="modal-dialog">
+						<div class="modal-dialog" style="width: 50%">
 							<div class="modal-content">
 								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

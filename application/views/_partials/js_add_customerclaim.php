@@ -175,7 +175,7 @@
 				'</div>'+
 				'</div>'+
 
-				'<table class="table table-bordered table-responsive">'+
+				'<table class="table table-bordered table-responsive" id="table-qgi-point'+loop+'">'+
 				'<thead>'+
 				'<tr>'+
 				'<th>HS</th>'+
@@ -443,7 +443,13 @@
 							"sPrevious": "Previous",
 							"sNext": "Next"
 						}
-					}
+					},
+					"lengthChange": true,
+                    "JQueryUI":true,
+                    "scrollCollapse":true,
+                    "initComplete": function (settings, json) {  
+                        $("#parts_table_"+loop).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                    },
 				});
 				$("#visual-"+loop).DataTable({
 					"oLanguage": {
@@ -453,7 +459,13 @@
 							"sNext": "Next"
 						}
 					},
-					"pageLength": 56
+					"pageLength": 56,
+					"lengthChange": false,
+                    "JQueryUI":true,
+                    "scrollCollapse":true,
+                    "initComplete": function (settings, json) {  
+                        $("#visual-"+loop).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                    },
 				});
 				$("#non_visual_"+loop).DataTable({
 					"oLanguage": {
@@ -463,9 +475,33 @@
 							"sNext": "Next"
 						}
 					},
-					"pageLength": 56
+					"pageLength": 13,
+					"lengthChange": false,
+                    "JQueryUI":true,
+                    "scrollCollapse":true,
+                    "initComplete": function (settings, json) {  
+                        $("#non_visual_"+loop).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                    },
 				});
 
+				$("#table-qgi-point"+loop).DataTable({
+					"oLanguage": {
+						"sSearch": "Search:",
+						"oPaginate": {
+							"sPrevious": "Previous",
+							"sNext": "Next"
+						}
+					},
+					"pageLength": 13,
+					"lengthChange": false,
+                    "JQueryUI":true,
+                    "scrollCollapse":true,
+                    "initComplete": function (settings, json) {  
+                        $("#table-qgi-point"+loop).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                    },
+				});
+
+				
 				$("#add_form_part").on('click', '#modal_parts_'+loop, function() {
 					var loop2 = loop - 1;
 					$(".modal_parts_tbl_"+loop2).modal('show');
@@ -992,7 +1028,13 @@
 						"sPrevious": "Previous",
 						"sNext": "Next"
 					}
-				}
+				},
+				"lengthChange": true,
+                "JQueryUI":true,
+                "scrollCollapse":true,
+                "initComplete": function (settings, json) {  
+                    $("#table-1").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                },
 			});
 
 			$('#visual').DataTable({
@@ -1004,6 +1046,12 @@
 					}
 				},
 				"pageLength": 56,
+				"lengthChange": false,
+                "JQueryUI":true,
+                "scrollCollapse":true,
+                "initComplete": function (settings, json) {  
+                    $("#visual").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                },
 			});
 
 			$('#non_visual').DataTable({
@@ -1015,9 +1063,30 @@
 					}
 				},
 				"pageLength": 13,
-				// "lengthChange": false,
+				"lengthChange": false,
+                "JQueryUI":true,
+                "scrollCollapse":true,
+                "initComplete": function (settings, json) {  
+                    $("#non_visual").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                },
 			});
 
+			$('#table-qgi-point').DataTable({
+				"oLanguage": {
+					"sSearch": "Search:",
+					"oPaginate": {
+						"sPrevious": "Previous",
+						"sNext": "Next"
+					}
+				},
+				"pageLength": 13,
+				"lengthChange": false,
+                "JQueryUI":true,
+                "scrollCollapse":true,
+                "initComplete": function (settings, json) {  
+                    $("#table-qgi-point").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+                },
+			});
 
 			$("#total_claim_surat").keyup(function() {
 				var value = $(this).val();

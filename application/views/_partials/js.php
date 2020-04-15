@@ -33,7 +33,14 @@
 	<script src="<?php echo site_url('assets/js/daterangepicker/daterangepicker.js'); ?>"></script>
 	<!-- JavaScripts initializations and stuff -->
 	<script src="<?php echo site_url('assets/js/neon-custom.js'); ?>"></script>
-
+	<script src="<?php echo site_url('assets/js/activity/user_activity.js'); ?>"></script>
 
 	<!-- Demo Settings -->
 	<script src="<?php echo site_url('assets/js/neon-demo.js'); ?>"></script>
+	<script>
+		let base_url = "<?php echo base_url(); ?>";
+		let count_aktivitas = <?php echo $count_aktivitas ?>;
+		let id_user = <?php echo $this->session->userdata('id_users') ?>;
+		let from_opponent = "<?php echo $this->session->userdata('full_name') ?>";
+		user_activity(base_url, count_aktivitas, id_user);
+	</script>

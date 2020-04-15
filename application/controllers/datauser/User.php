@@ -7,6 +7,7 @@ class User extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->load->model('user_model');
+		$this->load->model('aktivitas_model');
 		$this->load->helper('url');
 	}
 	
@@ -19,6 +20,8 @@ class User extends CI_Controller {
 		$session_role = $this->session->userdata['role'];
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
 			redirect(base_url(), 'refresh');
@@ -28,7 +31,8 @@ class User extends CI_Controller {
 		$data = array(
 			'users' => $data_user,
 			'slug' => $slug,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('user/index', $data);
 	}
@@ -37,6 +41,8 @@ class User extends CI_Controller {
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
 		$session_role = $this->session->userdata['role'];
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
 			redirect(base_url(), 'refresh');
@@ -44,7 +50,8 @@ class User extends CI_Controller {
 		$slug = $this->uri->segment(3);
 		$data = array(
 			'slug' => $slug,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('user/create', $data);
 	}
@@ -137,13 +144,14 @@ class User extends CI_Controller {
 				'updated_at' => date('Y-m-d H:i:s'),
 			);
 			$this->user_model->save($data);
-			// $get_user = $this->user_model->list_user();
-			// $get_pass = $this->user_model->edit_user($get_user[0]->id_users);
-			// $data_reset = array(
-			// 	'password' => $get_pass->password,
-			// 	'id_user' => $get_pass->id_users
-			// );
-			// $this->user_model->reset_password($data_reset);
+			$id_user = $this->session->userdata('id_users');
+			$data_aktivitas = array(
+				"id_user" => $id_user,
+				"aktivitas" => "telah membuat user baru",
+				"tgl" => date("Y-m-d"),
+				"jam" => date("H:i:s")
+			);
+			$this->aktivitas_model->save_aktivitas($data_aktivitas);
 			$this->session->set_flashdata('sukses', 'USER '.strtoupper($data['full_name']).' BERHASIL DITAMBAHKAN!');
 			redirect(base_url('datauser/user'), 'refresh');
 		}
@@ -154,6 +162,8 @@ class User extends CI_Controller {
 		$count_user = count($listing_user) - 1;
 		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		$session_id = $this->session->userdata['id_users'];
 		if($session_id != $user->id_users) {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
@@ -221,6 +231,13 @@ class User extends CI_Controller {
 					'created_at' => date('Y-m-d H:i:s'),
 					'updated_at' => date('Y-m-d H:i:s')
 				);
+				$data_aktivitas = array(
+					"id_user" => $this->session->userdata('id_users'),
+					"aktivitas" => "telah mengubah password",
+					"tgl" => date("Y-m-d"),
+					"jam" => date("H:i:s")
+				);
+				$this->aktivitas_model->save_aktivitas($data_aktivitas);
 				$this->user_model->update_user($data);
 				$this->simple_login->logout_changePassword();
 			} else {
@@ -246,6 +263,14 @@ class User extends CI_Controller {
 					$this->session->set_userdata($session_data);
 					$this->user_model->update_user($data);
 				}
+				$id_user = $this->session->userdata('id_users');
+				$data_aktivitas = array(
+					"id_user" => $id_user,
+					"aktivitas" => "telah mengedit profile",
+					"tgl" => date("Y-m-d"),
+					"jam" => date("H:i:s")
+				);
+				$this->aktivitas_model->save_aktivitas($data_aktivitas);
 				$this->session->set_flashdata('success', 'PROFILE ANDA TELAH DIUPDATE!');
 				redirect(base_url(), 'refresh');
 			}
@@ -254,7 +279,8 @@ class User extends CI_Controller {
 		$get_data = array(
 			'user' => $user,
 			'slug' => $slug,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('user/edit_profile', $get_data);	
 	}
@@ -264,6 +290,8 @@ class User extends CI_Controller {
 		$count_user = count($listing_user) - 1;
 		$slug = $this->uri->segment(2);
 		$user = $this->user_model->edit_user($id_user);
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		$session_role = $this->session->userdata['role'];
 		if($session_role != 'Super Admin') {
 			$this->session->set_flashdata('hapus', "CANNOT ACCESS THIS PAGE!!!");
@@ -322,6 +350,14 @@ class User extends CI_Controller {
 					'created_at' => date('Y-m-d H:i:s'),
 					'updated_at' => date('Y-m-d H:i:s')
 				);
+				$id_user = $this->session->userdata('id_users');
+				$data_aktivitas = array(
+					"id_user" => $id_user,
+					"aktivitas" => "telah mengubah password",
+					"tgl" => date("Y-m-d"),
+					"jam" => date("H:i:s")
+				);
+				$this->aktivitas_model->save_aktivitas($data_aktivitas);
 				$this->user_model->update_user($data);
 				$this->simple_login->logout_changePassword();
 			} else {
@@ -348,6 +384,14 @@ class User extends CI_Controller {
 					$this->session->set_userdata($session_data);
 					$this->user_model->update_user($data);
 				}
+				$id_user = $this->session->userdata('id_users');
+				$data_aktivitas = array(
+					"id_user" => $id_user,
+					"aktivitas" => "telah mengubah profile $user->full_name",
+					"tgl" => date("Y-m-d"),
+					"jam" => date("H:i:s")
+				);
+				$this->aktivitas_model->save_aktivitas($data_aktivitas);
 				$this->session->set_flashdata('sukses', 'DATA USER '.strtoupper($data['full_name']).' BERHASIL DIUPDATE!');
 				redirect(base_url('datauser/user'), 'refresh');
 			}
@@ -357,7 +401,8 @@ class User extends CI_Controller {
 		$get_data = array(
 			'user' => $user,
 			'slug' => $slug,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('user/edit', $get_data);		
 	}

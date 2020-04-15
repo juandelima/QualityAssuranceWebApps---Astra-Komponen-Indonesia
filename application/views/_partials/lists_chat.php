@@ -7,7 +7,7 @@
 			<span class="badge badge-success is-hidden">0</span>
 		</h2>
 
-        <div class="chat-group" id="group-2">
+        <div class="chat-group">
 			<!-- <strong>Work</strong> -->
 			<!-- <a href="#"><span class="user-status is-offline"></span><em>Robert J. Garcia</em></a>
 			<a href="#"><span class="user-status is-offline"></span><em>Daniel A. Pena</em></a>
@@ -18,9 +18,9 @@
 	<div class="chat-conversation">
         <div class="conversation-header" id="conversation">
             <a href="#" class="conversation-close"><i class="entypo-cancel"></i></a>
-            <!-- <span class="user-status"></span> -->
+            <span class="user-status"></span>
             <span class="display-name"></span>
-            <!-- <small class="status_login"></small> -->
+            <small class="status_login"></small>
         </div>
 
         <ul class="conversation-body">
@@ -28,7 +28,7 @@
         </ul>
 
         <div class="chat-textarea">
-            <textarea class="form-control autogrow" placeholder="Type a message"></textarea>
+            <textarea name="message" class="form-control autogrow" placeholder="Type a message" id="message"></textarea>
         </div>
     </div>
 </div>

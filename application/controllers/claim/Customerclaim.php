@@ -10,6 +10,7 @@ class Customerclaim extends CI_Controller {
 		$this->load->model('listpart_model');
 		$this->load->model('delivery_model');
 		$this->load->model('user_model');
+		$this->load->model('aktivitas_model');
 		$this->load->helper('date');
 		$this->load->helper('url');
 	}
@@ -24,6 +25,8 @@ class Customerclaim extends CI_Controller {
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
 		$count_customer_claim = count($get_customer_claim);
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
 			$getEnd = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date) - 1]->tgl_input;
@@ -43,7 +46,8 @@ class Customerclaim extends CI_Controller {
 			'start' => $start,
 			'end' => $end,
 			'slug' => $slug,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('customer_claim/index', $data);
 	} 
@@ -61,7 +65,8 @@ class Customerclaim extends CI_Controller {
 		$slug = $this->uri->segment(3);
 		$get_field_visual = $this->customerclaim_model->list_field_visual();
 		$get_field_non_visual = $this->customerclaim_model->list_field_non_visual();
-		
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
 		$merge_field = array_merge($get_field_visual, $get_field_non_visual);
 		$merge_field_filter = [];
 		$count_merge_field = count($merge_field);
@@ -77,7 +82,8 @@ class Customerclaim extends CI_Controller {
 			'non_visual_field' => $merge_field_filter,
 			'slug' => $slug,
 			'list_customer' => $list_customer,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'count_aktivitas' => $count_aktivitas
 		);
 		$this->load->view('customer_claim/tambah', $data);
 	}
@@ -575,17 +581,32 @@ class Customerclaim extends CI_Controller {
 				$this->customerclaim_model->save_non_visual($data_non_multiple);
 			}
 
+			$id_user = $this->session->userdata('id_users');
+			$data_aktivitas = array(
+				"id_user" => $id_user,
+				"aktivitas" => "telah melakukan customer claim",
+				"tgl" => date("Y-m-d"),
+				"jam" => date("H:i:s")
+			);
+			$this->aktivitas_model->save_aktivitas($data_aktivitas);
 			$this->session->set_flashdata('sukses', 'CUSTOMER CLAIM TELAH DI SIMPAN!');
 			redirect(base_url('claim/customerclaim'), 'refresh');
 		}
 	}
 
 	public function save_delivery() {
-		
 		$tgl = $_POST['tgl_deliv'];
 		$qty = $_POST['qty'];
 		$strTgl_toTime = date('Y-m-d', strtotime($tgl));
 		$result = $this->delivery_model->save_delivery($strTgl_toTime, $qty);
+		$id_user = $this->session->userdata('id_users');
+		$data_aktivitas = array(
+			"id_user" => $id_user,
+			"aktivitas" => "telah melakukan delivery sebanyak $qty part",
+			"tgl" => date("Y-m-d"),
+			"jam" => date("H:i:s")
+		);
+		$this->aktivitas_model->save_aktivitas($data_aktivitas);
 		echo json_encode($result);
 
 	}
@@ -604,10 +625,18 @@ class Customerclaim extends CI_Controller {
 		);
 		$this->customerclaim_model->update_pergantian_part($dataUpdate);
 		$select_claim = $this->customerclaim_model->select_claim($dataUpdate['id_customer_claim']);
+		$id_user = $this->session->userdata('id_users');
+		$data_aktivitas = array(
+			"id_user" => $id_user,
+			"aktivitas" => "telah melakukan pergantian part $select_claim->nama_part",
+			"tgl" => date("Y-m-d"),
+			"jam" => date("H:i:s")
+		);
 		$data = array(
 			'result' => $result,
 			'select_claim' => $select_claim,
 		);
+		$this->aktivitas_model->save_aktivitas($data_aktivitas);
 		echo json_encode($data);
 	}
 
@@ -690,7 +719,6 @@ class Customerclaim extends CI_Controller {
 		} else {
 			$sisa = 0;
 		}
-
 		$data = array(
 			'sisa' => $sisa,
 			'problem_part' => $problem_part
@@ -737,10 +765,18 @@ class Customerclaim extends CI_Controller {
 			$this->customerclaim_model->update_sortir_field($updateData);
 		}
 		$select_claim = $this->customerclaim_model->select_claim($id_customer_claim);
+		$id_user = $this->session->userdata('id_users');
+		$data_aktivitas = array(
+			"id_user" => $id_user,
+			"aktivitas" => "telah melakukan sortir stock pada part $select_claim->nama_part",
+			"tgl" => date("Y-m-d"),
+			"jam" => date("H:i:s")
+		);
 		$data = array(
 			'result' => $result,
 			'select_claim' => $select_claim
 		);
+		$this->aktivitas_model->save_aktivitas($data_aktivitas);
 		echo json_encode($data);
 	}
 }

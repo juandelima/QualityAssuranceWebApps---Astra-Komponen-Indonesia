@@ -247,7 +247,7 @@ function customer_claim_table(root_url) {
                                             "lengthChange": false,
                                             "JQueryUI":true,
                                             "scrollCollapse":true,
-                                            "paging": false,
+                                            "paging": true,
                                             "initComplete": function (settings, json) {  
                                                 $("#table_file_pfmea"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
                                             },
@@ -265,7 +265,7 @@ function customer_claim_table(root_url) {
                                             "lengthChange": false,
                                             "JQueryUI":true,
                                             "scrollCollapse":true,
-                                            "paging": false,
+                                            "paging": true,
                                             "initComplete": function (settings, json) {  
                                                 $("#table_file_pica"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
                                             },
@@ -282,7 +282,7 @@ function customer_claim_table(root_url) {
                                             "lengthChange": false,
                                             "JQueryUI":true,
                                             "scrollCollapse":true,
-                                            "paging": false,
+                                            "paging": true,
                                             "initComplete": function (settings, json) {  
                                                 $("#table_file_ofp"+id_claim).wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
                                             },
@@ -486,7 +486,6 @@ function customer_claim_table(root_url) {
                                                     $("#btn_plus_stock"+id_claim+"").attr("disabled", true);
                                                     $("#btn_plus_ok"+id_claim+"").attr("disabled", false);
                                                     $("#btn_plus_ng"+id_claim+"").attr("disabled", false);
-
                                                 } else {
                                                     $("#btn_plus_ok"+id_claim+"").click(function add() {
                                                         let ok_value = $("#ok"+id_claim+"").val();

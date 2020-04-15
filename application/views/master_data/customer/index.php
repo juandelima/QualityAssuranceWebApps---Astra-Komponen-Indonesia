@@ -63,6 +63,11 @@
 					// "createdRow": function(row, data, dataIndex) {
 					// 	$(row).addClass('edit');
 					// }
+					"JQueryUI":true,
+					"scrollCollapse":true,
+					"initComplete": function (settings, json) {  
+						$("#table-2").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
+					},
 				}	
 			);
 

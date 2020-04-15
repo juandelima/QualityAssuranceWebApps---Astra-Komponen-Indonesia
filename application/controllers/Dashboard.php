@@ -29,6 +29,7 @@ class Dashboard extends CI_Controller {
 		$this->load->model('listpart_model');
 		$this->load->model('delivery_model');
 		$this->load->model('user_model');
+		$this->load->model('aktivitas_model');
 		$this->load->helper('date');
 		$this->load->helper('url');
 	}
@@ -52,6 +53,9 @@ class Dashboard extends CI_Controller {
 		$get_customer_claim_sort_by_date = $this->customerclaim_model->get_customer_claim_sort_by_date();
 		$get_proses = $this->customerclaim_model->get_proses();
 		$count_customer_claim = count($get_customer_claim);
+		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
+		$count_aktivitas = count($get_data_aktivitas);
+		
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
 			$getEnd = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date) - 1]->tgl_input;
@@ -91,7 +95,8 @@ class Dashboard extends CI_Controller {
 			'start' => $start,
 			'end' => $end,
 			'slug' => $slug,
-			'proses' => $get_proses
+			'proses' => $get_proses,
+			'count_aktivitas' => $count_aktivitas
 		);
 
 		// $data = array(
@@ -356,7 +361,6 @@ class Dashboard extends CI_Controller {
 
 		$previous_month = $current_month;
 		$daily = [];
-		$dailyPpm = [];
 		$linked = [];
 		$defects = [];
 		for($tgl = 0; $tgl <= 30; $tgl++) {
@@ -371,7 +375,7 @@ class Dashboard extends CI_Controller {
 			$current_month = intval(date("m", strtotime("+$tgl day", $year_month)));
 			if($current_month == $previous_month) {
 				$daily_filter = $this->customerclaim_model->daily_filter($fullDate, $status, $customer, $proses, $part);
-				$daily_ppm = $this->delivery_model->daily_ppm($fullDate);
+				
 				$count_daily_filter = count($daily_filter);
 				for($i = 0; $i < $count_daily_filter; $i++) {
 					if(!empty($daily_filter[$i])) {
@@ -399,20 +403,13 @@ class Dashboard extends CI_Controller {
 				}
 
 
-				if($daily_ppm->total_qty != null) {
-					$ppm = $daily_ppm->total_qty;
-				} else {
-					$ppm = 0;
-				}
 				$daily[$day] = $dailySum;
 				$linked[] = "$day";
-				$dailyPpm[] = $ppm;
 				$defects[] = $temp;
 			}
 		}
 		$data = array(
 			"daily" => $daily,
-			"dailyPpm" => $dailyPpm,
 			"tahun" => $tahun,
 			"linked" => $linked,
 			"defects" => $defects,
