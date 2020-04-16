@@ -48,15 +48,19 @@ class Chat extends CI_Controller {
     public function history_message() {
       $id_receiver = $this->input->get('id_receiver');
       $id_from = $this->input->get('from');
-      $history_message = $this->chat_model->history_message($id_receiver, $id_from);
-      $count_history_message = count($history_message);
-      $list_user = $this->user_model->list_user();
-      $data = array(
-        'list_user' => $list_user,
-        'history_message' => $history_message,
-        'count_history_message' => $count_history_message
-      );
-      echo json_encode($data);
+      if($id_receiver != null) {
+        $history_message = $this->chat_model->history_message($id_receiver, $id_from);
+        $count_history_message = count($history_message);
+        $list_user = $this->user_model->list_user();
+        $data = array(
+          'list_user' => $list_user,
+          'history_message' => $history_message,
+          'count_history_message' => $count_history_message
+        );
+        echo json_encode($data);
+      } else {
+        echo json_encode(false);
+      }
     }
 
     public function update_unread() {

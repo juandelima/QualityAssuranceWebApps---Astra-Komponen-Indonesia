@@ -138,15 +138,17 @@ function chatting(root_url, current_user, cek_it) {
 				timer_chat = setTimeout(load_data_chatting_real_time, 2500);
 			}
         );
+
         load_data_chatting();
-        setInterval(user_status, 2000);
+        setInterval(user_status, 1000);
         
-        var chat_user = null;
-        var chat = $("#chat");
-        var conversation_window = chat.find(".chat-conversation");
-        var chat_badge = chat.find('.badge').add($('.chat-notifications-badge'));
-        var conversation_body = conversation_window.find(".conversation-body");
-        var textarea = conversation_window.find('.chat-textarea textarea');
+        var chat_user = null,
+            chat = $("#chat"),
+            conversation_window = chat.find(".chat-conversation"),
+            chat_badge = chat.find('.badge').add($('.chat-notifications-badge')),
+            conversation_header = conversation_window.find(".conversation-header"),
+            conversation_body = conversation_window.find(".conversation-body"),
+            textarea = conversation_window.find('.chat-textarea textarea');
         function send_message() {
             chat.on('click', ".chat-group a", function(ev) {
                 ev.preventDefault();
@@ -191,13 +193,13 @@ function chatting(root_url, current_user, cek_it) {
 
                 update_unread();
                 count_message();
-                setInterval(fetch_message, 2000);
+                setInterval(fetch_message, 1500);
             });            
         }
 
-        $("#chat").on('click', '.conversation-close', function(ev) {
+        conversation_header.on('click', '.conversation-close', function(ev) {
             ev.preventDefault();
-            clearInterval(fetch_message);
+            update_unread();
             chat_user = null;
         });
 
@@ -243,6 +245,9 @@ function chatting(root_url, current_user, cek_it) {
     
                 },
                 success: (get_data) => {
+                    if(get_data == false) {
+                        return false;
+                    }
                     conversation_body.html('');
                     let users = get_data.list_user;
                     let history_chat = get_data.history_message;
@@ -266,7 +271,7 @@ function chatting(root_url, current_user, cek_it) {
                                 sec = (sec < 10 ? "0" : "") + sec;
     
                                 date_formated = hour + ':' + min;
-                            }
+                        }
 
                         if(history_chat[i].fromOpponent && current_user != id_from) {
                             entry.addClass('odd');
@@ -363,7 +368,6 @@ function chatting(root_url, current_user, cek_it) {
                             if(id === all_message[i].id_from) {
                                 if(all_message[i].unread == 1) {
                                     all_message[i].unread = true;
-                                    console.log("test");
                                 } else {
                                     all_message[i].unread = false;
                                 }
@@ -396,6 +400,6 @@ function chatting(root_url, current_user, cek_it) {
             });
         }
         send_message();
-        setInterval(count_unread, 2500);
+        setInterval(count_unread, 1000);
     });
 }
