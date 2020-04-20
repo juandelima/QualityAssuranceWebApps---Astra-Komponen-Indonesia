@@ -156,30 +156,29 @@ INSERT INTO `claim_customer` (`id_customer_claim`, `tgl_input`, `no_surat_claim`
 
 CREATE TABLE `customer` (
   `id_customer` int(3) NOT NULL,
-  `nama_customer` varchar(100) NOT NULL,
-  `total_visual_and_nonvisual` int(3) DEFAULT 0
+  `nama_customer` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `customer`
 --
 
-INSERT INTO `customer` (`id_customer`, `nama_customer`, `total_visual_and_nonvisual`) VALUES
-(1, 'AHM', 54),
-(7, 'ADM', 0),
-(8, 'AVI', 0),
-(9, 'DNIA', 0),
-(10, 'AHM OP', 0),
-(11, 'FSCM', 0),
-(12, 'IAMI', 0),
-(13, 'TMMIN', 0),
-(14, 'SANENG', 0),
-(15, 'SKI', 0),
-(16, 'GEMITA', 0),
-(17, 'YUTAKA', 0),
-(18, 'YASUNLI', 0),
-(19, 'TGSSI', 7),
-(20, 'AHM-PC', 5);
+INSERT INTO `customer` (`id_customer`, `nama_customer`) VALUES
+(1, 'AHM'),
+(2, 'ADM'),
+(3, 'AVI'),
+(4, 'DNIA'),
+(5, 'AHM OP'),
+(6, 'FSCM'),
+(7, 'IAMI'),
+(8, 'TMMIN'),
+(9, 'SANENG'),
+(10, 'SKI'),
+(11, 'GEMITA'),
+(12, 'YUTAKA'),
+(13, 'YASUNLI'),
+(14, 'TGSSI'),
+(15, 'AHM-PC');
 
 -- --------------------------------------------------------
 
@@ -194,14 +193,14 @@ CREATE TABLE `data_parts` (
   `nama_part` varchar(40) NOT NULL,
   `type` varchar(4) NOT NULL,
   `proses` varchar(16) NOT NULL,
-  `customer` int(3) NOT NULL
+  `id_customer` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `data_parts`
 --
 
-INSERT INTO `data_parts` (`id_part`, `no_sap`, `safety_grade`, `nama_part`, `type`, `proses`, `customer`) VALUES
+INSERT INTO `data_parts` (`id_part`, `no_sap`, `safety_grade`, `nama_part`, `type`, `proses`, `id_customer`) VALUES
 (1, 'QI2LSG-GGRB61BK00', 'HS', 'REAR GRAB RAIL ASSY K61A', 'K61A', 'PI', 1),
 (2, 'QI2LSG-GGRB81BK00', 'HS', 'RR GRAB RAIL K81A', 'K81A', 'PI', 1),
 (3, 'QI2LSG-GLUG59BK01', 'HA', 'BOX LUGGAGE SUB ASSY K59J', 'K59J', 'PI', 1),
@@ -555,41 +554,6 @@ INSERT INTO `delivery` (`id_delivery`, `tgl_delivery`, `qty`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `list_part`
---
-
-CREATE TABLE `list_part` (
-  `id_part` int(8) NOT NULL,
-  `no_sap` varchar(50) DEFAULT NULL,
-  `safety_grade` varchar(12) NOT NULL,
-  `nama_part` varchar(125) NOT NULL,
-  `type` varchar(8) NOT NULL,
-  `proses` varchar(12) NOT NULL,
-  `id_customer` int(3) NOT NULL,
-  `created_at` date NOT NULL,
-  `updated_at` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `list_part`
---
-
-INSERT INTO `list_part` (`id_part`, `no_sap`, `safety_grade`, `nama_part`, `type`, `proses`, `id_customer`, `created_at`, `updated_at`) VALUES
-(4, 'QS2FEN-GFNF07BK00', 'HA', 'FENDER A FRONT K07A NH-1 BLACK', 'K07A', 'BLACK', 23, '2019-12-11', '2019-12-11'),
-(5, 'QS2ACL-GCVR07OR00', 'NON', 'COVER A/C OUTLET K07A YR294 BLITZ ORANGE', 'K07A', 'BLITZ ORANGE', 23, '2019-12-12', '2019-12-12'),
-(6, 'QT2SEA-GSBA93BR00', 'HB', 'SEAT COMP DOUBLE K93A TYPE 2', 'K93A', 'SB', 23, '2019-12-12', '2019-12-12'),
-(7, 'QS2ACL-GCVR47OR00', 'NON', 'COVER A/C OUTLET K47A YR-271 NIT ORANGE', 'K47A', 'NIT ORANGE', 23, '2019-12-16', '2019-12-16'),
-(8, 'QS2FEN-GFNF46WH01', 'HA', 'FENDER FRONT K46F NH-196 ROSS WHITE', 'K46F', 'ROSS WHITE', 23, '2019-12-16', '2019-12-16'),
-(9, 'QI4STW-GCSLG17870', '#N/A', 'COVER STEERING LOWER GS131-17870', '17870', 'PI', 1, '2019-12-18', '2019-12-18'),
-(10, 'QI4STW-GCSW80BK00', '#N/A', 'CVR STEERING WHEEL LOWER GS131-17880 5PK', '17880', 'PI', 19, '2019-12-18', '2019-12-18'),
-(11, 'QI4STW-GCSWG17830', '#N/A', 'COVER STEERING WHEEL LOWER GS131-17830', '17830', 'PI', 19, '2019-12-20', '2019-12-20'),
-(12, 'QS2SCO-GCBO60BR00', 'NON', 'COVER R BODY K60V YR-342M JASPER BR MET', 'K60V', 'PT', 1, '2020-01-17', '2020-01-17'),
-(13, 'QS2SCO-GCFR60BR00', 'NON', 'COVER R FRONT K60V YR-342M JASPER BR MET', 'K60V', 'PT', 1, '2020-01-17', '2020-01-17'),
-(14, 'QB2MRR-GASY56BK01', 'NON', 'MIRROR ASSY LH BACK K56A', 'K56A', 'BM', 1, '2020-01-17', '2020-01-17'),
-(15, 'QB2MRR-GANTZLBK01', 'NON', 'MIRROR ASSY LH BACK KZLG', 'KZLG', 'BM', 20, '2020-01-17', '2020-01-17'),
-(16, 'QB2MRR-GANTZRBK01', 'NON', 'MIRROR ASSY LH BACK KZRA', 'KZRA', 'BM', 20, '2020-01-17', '2020-01-17');
-
 -- --------------------------------------------------------
 
 --
@@ -706,23 +670,6 @@ INSERT INTO `pica` (`id_pica`, `tgl_upload`, `nama_file`) VALUES
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `reset_password`
---
-
-CREATE TABLE `reset_password` (
-  `id_reset` int(3) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `id_user` int(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `reset_password`
---
-
-INSERT INTO `reset_password` (`id_reset`, `password`, `id_user`) VALUES
-(4, '$2y$10$IO3PgZ9Uy5LD9vzq4Qk4XuHNyXOamyi7nFVtHkz1SkfL4rKTYM.Si', 5),
-(5, '$2y$10$tcJP9urWGMjh8ByI4BdMJOxE9iV3XnuGTntR4gQjV/3wrT9sG9o2S', 6);
 
 -- --------------------------------------------------------
 

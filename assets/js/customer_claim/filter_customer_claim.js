@@ -27,6 +27,8 @@ function customer_claim_table(root_url) {
                                                 $("#table_customer_claim").wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");            
                                             },
                                         });
+            
+            
 
             $("#table_customer_claim").on( 'column-sizing.dt', function (e, settings) {
                 $(".dataTables_scrollHeadInner").css( "width", "100%" );

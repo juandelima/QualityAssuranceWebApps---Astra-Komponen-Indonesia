@@ -35,6 +35,11 @@ class Dashboard extends CI_Controller {
 	}
 
 	public function index() {
+
+		if($this->session->userdata['role'] == 'Admin') {
+			$this->session->set_flashdata('error','YOU CANNOT ACCESS THE DASHBOARD PAGE!');
+			redirect(base_url('claim/customerclaim'),'refresh');
+		}
 		$slug = $this->uri->segment(1);
 		$get_customer = $this->customer_model->customer_list();
 		$get_field_visual = $this->customerclaim_model->list_field_visual();

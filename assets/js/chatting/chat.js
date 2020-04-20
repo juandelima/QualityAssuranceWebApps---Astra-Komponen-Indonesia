@@ -245,7 +245,7 @@ function chatting(root_url, current_user, cek_it) {
     
                 },
                 success: (get_data) => {
-                    if(get_data == false) {
+                    if(!get_data) {
                         return false;
                     }
                     conversation_body.html('');

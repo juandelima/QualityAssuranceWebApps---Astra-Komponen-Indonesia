@@ -272,6 +272,10 @@ class User extends CI_Controller {
 				);
 				$this->aktivitas_model->save_aktivitas($data_aktivitas);
 				$this->session->set_flashdata('success', 'PROFILE ANDA TELAH DIUPDATE!');
+				if($this->session->userdata['role'] == 'Admin') {
+					$this->session->set_flashdata('sukses', 'PROFILE ANDA TELAH DIUPDATE!');
+					redirect(base_url('claim/customerclaim'),'refresh');
+				}
 				redirect(base_url(), 'refresh');
 			}
 		}

@@ -85,23 +85,26 @@ function user_activity(root_url, count_aktivitas, id_user) {
                             table_aktivitas.draw();
                             nomor++;
                         }
-                        if(last_record.id_users != id_user) {
-                            var opts = {
-                                "closeButton": true,
-                                "debug": false,
-                                "positionClass": "toast-top-full-width",
-                                "onclick": null,
-                                "showDuration": "300",
-                                "hideDuration": "1000",
-                                "timeOut": "5000",
-                                "extendedTimeOut": "1000",
-                                "showEasing": "swing",
-                                "hideEasing": "linear",
-                                "showMethod": "fadeIn",
-                                "hideMethod": "fadeOut"
-                            };
-                            toastr.success(last_record.full_name+" "+last_record.aktivitas, "SUCCESS", opts);
+                        if(last_record != null) {
+                            if(last_record.id_users != id_user) {
+                                var opts = {
+                                    "closeButton": true,
+                                    "debug": false,
+                                    "positionClass": "toast-top-full-width",
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                };
+                                toastr.success(last_record.full_name+" "+last_record.aktivitas, "SUCCESS", opts);
+                            }
                         }
+                        
                         setTimeout(show_table, 1500);
                     } else {
                         setTimeout(show_table, 1500);

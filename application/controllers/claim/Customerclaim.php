@@ -27,6 +27,8 @@ class Customerclaim extends CI_Controller {
 		$count_customer_claim = count($get_customer_claim);
 		$get_data_aktivitas = $this->aktivitas_model->listing_aktivitas();
 		$count_aktivitas = count($get_data_aktivitas);
+		$get_data_delivery = $this->delivery_model->listing_deliv();
+		$count_delivery = count($get_data_delivery);
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
 			$getEnd = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date) - 1]->tgl_input;
@@ -47,7 +49,8 @@ class Customerclaim extends CI_Controller {
 			'end' => $end,
 			'slug' => $slug,
 			'count_user' => $count_user,
-			'count_aktivitas' => $count_aktivitas
+			'count_aktivitas' => $count_aktivitas,
+			'count_delivery' => $count_delivery
 		);
 		$this->load->view('customer_claim/index', $data);
 	} 
@@ -595,6 +598,10 @@ class Customerclaim extends CI_Controller {
 	}
 
 	public function save_delivery() {
+		if($this->session->userdata['role'] == 'User') {
+			$this->session->set_flashdata('error',"You can't do this surgery");
+			redirect(base_url('claim/customerclaim'),'refresh');
+		}
 		$tgl = $_POST['tgl_deliv'];
 		$qty = $_POST['qty'];
 		$strTgl_toTime = date('Y-m-d', strtotime($tgl));

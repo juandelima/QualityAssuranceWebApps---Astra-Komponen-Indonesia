@@ -124,6 +124,11 @@
 			text-align: center;
 		}
 
+		.centered1 {
+			width: 30%;
+			text-align: center;
+		}
+
 		.hide-main-table {
 			display: none;
 		}
@@ -275,528 +280,614 @@
 						<?php } ?>
 					</div>
 				</form>
-				<form role="form" id="filter_table" class="form-horizontal form-groups-bordered" style="margin-top: 20px;">
-					<div class="row">
-						<div class="col-sm-3">
-							<div class="form-group">
-								<div class="col-sm-10">
-									<select name="table_ganti_customer" id="table_ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
-										<option></option>
-										<?php foreach($customers as $data) { ?>
-											<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
-										<?php } ?>
-									</select>
-								</div>
-							</div>
-						</div>
-						
-						<div class="col-sm-3">
-							<div class="form-group">
-								<div class="col-sm-10">
-									<select name="table_ganti_part" id="table_ganti_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
-										<option></option>
-										<?php
-											foreach($customer_claim_dist as $data) {
-										?>
-											<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
-										<?php 
-											}
-										?>
-									</select>
-								</div>
-							</div>
-						</div>
-
-						<div class="col-sm-2">
-							<div class="form-group">
-								<!-- <label class="col-sm-2 control-label">Year</label> -->
-								<div class="col-sm-10">
-									<select name="table_year" id="table_year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
-										<option></option>
-										<?php
-											$firstYear = (int)date('Y') - 9;
-											$lastYear = $firstYear + 9;
-											for($i = $firstYear; $i <= $lastYear; $i++) { 
-										?>
-												<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-										<?php
-											}
-										?>
-									</select>
-								</div>
-							</div>
-						</div>
-					</div>										
-				</form>
-
-				<div class="row">
-					<div class="col-md-12">
-						<div id="skeleton-table">
-							<table class="table table-bordered" id="table_skeleton">
-								<thead>
-									<tr>
-										<th style="text-align: center;">No</th>
-										<th style="text-align: center;">Tgl</th>
-										<th style="text-align: center;">No Surat Claim</th>
-										<th style="text-align: center;">Nama Part</th>
-										<th style="text-align: center;">Type</th>
-										<th style="text-align: center;">Proses</th>
-										<th style="text-align: center;">Due Date</th>
-										<th style="text-align: center;">OFP</th>
-										<th style="text-align: center;">Pergantian Part</th>
-										<th style="text-align: center;">Sortir Stock</th>
-										<th style="text-align: center;">PICA</th>
-										<th style="text-align: center;">PFMEA</th>
-										<th style="text-align: center;">Status</th>
-										<th style="text-align: center;">Card</th>
-									</tr>
-								</thead>
-								
-								<tbody class="tbody">
-									<?php for($i = 0; $i < 10; $i++) {
-
-									?>
-									<tr>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-										<td class="loading">
-											<div class="bar"></div>
-										</td>
-									</tr>
-									<?php } ?>
-								</tbody>
-							</table>
-						</div>
-						<div id="main-table" class="hide-main-table">
-							<table class="table table-bordered nowrap" id="table_customer_claim">
-								<thead>
-									<tr>
-										<th width="1" style="text-align: center;">No</th>
-										<th width="50" style="text-align: center;">Tgl</th>
-										<th class="no_surat_claim">No Surat Claim</th>
-										<th style="text-align: center;">Nama Part</th>
-										<th style="text-align: center;">Type</th>
-										<th style="text-align: center;">Proses</th>
-										<th width="50" style="text-align: center;">Due Date</th>
-										<th style="text-align: center;">OFP</th>
-										<th style="text-align: center;">Pergantian Part</th>
-										<th style="text-align: center;">Sortir Stock</th>
-										<th width="180" style="text-align: center;">PICA</th>
-										<th style="text-align: center;">PFMEA</th>
-										<th style="text-align: center;">Status</th>
-										<th style="text-align: center;" width="40">Card</th>
-									</tr>
-								</thead>
-								
-								<tbody>
-									
-								</tbody>
-							</table>
-						</div>
-					</div>
-					<?php
-						$index = 0;
-						foreach($customer_claim as $data) {
-							$id = $data->id_customer_claim;
-					?>
-					
-					<div class="modal fade" id="upload-ppt<?php echo $id; ?>">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">Upload PICA File - <?php echo $data->nama_part; ?></h4>
-								</div>
-								<form role="form" class="form-horizontal" id="upload_file<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ppt/'.$id); ?>" method="POST">
-									<div class="modal-body">
-										<div class="row" id="spinners">
-											<div class="col-md-12">
-												<div class="form-group">
-													<label class="col-sm-3 control-label">PICA File</label>
-													<div class="col-sm-5">
-														<input required type="file" id="nama_file<?php echo $id; ?>" name="ppt_file[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+				<div class="panel panel-primary" id="charts_env">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-12">
+								<ul class="nav nav-tabs">
+									<li class="active">
+										<a href="#customer_claim" data-toggle="tab">
+											<span class="visible-xs"><i class="entypo-chart-line"></i></span>
+											<span class="hidden-xs">Customer Claim</span>
+										</a>
+									</li>
+									<li>
+										<a href="#delivery" data-toggle="tab">
+											<span class="visible-xs"><i class="entypo-chart-bar"></i></span>
+											<span class="hidden-xs">Delivery</span>
+										</a>
+									</li>
+								</ul>
+								<div class="tab-content">
+									<div class="tab-pane active" id="customer_claim">
+										<form role="form" id="filter_table" class="form-horizontal form-groups-bordered" style="margin-top: 20px;">
+											<div class="row">
+												<div class="col-sm-3">
+													<div class="form-group">
+														<div class="col-sm-10">
+															<select name="table_ganti_customer" id="table_ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
+																<option></option>
+																<?php foreach($customers as $data) { ?>
+																	<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
+																<?php } ?>
+															</select>
+														</div>
 													</div>
 												</div>
-											</div>
-											<div class="col-md-12">
-												<div class="progress progress-striped active">
-													<div id="progress-bar<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-														<span id="progress<?php echo $id; ?>"></span>
+												
+												<div class="col-sm-3">
+													<div class="form-group">
+														<div class="col-sm-10">
+															<select name="table_ganti_part" id="table_ganti_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
+																<option></option>
+																<?php
+																	foreach($customer_claim_dist as $data) {
+																?>
+																	<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
+																<?php 
+																	}
+																?>
+															</select>
+														</div>
 													</div>
 												</div>
-											</div>  
-										</div>  
-									</div>
-									<div class="modal-footer">
-										<button type="button" id="modal_close<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
-										<button type="submit" class="btn btn-primary">Upload</button>
-									</div>
-								</form>
-							</div> 
-						</div>
-					</div>
-					
 
-					<div class="modal fade" id="modal_view_pica_files<?php echo $id; ?>">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">PICA FILES - <?php echo $data->nama_part; ?></h4>
-								</div>
-								<div class="modal-body">
-									<table class="table table-bordered" id="table_file_pica<?php echo $id; ?>">
-										<thead>
-											<tr>
-												<th width="1" style="text-align: center;">No</th>
-												<th width="50" style="text-align: center;">Tgl Upload</th>
-												<th style="text-align: center;">Nama File</th>
-												<th width="1" style="text-align: center;">Link</th>
-											</tr>
-										</thead>
-										
-										<tbody>
-											
-										</tbody>
-									</table>
-								</div>
-								<div class="modal-footer">
-									<button type="button" id="close_table_pica<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-
-
-					<div class="modal fade" id="upload-ofp<?php echo $id; ?>">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">Upload OFP File - <?php echo $data->nama_part; ?></h4>
-								</div>
-								<form role="form" class="form-horizontal" id="upload_ofpfile<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ofp/'.$id); ?>" method="POST" accept-charset="utf-8">
-									<div class="modal-body">
-										<div class="row" id="spinners">
-											<div class="col-md-12">
-												<div class="form-group">
-													<label class="col-sm-3 control-label">File</label>
-													<div class="col-sm-5">
-														<input required type="file" id="nama_file_ofp<?php echo $id; ?>" name="nama_file_ofp[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+												<div class="col-sm-2">
+													<div class="form-group">
+														<!-- <label class="col-sm-2 control-label">Year</label> -->
+														<div class="col-sm-10">
+															<select name="table_year" id="table_year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
+																<option></option>
+																<?php
+																	$firstYear = (int)date('Y') - 9;
+																	$lastYear = $firstYear + 9;
+																	for($i = $firstYear; $i <= $lastYear; $i++) { 
+																?>
+																		<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+																<?php
+																	}
+																?>
+															</select>
+														</div>
 													</div>
 												</div>
-											</div>
-											<div class="col-md-12">
-												<div class="progress progress-striped active">
-													<div id="progress-bar-ofp<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-														<span id="progress-ofp<?php echo $id; ?>"></span>
-													</div>
-												</div>
-											</div>  
-										</div>  
-									</div>
-									<div class="modal-footer">
-										<button type="button" id="modal_close_ofp<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
-										<button type="submit" class="btn btn-primary">Upload</button>
-									</div>
-								</form>
-							</div> 
-						</div>
-					</div>
+											</div>										
+										</form>
 
-					<div class="modal fade" id="modal_view_ofp_files<?php echo $id; ?>">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">OFP FILES - <?php echo $data->nama_part; ?></h4>
-								</div>
-								<div class="modal-body">
-									<table class="table table-bordered" id="table_file_ofp<?php echo $id; ?>">
-										<thead>
-											<tr>
-												<th width="1" style="text-align: center;">No</th>
-												<th width="50" style="text-align: center;">Tgl Upload</th>
-												<th style="text-align: center;">Nama File</th>
-												<th width="1" style="text-align: center;">Link</th>
-											</tr>
-										</thead>
-										
-										<tbody>
-											
-										</tbody>
-									</table>
-								</div>
-								<div class="modal-footer">
-									<button type="button" id="close_table_ofp<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
-								</div>
-							</div>
-						</div>
-					</div>
-
-
-					<div class="modal fade" id="pergantian-part<?php echo $id; ?>">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">Pergantian Part <?php echo $data->nama_part; ?></h4>
-								</div>
-								<form role="form" class="form-horizontal" id="upload_pergantian<?php echo $id; ?>" enctype="multipart/form-data" method="POST" accept-charset="utf-8">
-									<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
-									<div class="modal-body">
 										<div class="row">
 											<div class="col-md-12">
-												<div class="form-group">
-													<label class="col-sm-3 control-label" style="text-align:left;">Tanggal Pembayaran</label>
-													<div class="col-sm-4">
-														<div class="input-group">
-															<input type="text" class="form-control datepicker" name="tgl_pembayaran" id="tgl_pembayaran<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
-															<div class="input-group-addon">
-																<a href="#"><i class="entypo-calendar"></i></a>
-															</div>
-														</div>
-													</div>
-												</div>
-
-												<div class="form-group">
-													<label class="col-sm-3 control-label" style="text-align:left;">NO GI 451</label>
-													<div class="col-sm-4">
-														<div class="input-group">
-															<input type="text" class="form-control" name="no_gi_451" id="no_gi_451<?php echo $id; ?>" placeholder="4953444424" required>
-														</div>
-													</div>
-												</div>
-
-												<div class="form-group">
-													<label class="col-sm-3 control-label" style="text-align:left;">NO GI 945</label>
-													<div class="col-sm-4">
-														<div class="input-group">
-															<input type="text" class="form-control" name="no_gi_945" id="no_gi_945<?php echo $id; ?>" placeholder="4953444428" required>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="modal-footer">
-										<button type="button" id="modal_close_pergantian<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
-										<button type="submit" id="simpan_pergantian<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
-									</div>
-								</form>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="modal fade" id="sortir-stock<?php echo $id; ?>">
-						<div class="modal-dialog" style="width: 50%">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">SORTIR / REPAIR PART <b><?php echo $data->nama_part; ?></b></h4>
-								</div>
-
-								<form role="form" class="form-horizontal" id="create_sortir_stock<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="#" accept-charset="utf-8">
-									<div class="modal-body">
-										<div class="row">
-											<div class="col-md-12">
-												<div class="form-group">
-													<label class="col-sm-2 control-label" style="text-align:left;">Tanggal</label>
-													<div class="col-sm-7">
-														<div class="input-group">
-															<input type="text" class="form-control datepicker" name="tgl_sortir" id="tgl_sortir<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
-															<div class="input-group-addon">
-																<a href="#"><i class="entypo-calendar"></i></a>
-															</div>
-														</div>
-													</div>
-												</div>
-
-												<div class="form-group">
-													<label class="col-sm-2 control-label" style="text-align:left;">Nama Part</label>
-													<div class="col-sm-7">
-														<input type="text" class="form-control" name="nama_part_sortir" id="nama_part_sortir<?php echo $id; ?>" placeholder="4953444424" value="<?php echo $data->nama_part; ?>" required readonly>
-													</div>
-												</div>
-
-												<div class="form-group">
-													<label class="col-sm-2 control-label" style="text-align:left;">Type</label>
-													<div class="col-sm-7">
-														<input type="text" class="form-control" name="type" id="type<?php echo $id; ?>" placeholder="problem..." value="<?php echo $data->type; ?>" required readonly>
-													</div>
-												</div>
-												<div class="form-group" style="padding: 10px;">
-													<table class="table table-bordered" id="table_sortir_problem<?php echo $id; ?>">
+												<div id="skeleton-table">
+													<table class="table table-bordered" id="table_skeleton">
 														<thead>
 															<tr>
-																<th><b>Problem</b></th>
+																<th style="text-align: center;">No</th>
+																<th style="text-align: center;">Tgl</th>
+																<th style="text-align: center;">No Surat Claim</th>
+																<th style="text-align: center;">Nama Part</th>
+																<th style="text-align: center;">Type</th>
+																<th style="text-align: center;">Proses</th>
+																<th style="text-align: center;">Due Date</th>
+																<th style="text-align: center;">OFP</th>
+																<th style="text-align: center;">Pergantian Part</th>
+																<th style="text-align: center;">Sortir Stock</th>
+																<th style="text-align: center;">PICA</th>
+																<th style="text-align: center;">PFMEA</th>
+																<th style="text-align: center;">Status</th>
+																<th style="text-align: center;">Card</th>
 															</tr>
 														</thead>
-														<tbody>
+														
+														<tbody class="tbody">
+															<?php for($i = 0; $i < 10; $i++) {
+
+															?>
 															<tr>
-																<td class="padding-sm" id="problem_part<?php echo $id; ?>">
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
+																</td>
+																<td class="loading">
+																	<div class="bar"></div>
 																</td>
 															</tr>
+															<?php } ?>
 														</tbody>
 													</table>
 												</div>
-												<div class="form-group" style="padding: 10px;" style="margin-top: -10px;">
-													<table class="table table-bordered" id="table_sortir_stock<?php echo $id; ?>">
+												<div id="main-table" class="hide-main-table">
+													<table class="table table-bordered nowrap" id="table_customer_claim">
 														<thead>
 															<tr>
-																<th><b>Stock</b></th>
-																<th><b>Ok</b></th>
-																<th><b>Ng</b></th>
-																<th><b>Sisa</b></th>
+																<th width="1" style="text-align: center;">No</th>
+																<th width="50" style="text-align: center;">Tgl</th>
+																<th class="no_surat_claim">No Surat Claim</th>
+																<th style="text-align: center;">Nama Part</th>
+																<th style="text-align: center;">Type</th>
+																<th style="text-align: center;">Proses</th>
+																<th width="50" style="text-align: center;">Due Date</th>
+																<th style="text-align: center;">OFP</th>
+																<th style="text-align: center;">Pergantian Part</th>
+																<th style="text-align: center;">Sortir Stock</th>
+																<th width="180" style="text-align: center;">PICA</th>
+																<th style="text-align: center;">PFMEA</th>
+																<th style="text-align: center;">Status</th>
+																<th style="text-align: center;" width="40">Card</th>
 															</tr>
 														</thead>
-
+														
 														<tbody>
-															<tr>
-																<td width="150">
-																	<div class="input-spinner">
-																		<button type="button" class="btn btn-success btn-sm" id="btn_min_stock<?php echo $id; ?>">-</button>
-																			<input name="stock" id="stock<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
-																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_stock<?php echo $id; ?>">+</button>
-																	</div>
-																</td>
-																<td width="150">
-																	<div class="input-spinner">
-																		<button type="button" class="btn btn-success btn-sm" id="btn_min_ok<?php echo $id; ?>">-</button>
-																		<input name="ok" id="ok<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
-																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_ok<?php echo $id; ?>">+</button>
-																	</div>
-																</td>
-																<td width="150">
-																	<div class="input-spinner">
-																		<button type="button" class="btn btn-success btn-sm" id="btn_min_ng<?php echo $id; ?>">-</button>
-																		<input name="ng" id="ng<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
-																		<button type="button" class="btn btn-success btn-sm" id="btn_plus_ng<?php echo $id; ?>">+</button>
-																	</div>
-																</td>
-																<td width="150">
-																	<input name="sisa" id="sisa<?php echo $id; ?>" type="text" class="form-control input-sm" value="0" readonly/>
-																</td>
-															</tr>
+															
 														</tbody>
 													</table>
 												</div>
 											</div>
-										</div>
-									</div>
-									<div class="modal-footer">
-										<button type="button" id="close_sortir<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
-										<button type="submit" id="simpan_sortir<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-
-					<div class="modal fade" id="pfmea<?php echo $id; ?>">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">PFMEA - <?php echo $data->nama_part; ?></h4>
-								</div>
-								<form role="form" class="form-horizontal" id="pfmea_file<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="<?php echo base_url('claim/powerpoint/upload_pfmea/'.$id); ?>" accept-charset="utf-8">
-									<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
-									<div class="modal-body">
-										<div class="row">
-											<div class="col-md-12" style="margin-bottom: 10px;">
-												<input required type="file" id="nama_file_pfmea<?php echo $id; ?>" name="file_pfmea[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+											<?php
+												$index = 0;
+												foreach($customer_claim as $data) {
+													$id = $data->id_customer_claim;
+											?>
+											
+											<div class="modal fade" id="upload-ppt<?php echo $id; ?>">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">Upload PICA File - <?php echo $data->nama_part; ?></h4>
+														</div>
+														<form role="form" class="form-horizontal" id="upload_file<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ppt/'.$id); ?>" method="POST">
+															<div class="modal-body">
+																<div class="row" id="spinners">
+																	<div class="col-md-12">
+																		<div class="form-group">
+																			<label class="col-sm-3 control-label">PICA File</label>
+																			<div class="col-sm-5">
+																				<input required type="file" id="nama_file<?php echo $id; ?>" name="ppt_file[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+																			</div>
+																		</div>
+																	</div>
+																	<div class="col-md-12">
+																		<div class="progress progress-striped active">
+																			<div id="progress-bar<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+																				<span id="progress<?php echo $id; ?>"></span>
+																			</div>
+																		</div>
+																	</div>  
+																</div>  
+															</div>
+															<div class="modal-footer">
+																<button type="button" id="modal_close<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+																<button type="submit" class="btn btn-primary">Upload</button>
+															</div>
+														</form>
+													</div> 
+												</div>
 											</div>
-											<div class="col-md-12">
-												<div class="progress progress-striped active">
-													<div id="progress-bar-pfmea<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-														<span id="progress-pfmea<?php echo $id; ?>"></span>
+											
+
+											<div class="modal fade" id="modal_view_pica_files<?php echo $id; ?>">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">PICA FILES - <?php echo $data->nama_part; ?></h4>
+														</div>
+														<div class="modal-body">
+															<table class="table table-bordered" id="table_file_pica<?php echo $id; ?>">
+																<thead>
+																	<tr>
+																		<th width="1" style="text-align: center;">No</th>
+																		<th width="50" style="text-align: center;">Tgl Upload</th>
+																		<th style="text-align: center;">Nama File</th>
+																		<th width="1" style="text-align: center;">Link</th>
+																	</tr>
+																</thead>
+																
+																<tbody>
+																	
+																</tbody>
+															</table>
+														</div>
+														<div class="modal-footer">
+															<button type="button" id="close_table_pica<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+														</div>
 													</div>
 												</div>
-											</div> 
+											</div>
+
+
+
+											<div class="modal fade" id="upload-ofp<?php echo $id; ?>">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">Upload OFP File - <?php echo $data->nama_part; ?></h4>
+														</div>
+														<form role="form" class="form-horizontal" id="upload_ofpfile<?php echo $id; ?>" enctype="multipart/form-data" action="<?php echo base_url('claim/powerpoint/upload_ofp/'.$id); ?>" method="POST" accept-charset="utf-8">
+															<div class="modal-body">
+																<div class="row" id="spinners">
+																	<div class="col-md-12">
+																		<div class="form-group">
+																			<label class="col-sm-3 control-label">File</label>
+																			<div class="col-sm-5">
+																				<input required type="file" id="nama_file_ofp<?php echo $id; ?>" name="nama_file_ofp[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+																			</div>
+																		</div>
+																	</div>
+																	<div class="col-md-12">
+																		<div class="progress progress-striped active">
+																			<div id="progress-bar-ofp<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+																				<span id="progress-ofp<?php echo $id; ?>"></span>
+																			</div>
+																		</div>
+																	</div>  
+																</div>  
+															</div>
+															<div class="modal-footer">
+																<button type="button" id="modal_close_ofp<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+																<button type="submit" class="btn btn-primary">Upload</button>
+															</div>
+														</form>
+													</div> 
+												</div>
+											</div>
+
+											<div class="modal fade" id="modal_view_ofp_files<?php echo $id; ?>">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">OFP FILES - <?php echo $data->nama_part; ?></h4>
+														</div>
+														<div class="modal-body">
+															<table class="table table-bordered" id="table_file_ofp<?php echo $id; ?>">
+																<thead>
+																	<tr>
+																		<th width="1" style="text-align: center;">No</th>
+																		<th width="50" style="text-align: center;">Tgl Upload</th>
+																		<th style="text-align: center;">Nama File</th>
+																		<th width="1" style="text-align: center;">Link</th>
+																	</tr>
+																</thead>
+																
+																<tbody>
+																	
+																</tbody>
+															</table>
+														</div>
+														<div class="modal-footer">
+															<button type="button" id="close_table_ofp<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+
+
+											<div class="modal fade" id="pergantian-part<?php echo $id; ?>">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">Pergantian Part <?php echo $data->nama_part; ?></h4>
+														</div>
+														<form role="form" class="form-horizontal" id="upload_pergantian<?php echo $id; ?>" enctype="multipart/form-data" method="POST" accept-charset="utf-8">
+															<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
+															<div class="modal-body">
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="form-group">
+																			<label class="col-sm-3 control-label" style="text-align:left;">Tanggal Pembayaran</label>
+																			<div class="col-sm-4">
+																				<div class="input-group">
+																					<input type="text" class="form-control datepicker" name="tgl_pembayaran" id="tgl_pembayaran<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
+																					<div class="input-group-addon">
+																						<a href="#"><i class="entypo-calendar"></i></a>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+
+																		<div class="form-group">
+																			<label class="col-sm-3 control-label" style="text-align:left;">NO GI 451</label>
+																			<div class="col-sm-4">
+																				<div class="input-group">
+																					<input type="text" class="form-control" name="no_gi_451" id="no_gi_451<?php echo $id; ?>" placeholder="4953444424" required>
+																				</div>
+																			</div>
+																		</div>
+
+																		<div class="form-group">
+																			<label class="col-sm-3 control-label" style="text-align:left;">NO GI 945</label>
+																			<div class="col-sm-4">
+																				<div class="input-group">
+																					<input type="text" class="form-control" name="no_gi_945" id="no_gi_945<?php echo $id; ?>" placeholder="4953444428" required>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="modal-footer">
+																<button type="button" id="modal_close_pergantian<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+																<button type="submit" id="simpan_pergantian<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
+															</div>
+														</form>
+													</div> 
+												</div>
+											</div>
+											
+											<div class="modal fade" id="sortir-stock<?php echo $id; ?>">
+												<div class="modal-dialog" style="width: 50%">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">SORTIR / REPAIR PART <b><?php echo $data->nama_part; ?></b></h4>
+														</div>
+
+														<form role="form" class="form-horizontal" id="create_sortir_stock<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="#" accept-charset="utf-8">
+															<div class="modal-body">
+																<div class="row">
+																	<div class="col-md-12">
+																		<div class="form-group">
+																			<label class="col-sm-2 control-label" style="text-align:left;">Tanggal</label>
+																			<div class="col-sm-7">
+																				<div class="input-group">
+																					<input type="text" class="form-control datepicker" name="tgl_sortir" id="tgl_sortir<?php echo $id; ?>" data-format="dd.mm.yyyy" placeholder="06.11.2019" required>
+																					<div class="input-group-addon">
+																						<a href="#"><i class="entypo-calendar"></i></a>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+
+																		<div class="form-group">
+																			<label class="col-sm-2 control-label" style="text-align:left;">Nama Part</label>
+																			<div class="col-sm-7">
+																				<input type="text" class="form-control" name="nama_part_sortir" id="nama_part_sortir<?php echo $id; ?>" placeholder="4953444424" value="<?php echo $data->nama_part; ?>" required readonly>
+																			</div>
+																		</div>
+
+																		<div class="form-group">
+																			<label class="col-sm-2 control-label" style="text-align:left;">Type</label>
+																			<div class="col-sm-7">
+																				<input type="text" class="form-control" name="type" id="type<?php echo $id; ?>" placeholder="problem..." value="<?php echo $data->type; ?>" required readonly>
+																			</div>
+																		</div>
+																		<div class="form-group" style="padding: 10px;">
+																			<table class="table table-bordered" id="table_sortir_problem<?php echo $id; ?>">
+																				<thead>
+																					<tr>
+																						<th><b>Problem</b></th>
+																					</tr>
+																				</thead>
+																				<tbody>
+																					<tr>
+																						<td class="padding-sm" id="problem_part<?php echo $id; ?>">
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																		<div class="form-group" style="padding: 10px;" style="margin-top: -10px;">
+																			<table class="table table-bordered" id="table_sortir_stock<?php echo $id; ?>">
+																				<thead>
+																					<tr>
+																						<th><b>Stock</b></th>
+																						<th><b>Ok</b></th>
+																						<th><b>Ng</b></th>
+																						<th><b>Sisa</b></th>
+																					</tr>
+																				</thead>
+
+																				<tbody>
+																					<tr>
+																						<td width="150">
+																							<div class="input-spinner">
+																								<button type="button" class="btn btn-success btn-sm" id="btn_min_stock<?php echo $id; ?>">-</button>
+																									<input name="stock" id="stock<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																								<button type="button" class="btn btn-success btn-sm" id="btn_plus_stock<?php echo $id; ?>">+</button>
+																							</div>
+																						</td>
+																						<td width="150">
+																							<div class="input-spinner">
+																								<button type="button" class="btn btn-success btn-sm" id="btn_min_ok<?php echo $id; ?>">-</button>
+																								<input name="ok" id="ok<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																								<button type="button" class="btn btn-success btn-sm" id="btn_plus_ok<?php echo $id; ?>">+</button>
+																							</div>
+																						</td>
+																						<td width="150">
+																							<div class="input-spinner">
+																								<button type="button" class="btn btn-success btn-sm" id="btn_min_ng<?php echo $id; ?>">-</button>
+																								<input name="ng" id="ng<?php echo $id; ?>" type="text" class="form-control size-1 input-sm" value="0" data-min="0" />
+																								<button type="button" class="btn btn-success btn-sm" id="btn_plus_ng<?php echo $id; ?>">+</button>
+																							</div>
+																						</td>
+																						<td width="150">
+																							<input name="sisa" id="sisa<?php echo $id; ?>" type="text" class="form-control input-sm" value="0" readonly/>
+																						</td>
+																					</tr>
+																				</tbody>
+																			</table>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<div class="modal-footer">
+																<button type="button" id="close_sortir<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+																<button type="submit" id="simpan_sortir<?php echo $id; ?>" class="btn btn-primary">Simpan</button>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+
+											<div class="modal fade" id="pfmea<?php echo $id; ?>">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">PFMEA - <?php echo $data->nama_part; ?></h4>
+														</div>
+														<form role="form" class="form-horizontal" id="pfmea_file<?php echo $id; ?>" enctype="multipart/form-data" method="POST" action="<?php echo base_url('claim/powerpoint/upload_pfmea/'.$id); ?>" accept-charset="utf-8">
+															<input type="hidden" name="id_customer_claim" value="<?php echo $id; ?>"/>
+															<div class="modal-body">
+																<div class="row">
+																	<div class="col-md-12" style="margin-bottom: 10px;">
+																		<input required type="file" id="nama_file_pfmea<?php echo $id; ?>" name="file_pfmea[]" class="form-control file2 inline btn btn-primary" multiple="1" data-label="<i class='glyphicon glyphicon-circle-arrow-up'></i> &nbsp;Browse Files" />
+																	</div>
+																	<div class="col-md-12">
+																		<div class="progress progress-striped active">
+																			<div id="progress-bar-pfmea<?php echo $id; ?>" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+																				<span id="progress-pfmea<?php echo $id; ?>"></span>
+																			</div>
+																		</div>
+																	</div> 
+																</div>
+															</div>
+															<div class="modal-footer">
+																<button type="button" id="close_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
+																<button type="submit" class="btn btn-primary">Simpan</button>
+															</div>
+														</form>
+													</div> 
+												</div>
+											</div>
+											
+											<div class="modal fade" id="modal_view_files<?php echo $id; ?>">
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+															<h4 class="modal-title">PFMEA FILES - <?php echo $data->nama_part; ?></h4>
+														</div>
+														<div class="modal-body">
+															<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>" width="75">
+																<thead>
+																	<tr>
+																		<th width="1" style="text-align: center;">No</th>
+																		<th width="50" style="text-align: center;">Tgl Upload</th>
+																		<th style="text-align: center;">Nama File</th>
+																		<th width="1" style="text-align: center;">Link</th>
+																	</tr>
+																</thead>
+																
+																<tbody>
+																	
+																</tbody>
+															</table>
+														</div>
+														<div class="modal-footer">
+															<button type="button" id="close_table_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+											<?php
+												$index++;
+												}
+											?>
 										</div>
 									</div>
-									<div class="modal-footer">
-										<button type="button" id="close_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Batal</button>
-										<button type="submit" class="btn btn-primary">Simpan</button>
-									</div>
-								</form>
-							</div> 
-						</div>
-					</div>
-					
-					<div class="modal fade" id="modal_view_files<?php echo $id; ?>">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-									<h4 class="modal-title">PFMEA FILES - <?php echo $data->nama_part; ?></h4>
-								</div>
-								<div class="modal-body">
-									<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>">
-										<thead>
-											<tr>
-												<th width="1" style="text-align: center;">No</th>
-												<th width="50" style="text-align: center;">Tgl Upload</th>
-												<th style="text-align: center;">Nama File</th>
-												<th width="1" style="text-align: center;">Link</th>
-											</tr>
-										</thead>
-										
-										<tbody>
+									<div class="tab-pane" id="delivery">
+										<div id="skeleton-delivery-table">
+											<table class="table table-bordered" id="table_delivery_skeleton">
+												<thead>
+													<tr>
+														<th style="text-align: center;">No</th>
+														<th style="text-align: center;">Tgl</th>
+														<th style="text-align: center;">Quantity</th>
+														<th style="text-align: center;">Aksi</th>
+													</tr>
+												</thead>
+															
+												<tbody class="tbody">
+													<?php for($i = 0; $i < 10; $i++) {
+													?>
+													<tr>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+													</tr>
+													<?php } ?>
+												</tbody>
+											</table>
+										</div>
+										<div id="main-delivery-table" class="hide-main-table">
+											<table class="table table-bordered" id="table_delivery1">
+												<thead>
+													<tr>
+														<th width="1" style="text-align: center;">No</th>
+														<th width="80" style="text-align: center;">Tgl Delivery</th>
+														<th width="500" style="text-align: center;">Quantity</th>
+														<th style="text-align: center;">Aksi</th>
+													</tr>
+												</thead>
+														
+												<tbody>
+															
+												</tbody>
+											</table>
+										</div>
+
+
+										<div id="modal-edit-delivery">
+
+										</div>
+
+										<div id="modal-delete-delivery">
 											
-										</tbody>
-									</table>
-								</div>
-								<div class="modal-footer">
-									<button type="button" id="close_table_pfmea<?php echo $id; ?>" class="btn btn-danger" data-dismiss="modal">Close</button>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-					<?php
-						$index++;
-					    }
-					?>
 				</div>
+				
 				<div class="modal fade" id="form_delivery">
 						<div class="modal-dialog">
 							<div class="modal-content">
@@ -824,9 +915,9 @@
 												<div class="form-group">
 													<label class="col-sm-3 control-label" style="text-align:left;">Quantity</label>
 													<div class="input-spinner col-sm-3">
-														<button type="button" class="btn btn-blue" id="btn_min">-</button>
-														<input type="text" id="qty" name="qty" class="form-control size-1" value="1"/>
-														<button type="button" class="btn btn-blue" id="btn_plus">+</button>
+														<button type="button" class="btn btn-blue">-</button>
+														<input type="text" id="qty" name="qty" class="form-control size-1" value="1" data-min="1"/>
+														<button type="button" class="btn btn-blue">+</button>
 													</div>
 												</div>
 											</div>  

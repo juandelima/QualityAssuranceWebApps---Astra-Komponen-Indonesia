@@ -12,6 +12,20 @@ class Delivery_model extends CI_Model {
 		return $result;
 	}
 
+
+	public function update_delivery($data) {
+		$this->db->set('qty', $data['qty']);
+		$this->db->where('id_delivery', $data['id_delivery']);
+		$result = $this->db->update($this->table);
+		return $result;
+	}
+
+	public function delete_delivery($id_delivery) {
+		$this->db->where('id_delivery', $id_delivery);
+		$result = $this->db->delete($this->table);
+		return $result;
+	}
+
 	public function listing_deliv() {
 		$this->db->select('*');
 		$this->db->from($this->table);
