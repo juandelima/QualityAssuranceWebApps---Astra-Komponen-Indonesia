@@ -305,7 +305,7 @@
 												<div class="col-sm-3">
 													<div class="form-group">
 														<div class="col-sm-10">
-															<select name="table_ganti_customer" id="table_ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Select a customer...">
+															<select name="table_ganti_customer" id="table_ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Pilih customer...">
 																<option></option>
 																<?php foreach($customers as $data) { ?>
 																	<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
@@ -314,11 +314,11 @@
 														</div>
 													</div>
 												</div>
-												
+
 												<div class="col-sm-3">
 													<div class="form-group">
 														<div class="col-sm-10">
-															<select name="table_ganti_part" id="table_ganti_part" class="select2" data-allow-clear="true" data-placeholder="Select a part...">
+															<select name="table_ganti_part" id="table_ganti_part" class="select2" data-allow-clear="true" data-placeholder="Pilih part...">
 																<option></option>
 																<?php
 																	foreach($customer_claim_dist as $data) {
@@ -332,11 +332,11 @@
 													</div>
 												</div>
 
-												<div class="col-sm-2">
+												<div class="col-sm-3">
 													<div class="form-group">
 														<!-- <label class="col-sm-2 control-label">Year</label> -->
 														<div class="col-sm-10">
-															<select name="table_year" id="table_year" class="select2" data-allow-clear="true" data-placeholder="Select year...">
+															<select name="table_year" id="table_year" class="select2" data-allow-clear="true" data-placeholder="Pilih tahun...">
 																<option></option>
 																<?php
 																	$firstYear = (int)date('Y') - 9;
@@ -347,6 +347,20 @@
 																<?php
 																	}
 																?>
+															</select>
+														</div>
+													</div>
+												</div>
+
+												<div class="col-sm-3">
+													<div class="form-group">
+														<!-- <label class="col-sm-2 control-label">Year</label> -->
+														<div class="col-sm-10">
+															<select name="banyak_data" id="banyak_data" class="select2" data-allow-clear="true" data-placeholder="Banyak data...">
+																<option></option>
+																<option value="10">10 (default)</option>
+																<option value="50">50</option>
+																<option value="100">100</option>
 															</select>
 														</div>
 													</div>
@@ -954,11 +968,11 @@
 	</div>
 	<link rel="stylesheet" href="<?php echo site_url('assets/js/daterangepicker/daterangepicker-bs3.css'); ?>">
 	<?php $this->load->view('_partials/js.php'); ?>
+	<script src="<?php echo site_url('assets/js/customer_claim/filter_customer_claim.js'); ?>"></script>
+	<?php $this->load->view('_partials/customer_claim.php'); ?>
 	<script src="<?php echo site_url('assets/js/icheck/icheck.min.js'); ?>"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.js"></script>
 	<script src="<?php echo site_url('assets/js/customer_claim/delivery.js'); ?>"></script>
-	<script src="<?php echo site_url('assets/js/customer_claim/filter_customer_claim.js'); ?>"></script>
-	<?php $this->load->view('_partials/customer_claim.php'); ?>
 	<script src="<?php echo site_url('assets/js/chatting/chat.js'); ?>"></script>
 	<?php $this->load->view('_partials/chatting'); ?>
 </body>

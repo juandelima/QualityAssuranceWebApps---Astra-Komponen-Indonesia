@@ -50,7 +50,8 @@ class Customerclaim extends CI_Controller {
 			'slug' => $slug,
 			'count_user' => $count_user,
 			'count_aktivitas' => $count_aktivitas,
-			'count_delivery' => $count_delivery
+			'count_delivery' => $count_delivery,
+			'get_data_delivery' => json_encode($get_data_delivery)
 		);
 		$this->load->view('customer_claim/index', $data);
 	} 
@@ -301,6 +302,7 @@ class Customerclaim extends CI_Controller {
 		$customer = $_GET['table_ganti_customer'];
 		$nama_part = $_GET['table_ganti_part'];
 		$year = $_GET['table_year'];
+		$limit = $_GET['banyak_data'];
 		if($customer != null) {
 			$customer = $customer;
 		} else {
@@ -318,7 +320,13 @@ class Customerclaim extends CI_Controller {
 		} else {
 			$year = null;
 		}
-		$get_all_customer_claim = $this->customerclaim_model->model_filter_table($nama_part, $customer, $year);
+
+		if($limit != null) {
+			$limit = $limit;
+		} else {
+			$limit = 10;
+		}
+		$get_all_customer_claim = $this->customerclaim_model->model_filter_table($nama_part, $customer, $year, $limit);
 		echo json_encode($get_all_customer_claim);
 	}
 
@@ -410,20 +418,21 @@ class Customerclaim extends CI_Controller {
 					'jml_qty_nonvisual' => $data['jml_qty_nonvisual'][$j],
 					'rank_point_nonvisual' => $data['rank_point_nonvisual'][$j],
 					'gqi_point' => $data['gqi_point'][$j],
-					'card' => $data['card'][$j]
+					'card' => $data['card'][$j],
+					'status' => 'open'
 				);
 
 				$this->customerclaim_model->save_claim_customer($data_multiple);
 				$next_id_customer_claim = $this->customerclaim_model->max_id();
-				$get_customer_claim = $this->customerclaim_model->get_customer_claim();
-				$select_record_part = $this->customerclaim_model->select_id_part($data_multiple['id_part']);
-				$sum = 0;
-				for($i = 0; $i < count($get_customer_claim); $i++) {
-					if($select_record_part->id_customer === $get_customer_claim[$i]->customer) {
-						$sum += $get_customer_claim[$i]->jml_qty_visual + $get_customer_claim[$i]->jml_qty_nonvisual;
-					}
-				}
-				$this->customer_model->update_visual_nonvisual($select_record_part->id_customer, $sum);
+				// $get_customer_claim = $this->customerclaim_model->get_customer_claim();
+				// $select_record_part = $this->customerclaim_model->select_id_part($data_multiple['id_part']);
+				// $sum = 0;
+				// for($i = 0; $i < count($get_customer_claim); $i++) {
+				// 	if($select_record_part->id_customer === $get_customer_claim[$i]->customer) {
+				// 		$sum += $get_customer_claim[$i]->jml_qty_visual + $get_customer_claim[$i]->jml_qty_nonvisual;
+				// 	}
+				// }
+				// $this->customer_model->update_visual_nonvisual($select_record_part->id_customer, $sum);
 				$data_visual = array(
 					'id_customer_claim' => $next_id_customer_claim,
 					'Kotor' => $this->input->post('kotor_visual'),
@@ -609,7 +618,7 @@ class Customerclaim extends CI_Controller {
 		$id_user = $this->session->userdata('id_users');
 		$data_aktivitas = array(
 			"id_user" => $id_user,
-			"aktivitas" => "telah melakukan delivery sebanyak $qty part",
+			"aktivitas" => "telah melakukan delivery sebanyak $qty quantity",
 			"tgl" => date("Y-m-d"),
 			"jam" => date("H:i:s")
 		);
@@ -728,7 +737,7 @@ class Customerclaim extends CI_Controller {
 		}
 		$data = array(
 			'sisa' => $sisa,
-			'problem_part' => $problem_part
+			'problem_part' => array_unique($problem_part)
 		);
 		
 		echo json_encode($data);

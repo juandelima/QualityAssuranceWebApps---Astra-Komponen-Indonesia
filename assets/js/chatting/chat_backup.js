@@ -1,5 +1,6 @@
 function chatting(root_url, current_user, cek_it) {
     $(function () {
+        let banyak_data_realTime = 0;
         let get_users = root_url.concat('chatting/chat/get_users');
         let kirim_pesan = root_url.concat('chatting/chat/sender_message');
         let history_message = root_url.concat('chatting/chat/history_message');
@@ -16,6 +17,7 @@ function chatting(root_url, current_user, cek_it) {
 
                 },
                 success: (data_users) => {
+                    banyak_data_realTime += cek_it;
                     let cnt = 0;
                     for(i in data_users) {
                         if(current_user != data_users[i].id_users) {
@@ -153,8 +155,8 @@ function chatting(root_url, current_user, cek_it) {
                 chat_user = $(this).attr('id');
                 textarea.keydown((e) => {
                     let time = new Date();
-                    let fromOpponent = true;
-                    let unread = true;
+                    let fromOpponent = 1;
+                    let unread = 1;
                     if(e.keyCode == 13 && !e.shiftKey) {
                         let pesan = textarea.val().trim();
                         textarea.val('');
@@ -271,11 +273,11 @@ function chatting(root_url, current_user, cek_it) {
                                 date_formated = hour + ':' + min;
                         }
 
-                        if(history_chat[i].fromOpponent == "t" && current_user != id_from) {
+                        if(history_chat[i].fromOpponent && current_user != id_from) {
                             entry.addClass('odd');
                         }
     
-                        if(history_chat[i].unread == "t") {
+                        if(history_chat[i].unread == 1) {
                             history_chat[i].unread = true;
                         } else {
                             history_chat[i].unread = false;
@@ -364,11 +366,12 @@ function chatting(root_url, current_user, cek_it) {
                             badge_by_user = $("#"+id).find('.badge');
                         for(let i in all_message) {
                             if(id === all_message[i].id_from) {
-                                if(all_message[i].unread == "t") {
+                                if(all_message[i].unread == 1) {
                                     all_message[i].unread = true;
                                 } else {
-                                    all_message[i].unread =  false;
+                                    all_message[i].unread = false;
                                 }
+
                                 if(all_message[i].unread) {
                                     count_message_current_user++;
                                     count_unread_all++;

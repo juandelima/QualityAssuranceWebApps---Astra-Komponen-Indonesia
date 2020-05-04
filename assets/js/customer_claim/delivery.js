@@ -1,9 +1,11 @@
-function delivery(root_url, count_delivery, role) {
+function delivery(root_url, count_delivery, role, get_data_delivery) {
     let save_delivery = root_url.concat('claim/customerclaim/save_delivery');
     let get_data = root_url.concat('delivery/delivery/get_data');
     let edit_data = root_url.concat('delivery/delivery/update_data');
     let delete_data = root_url.concat('delivery/delivery/delete_data');
     let cnt_delivery = count_delivery;
+    let data_delivery = JSON.parse(get_data_delivery);
+    let change = false;
     jQuery(document).ready(($) => {
         let table_delivery = $("#table_delivery1").DataTable({
             "oLanguage": {
@@ -140,13 +142,38 @@ function delivery(root_url, count_delivery, role) {
                 success: (datanya) => {
                     let data = datanya.data;
                     let count_data = datanya.count_data;
+                    
+                    function cek_updateData() {
+                        let sum_old_data = 0;
+                        let sum_new_data = 0;
+                        for(let j in data_delivery) {
+                            sum_old_data += parseInt(data_delivery[j].qty);
+                        }
+
+                        for(let i in data) {
+                            sum_new_data += parseInt(data[i].qty);
+                        }
+
+                        if(sum_old_data != sum_new_data) {
+                            data_delivery = data;
+                            change = true;
+                        }
+
+                        return change;
+                    }
+
                     function show_table() {
                         $("#skeleton-delivery-table").removeClass("show-skeleton-table");
                         $("#skeleton-delivery-table").addClass("remove-skeleton-table");
                         $("#main-delivery-table").removeClass("hide-main-table");
                         $("#main-delivery-table").addClass("show-main-table");
                     }
-                    if(cnt_delivery != count_data) {
+
+                    if(cnt_delivery != count_data || cek_updateData()) {
+                        if(cek_updateData()) {
+                            change = false;
+                        }
+                        
                         cnt_delivery = count_data;
                         table_delivery.clear().draw();
                         $("#main-delivery-table").removeClass("show-main-table");

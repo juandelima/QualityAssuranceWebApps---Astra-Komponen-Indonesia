@@ -37,7 +37,7 @@ class Delivery extends CI_Controller {
         $id_user = $this->session->userdata('id_users');
 		$data_aktivitas = array(
 			"id_user" => $id_user,
-			"aktivitas" => "telah mengubah delivery tanggal $tgl sebanyak $qty part",
+			"aktivitas" => "telah mengubah delivery tanggal $tgl sebanyak $qty quantity",
 			"tgl" => date("Y-m-d"),
 			"jam" => date("H:i:s")
 		);

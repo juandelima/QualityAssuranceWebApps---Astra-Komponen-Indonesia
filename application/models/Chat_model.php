@@ -30,7 +30,7 @@ class Chat_model extends CI_Model {
     }
 
     public function update_unread($data) {
-        $this->db->set('unread', 0);
+        $this->db->set('unread', false);
         $this->db->where('id_receiver', $data['id_receiver']);
         $this->db->where('id_from', $data['id_from']);
         $query = $this->db->update($this->table);
