@@ -2635,50 +2635,66 @@ class Customerclaim_model extends CI_Model {
 
 	public function model_filter_table($nama_part, $id_customer, $year, $limit) {
 		if($nama_part != null && $id_customer != null && $year != null) {
-			$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.nama_part = '$nama_part' AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.nama_part = '$nama_part' AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
 			return $query->result();
 		}
 
 		if($nama_part != null && $id_customer != null) {
-			$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part where data_parts.nama_part = '$nama_part' AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where data_parts.nama_part = '$nama_part' AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
 			return $query->result();
 		}
 
 		if($nama_part != null && $year != null) {
-			$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.nama_part = '$nama_part' order by claim_customer.tgl_input desc limit $limit");
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.nama_part = '$nama_part' order by claim_customer.tgl_input desc limit $limit");
 			return $query->result();
 		}
 
 		if($nama_part != null) {
-			$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part where data_parts.nama_part = '$nama_part' order by claim_customer.tgl_input desc limit $limit");
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where data_parts.nama_part = '$nama_part' order by claim_customer.tgl_input desc limit $limit");
 			return $query->result();
 		}
 		
 
 		if($id_customer != null && $year != null) {
-			$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
 			return $query->result();
 		}
 
 		if($id_customer != null) {
-			$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part where data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+			where data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
 			return $query->result();
 		}
 
 		if($year != null) {
-			$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part where extract(YEAR from claim_customer.tgl_input) = $year order by claim_customer.tgl_input desc limit $limit");
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where extract(YEAR from claim_customer.tgl_input) = $year order by claim_customer.tgl_input desc limit $limit");
 			return $query->result();
 		}
 
-		$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
-			on $this->table.id_part = data_parts.id_part order by claim_customer.tgl_input desc limit $limit");
+		$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table
+		inner join data_parts on $this->table.id_part = data_parts.id_part 
+		left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+		order by claim_customer.tgl_input desc limit $limit");
 		return $query->result();
 	}
 
@@ -2722,17 +2738,28 @@ class Customerclaim_model extends CI_Model {
 		return $query->result();
 	}
 
+
 	public function simpan_data_sortir($data) {
 		$this->db->insert('sortir_stock', $data);
 	}
 
+	public function update_data_sortir($data) {
+		$this->db->set('tgl', $data['tgl']);
+		$this->db->set('stock', $data['stock']);
+		$this->db->set('ok', $data['ok']);
+		$this->db->set('ng', $data['ng']);
+		$this->db->set('sisa', $data['sisa']);
+		$this->db->where('id_sortir_stock', $data['id_sortir_stock']);
+		$result = $this->db->update('sortir_stock');
+		return $result;
+	}
 	public function update_sortir_field($data) {
 		$this->db->set('id_sortir_stock', $data['id_sortir_stock']);
 		$this->db->where('id_customer_claim', $data['id_customer_claim']);
 		$result = $this->db->update('claim_customer');
 		return $result;
 	}
-	
+
 	public function get_data_sortir() {
 		$query = $this->db->query("select * from sortir_stock order by id_sortir_stock desc");
 		return $query->row();

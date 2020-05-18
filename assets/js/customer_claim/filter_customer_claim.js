@@ -10,7 +10,7 @@ function customer_claim_table(root_url) {
         let pfmea = root_url.concat("assets/claim_customer/pfmea/");
         let simpan_pergantian_part = root_url.concat("claim/customerclaim/pergantian_part");
         let simpan_sortir = root_url.concat("claim/customerclaim/simpan_sortir/");
-        
+
         let table_customer_claim = $("#table_customer_claim").DataTable({
                                             "oLanguage": {
                                                 "sSearch": "Search:",
@@ -137,7 +137,14 @@ function customer_claim_table(root_url) {
                                 sortir_stock = "<a href='javascript:;' id='modal-sortir-stock"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-pencil'></i></a>";
                             } else {
                                 if(data[i].id_sortir_stock != null) {
-                                    sortir_stock = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>";
+                                    if(data[i].sisa > 0) {
+                                        sortir_stock = "<a href='javascript:;' id='modal-sortir-stock"+data[i].id_customer_claim+"' class='btn btn-success'><i class='entypo-pencil'></i></a>";
+                                    } else {
+                                        if(data[i].sisa == 0) {
+                                            sortir_stock = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>";
+                                        }
+                                    }
+                                    
                                 }
                             }
 
@@ -350,38 +357,62 @@ function customer_claim_table(root_url) {
                                             dataType: "JSON",
                                             cache: false,
                                             beforeSend: () => {
-                                                // table_sortir_problem.clear().draw();
                                                 $("#problem_part"+id_claim).html("");
                                             },
                                             success: (data_sortir) => {
+                                                $("#problem_part"+id_claim).html("");
                                                 let mod = data_sortir.sisa;
-                                                let stock;
-                                                let ok = 0;
-                                                let ng = 0;
-                                                $("#ok"+id_claim).attr('disabled', true);
-                                                $("#ng"+id_claim).attr('disabled', true);
-                                                $("#btn_plus_ok"+id_claim).attr("disabled", true);
-                                                $("#btn_plus_ng"+id_claim).attr("disabled", true);
-                                                $("#btn_min_ok"+id_claim).attr("disabled", true);
-                                                $("#btn_min_ng"+id_claim).attr("disabled", true);
+                                                let stock = data_sortir.stock;
+                                                let ok = data_sortir.ok;
+                                                let ng = data_sortir.ng;
+                                                parseInt($("#ok"+id_claim).val(ok));
+                                                parseInt($("#ng"+id_claim).val(ng));
+                                                parseInt($("#sisa"+id_claim).val(mod));
+                                                ok = parseInt($("#ok"+id_claim).val());
+                                                ng = parseInt($("#ng"+id_claim).val());
                                                 if(mod != 0) {
-                                                    parseInt($("#stock"+id_claim).val(mod));
+                                                    ok = parseInt($("#ok"+id_claim).val());
+                                                    ng = parseInt($("#ng"+id_claim).val());
+                                                    if(ok > 0) {
+                                                        $("#btn_min_ok"+id_claim).attr("disabled", false);
+                                                    } else {
+                                                        $("#btn_min_ok"+id_claim).attr("disabled", true);
+                                                    }
+
+                                                    if(ng > 0) {
+                                                        $("#btn_min_ng"+id_claim).attr("disabled", false);
+                                                    } else {
+                                                        $("#btn_min_ng"+id_claim).attr("disabled", true);
+                                                    }
+
+                                                    // $("#ok"+id_claim).attr('readonly', false);
+                                                    // $("#ng"+id_claim).attr('readonly', false);
+                                                    $("#btn_plus_ok"+id_claim).attr("disabled", false);
+                                                    $("#btn_plus_ng"+id_claim).attr("disabled", false);
+                                                    parseInt($("#stock"+id_claim).val(stock));
                                                 } else {
+                                                    // $("#ok"+id_claim).attr('readonly', true);
+                                                    // $("#ng"+id_claim).attr('readonly', true);
+                                                    $("#btn_plus_ok"+id_claim).attr("disabled", true);
+                                                    $("#btn_plus_ng"+id_claim).attr("disabled", true);
+                                                    $("#btn_min_ok"+id_claim).attr("disabled", true);
+                                                    $("#btn_min_ng"+id_claim).attr("disabled", true);
                                                     parseInt($("#stock"+id_claim).val(0));
                                                 }
 
+                                                stock = parseInt($("#stock"+id_claim).val());
                                                 let sisa = parseInt($("#sisa"+id_claim).val());
 
                                                 $("#stock"+id_claim).keyup((e) => {
                                                     stock = parseInt($(e.target).val());
                                                     if(stock > 0) {
-                                                        $("#ok"+id_claim).attr('disabled', false);
-                                                        $("#ng"+id_claim).attr('disabled', false);
+                                                        $("#ok"+id_claim).attr('readonly', false);
+                                                        $("#ng"+id_claim).attr('readonly', false);
                                                         $("#btn_plus_ok"+id_claim).attr("disabled", false);
                                                         $("#btn_plus_ng"+id_claim).attr("disabled", false);
                                                     } else {
-                                                        $("#ok"+id_claim).attr('disabled', true);
-                                                        $("#ng"+id_claim).attr('disabled', true);
+                                                        $("#ok"+id_claim).attr('readonly', true);
+                                                        $("#ng"+id_claim).attr('readonly', true);
                                                         $("#btn_plus_ok"+id_claim).attr("disabled", true);
                                                         $("#btn_plus_ng"+id_claim).attr("disabled", true);
                                                         parseInt($("#sisa"+id_claim).val(0));
@@ -392,15 +423,23 @@ function customer_claim_table(root_url) {
                                                         if(sisa > 0) {
                                                             parseInt($("#sisa"+id_claim).val(sisa));
                                                         }
-                                                        if(stock <= Math.abs(ok + ng)) {
-                                                            parseInt($(e.target).val(Math.abs(ok + ng)));
-                                                            parseInt($("#sisa"+id_claim).val(0));
+                                                        if(stock < Math.abs(ok + ng)) {
+                                                            // parseInt($(e.target).val(Math.abs(ok + ng)));
+                                                            sisa = parseInt($("#sisa"+id_claim).val(0));
+                                                            
+                                                        }
+
+                                                        if(stock >= Math.abs(ok + ng)) {
+                                                            sisa = stock - Math.abs(ok + ng);
+                                                            sisa = parseInt($("#sisa"+id_claim).val(sisa));
                                                         }
                                                     }
                                                 });
 
                                                 $("#ok"+id_claim).keyup((e) => {
                                                     ok = parseInt($(e.target).val());
+                                                    ng = parseInt($("#ng"+id_claim).val());
+                                                    // console.log(ok);
                                                     if(ok > 0) {
                                                         $("#btn_min_ok"+id_claim).attr("disabled", false);
                                                     } else {
@@ -409,16 +448,18 @@ function customer_claim_table(root_url) {
                                                     if(Math.abs(ok + ng) >= stock) {
                                                         $("#btn_plus_ok"+id_claim).attr("disabled", true);
                                                         $("#btn_plus_ng"+id_claim).attr("disabled", true);
-                                                        $("#ng"+id_claim).attr("disabled", true);
-                                                        $("#ok"+id_claim).attr("disabled", true);
+                                                        // $("#ng"+id_claim).attr("readonly", true);
+                                                        // $("#ok"+id_claim).attr("readonly", true);
                                                         parseInt($("#sisa"+id_claim).val(0));
                                                         $("#stock"+id_claim).val(Math.abs(ok + ng));
                                                     } else {
                                                         $("#btn_plus_ok"+id_claim).attr("disabled", false);
                                                         $("#btn_plus_ng"+id_claim).attr("disabled", false);
-                                                        $("#ok"+id_claim).attr("disabled", false);
-                                                        $("#ng"+id_claim).attr("disabled", false);
+                                                        // $("#ok"+id_claim).attr("readonly", false);
+                                                        // $("#ng"+id_claim).attr("readonly", false);
+                                                        console.log(ng);
                                                         sisa = stock - Math.abs(ok + ng);
+                                                        
                                                         parseInt($("#sisa"+id_claim).val(sisa));
                                                     }
                                                     
@@ -435,15 +476,15 @@ function customer_claim_table(root_url) {
                                                     if(Math.abs(ok + ng) >= stock) {
                                                         $("#btn_plus_ng"+id_claim).attr("disabled", true);
                                                         $("#btn_plus_ok"+id_claim).attr("disabled", true);
-                                                        $("#ng"+id_claim).attr("disabled", true);
-                                                        $("#ok"+id_claim).attr("disabled", true);
+                                                        // $("#ng"+id_claim).attr("readonly", true);
+                                                        // $("#ok"+id_claim).attr("readonly", true);
                                                         parseInt($("#sisa"+id_claim).val(0));
                                                         $("#stock"+id_claim).val(Math.abs(ok + ng));
                                                     } else {
                                                         $("#btn_plus_ng"+id_claim).attr("disabled", false);
                                                         $("#btn_plus_ok"+id_claim).attr("disabled", false);
-                                                        $("#ng"+id_claim).attr("disabled", false);
-                                                        $("#ok"+id_claim).attr("disabled", false);
+                                                        // $("#ng"+id_claim).attr("readonly", false);
+                                                        // $("#ok"+id_claim).attr("readonly", false);
                                                         sisa = stock - Math.abs(ok + ng);
                                                         parseInt($("#sisa"+id_claim).val(sisa));
                                                     }
@@ -742,6 +783,7 @@ function customer_claim_table(root_url) {
                                                 dataType: "JSON",
                                                 cache: false,
                                                 success: (data) => {
+                                                    
                                                     var opts = {
                                                         "closeButton": true,
                                                         "debug": false,
@@ -759,8 +801,16 @@ function customer_claim_table(root_url) {
                                                     toastr.success('SORTIR STOCK BERHASIL DILAKUKAN!', "SUCCESS", opts);
                                                 },
                                                 complete: (data) => {
+                                                    console.log(data);
                                                     let responseJSON = data.responseJSON.select_claim;
-                                                    let status_complete = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>"
+                                                    let sisa_stock = data.responseJSON.sisa_stock;
+                                                    let status_complete;
+                                                    if(parseInt(sisa_stock) > 0) {
+                                                        status_complete = "<a href='javascript:;' id='modal-sortir-stock"+responseJSON.id_customer_claim+"' class='btn btn-success'><i class='entypo-pencil'></i></a>"
+                                                    } else {
+                                                        status_complete = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>"
+                                                    }
+                                                    
                                                     $("#modal-sortir-stock"+id_claim+"").remove();
                                                     $("#tgl_sortir"+id_claim+"").val(null);
                                                     $("#type"+id_claim+"").val("");
@@ -777,15 +827,13 @@ function customer_claim_table(root_url) {
                                                 },
                                                 error: (jqXHR, textStatus, errorThrown) => {
                                                     alert(textStatus +" "+errorThrown);
-                                                    // $("#error_text").text(textStatus +" "+errorThrown);
-                                                    // $("#modal-error-ajax").modal('show');;
                                                 }
                                             });
                                         } else {
                                             alert("SEMUA FIELD HARUS DI ISI TERLEBIH DAHULU!!!")
                                         }	
                                     });
-
+                                    
                                     $("#pfmea_file"+id_claim+"").submit(function(e) {
                                         e.preventDefault();
                                         $(this).ajaxSubmit({
@@ -927,7 +975,14 @@ function customer_claim_table(root_url) {
                                     sortir_stock = "<a href='javascript:;' id='modal-sortir-stock"+data[i].id_customer_claim+"' class='btn btn-blue'><i class='entypo-pencil'></i></a>";
                                 } else {
                                     if(data[i].id_sortir_stock != null) {
-                                        sortir_stock = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>";
+                                        if(data[i].sisa > 0) {
+                                            sortir_stock = "<a href='javascript:;' id='modal-sortir-stock"+data[i].id_customer_claim+"' class='btn btn-success'><i class='entypo-pencil'></i></a>";
+                                        } else {
+                                            if(data[i].sisa == 0) {
+                                                sortir_stock = "<i id='ganti-part"+data[i].id_customer_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>";
+                                            }
+                                        }
+                                        
                                     }
                                 }
 
@@ -1054,57 +1109,90 @@ function customer_claim_table(root_url) {
                                                 dataType: "JSON",
                                                 cache: false,
                                                 beforeSend: () => {
-                                                    // table_sortir_problem.clear().draw();
                                                     $("#problem_part"+id_claim).html("");
                                                 },
                                                 success: (data_sortir) => {
+                                                    $("#problem_part"+id_claim).html("");
                                                     let mod = data_sortir.sisa;
-                                                    let stock;
-                                                    let ok = 0;
-                                                    let ng = 0;
-                                                    $("#ok"+id_claim).attr('disabled', true);
-                                                    $("#ng"+id_claim).attr('disabled', true);
-                                                    $("#btn_plus_ok"+id_claim).attr("disabled", true);
-                                                    $("#btn_plus_ng"+id_claim).attr("disabled", true);
-                                                    $("#btn_min_ok"+id_claim).attr("disabled", true);
-                                                    $("#btn_min_ng"+id_claim).attr("disabled", true);
+                                                    let stock = data_sortir.stock;
+                                                    let ok = data_sortir.ok;
+                                                    let ng = data_sortir.ng;
+                                                    parseInt($("#ok"+id_claim).val(ok));
+                                                    parseInt($("#ng"+id_claim).val(ng));
+                                                    parseInt($("#sisa"+id_claim).val(mod));
+                                                    ok = parseInt($("#ok"+id_claim).val());
+                                                    ng = parseInt($("#ng"+id_claim).val());
                                                     if(mod != 0) {
-                                                        parseInt($("#stock"+id_claim).val(mod));
+                                                        ok = parseInt($("#ok"+id_claim).val());
+                                                        ng = parseInt($("#ng"+id_claim).val());
+                                                        if(ok > 0) {
+                                                            $("#btn_min_ok"+id_claim).attr("disabled", false);
+                                                        } else {
+                                                            $("#btn_min_ok"+id_claim).attr("disabled", true);
+                                                        }
+    
+                                                        if(ng > 0) {
+                                                            $("#btn_min_ng"+id_claim).attr("disabled", false);
+                                                        } else {
+                                                            $("#btn_min_ng"+id_claim).attr("disabled", true);
+                                                        }
+    
+                                                        // $("#ok"+id_claim).attr('readonly', false);
+                                                        // $("#ng"+id_claim).attr('readonly', false);
+                                                        $("#btn_plus_ok"+id_claim).attr("disabled", false);
+                                                        $("#btn_plus_ng"+id_claim).attr("disabled", false);
+                                                        parseInt($("#stock"+id_claim).val(stock));
                                                     } else {
+                                                        // $("#ok"+id_claim).attr('readonly', true);
+                                                        // $("#ng"+id_claim).attr('readonly', true);
+                                                        $("#btn_plus_ok"+id_claim).attr("disabled", true);
+                                                        $("#btn_plus_ng"+id_claim).attr("disabled", true);
+                                                        $("#btn_min_ok"+id_claim).attr("disabled", true);
+                                                        $("#btn_min_ng"+id_claim).attr("disabled", true);
                                                         parseInt($("#stock"+id_claim).val(0));
                                                     }
-
+    
+                                                    stock = parseInt($("#stock"+id_claim).val());
                                                     let sisa = parseInt($("#sisa"+id_claim).val());
-
+    
                                                     $("#stock"+id_claim).keyup((e) => {
                                                         stock = parseInt($(e.target).val());
                                                         if(stock > 0) {
-                                                            $("#ok"+id_claim).attr('disabled', false);
-                                                            $("#ng"+id_claim).attr('disabled', false);
+                                                            $("#ok"+id_claim).attr('readonly', false);
+                                                            $("#ng"+id_claim).attr('readonly', false);
                                                             $("#btn_plus_ok"+id_claim).attr("disabled", false);
                                                             $("#btn_plus_ng"+id_claim).attr("disabled", false);
                                                         } else {
-                                                            $("#ok"+id_claim).attr('disabled', true);
-                                                            $("#ng"+id_claim).attr('disabled', true);
+                                                            $("#ok"+id_claim).attr('readonly', true);
+                                                            $("#ng"+id_claim).attr('readonly', true);
                                                             $("#btn_plus_ok"+id_claim).attr("disabled", true);
                                                             $("#btn_plus_ng"+id_claim).attr("disabled", true);
                                                             parseInt($("#sisa"+id_claim).val(0));
                                                             parseInt($(e.target).val(0));
                                                         }
+
                                                         if(ok > 0 || ng > 0) {
                                                             sisa = stock - Math.abs(ok + ng);
                                                             if(sisa > 0) {
                                                                 parseInt($("#sisa"+id_claim).val(sisa));
                                                             }
-                                                            if(stock <= Math.abs(ok + ng)) {
-                                                                parseInt($(e.target).val(Math.abs(ok + ng)));
-                                                                parseInt($("#sisa"+id_claim).val(0));
+                                                            if(stock < Math.abs(ok + ng)) {
+                                                                // parseInt($(e.target).val(Math.abs(ok + ng)));
+                                                                sisa = parseInt($("#sisa"+id_claim).val(0));
+                                                                
+                                                            }
+    
+                                                            if(stock >= Math.abs(ok + ng)) {
+                                                                sisa = stock - Math.abs(ok + ng);
+                                                                sisa = parseInt($("#sisa"+id_claim).val(sisa));
                                                             }
                                                         }
                                                     });
-
+    
                                                     $("#ok"+id_claim).keyup((e) => {
                                                         ok = parseInt($(e.target).val());
+                                                        ng = parseInt($("#ng"+id_claim).val());
+                                                        // console.log(ok);
                                                         if(ok > 0) {
                                                             $("#btn_min_ok"+id_claim).attr("disabled", false);
                                                         } else {
@@ -1113,22 +1201,24 @@ function customer_claim_table(root_url) {
                                                         if(Math.abs(ok + ng) >= stock) {
                                                             $("#btn_plus_ok"+id_claim).attr("disabled", true);
                                                             $("#btn_plus_ng"+id_claim).attr("disabled", true);
-                                                            $("#ng"+id_claim).attr("disabled", true);
-                                                            $("#ok"+id_claim).attr("disabled", true);
+                                                            // $("#ng"+id_claim).attr("readonly", true);
+                                                            // $("#ok"+id_claim).attr("readonly", true);
                                                             parseInt($("#sisa"+id_claim).val(0));
                                                             $("#stock"+id_claim).val(Math.abs(ok + ng));
                                                         } else {
                                                             $("#btn_plus_ok"+id_claim).attr("disabled", false);
                                                             $("#btn_plus_ng"+id_claim).attr("disabled", false);
-                                                            $("#ok"+id_claim).attr("disabled", false);
-                                                            $("#ng"+id_claim).attr("disabled", false);
+                                                            // $("#ok"+id_claim).attr("readonly", false);
+                                                            // $("#ng"+id_claim).attr("readonly", false);
+                                                            console.log(ng);
                                                             sisa = stock - Math.abs(ok + ng);
+                                                            
                                                             parseInt($("#sisa"+id_claim).val(sisa));
                                                         }
                                                         
                                                     });
-
-
+    
+    
                                                     $("#ng"+id_claim).keyup((e) => {
                                                         ng = parseInt($(e.target).val());
                                                         if(ng > 0) {
@@ -1139,22 +1229,28 @@ function customer_claim_table(root_url) {
                                                         if(Math.abs(ok + ng) >= stock) {
                                                             $("#btn_plus_ng"+id_claim).attr("disabled", true);
                                                             $("#btn_plus_ok"+id_claim).attr("disabled", true);
-                                                            $("#ng"+id_claim).attr("disabled", true);
-                                                            $("#ok"+id_claim).attr("disabled", true);
+                                                            // $("#ng"+id_claim).attr("readonly", true);
+                                                            // $("#ok"+id_claim).attr("readonly", true);
                                                             parseInt($("#sisa"+id_claim).val(0));
                                                             $("#stock"+id_claim).val(Math.abs(ok + ng));
                                                         } else {
                                                             $("#btn_plus_ng"+id_claim).attr("disabled", false);
                                                             $("#btn_plus_ok"+id_claim).attr("disabled", false);
-                                                            $("#ng"+id_claim).attr("disabled", false);
-                                                            $("#ok"+id_claim).attr("disabled", false);
+                                                            // $("#ng"+id_claim).attr("readonly", false);
+                                                            // $("#ok"+id_claim).attr("readonly", false);
                                                             sisa = stock - Math.abs(ok + ng);
                                                             parseInt($("#sisa"+id_claim).val(sisa));
                                                         }
                                                         
                                                     });
-
-                                                    
+    
+                                                    let label = ["label-primary", "label-secondary", "label-success",
+                                                        "label-info", "label-warning", "label-danger"];
+                                                        
+                                                    for(let i in data_sortir.problem_part) {
+                                                        let problem = "<div class='label "+label[Math.floor(Math.random() * label.length)]+" tooltip-primary' data-toggle='tooltip' data-placement='top' title='' data-original-title='Tooltip on top'>"+data_sortir.problem_part[i]+"</div>";
+                                                        $("#problem_part"+id_claim).append(problem);
+                                                    }
                                                     $("#sortir-stock"+id_claim).modal('show');
                                                 },
                                                 error: (jqXHR, textStatus, errorThrown) => {
@@ -1163,6 +1259,70 @@ function customer_claim_table(root_url) {
                                             });
                                         });
 
+                                        $("#simpan_sortir"+id_claim+"").click((e) => {
+                                            e.preventDefault();
+                                            let tgl_sortir = $("#tgl_sortir"+id_claim+"").val();
+                                            let stock = $("#stock"+id_claim+"").val();
+                                            let ok = $("#ok"+id_claim+"").val();
+                                            let ng = $("#ng"+id_claim+"").val();
+                                            if(tgl_sortir != "" && stock != "" && ok != "" && ng != "") {
+                                                $.ajax({
+                                                    url: simpan_sortir+id_claim,
+                                                    type: "POST",
+                                                    data: $("#create_sortir_stock"+id_claim+"").serialize(),
+                                                    dataType: "JSON",
+                                                    cache: false,
+                                                    success: (data) => {
+                                                        
+                                                        var opts = {
+                                                            "closeButton": true,
+                                                            "debug": false,
+                                                            "positionClass": "toast-top-right",
+                                                            "onclick": null,
+                                                            "showDuration": "300",
+                                                            "hideDuration": "1000",
+                                                            "timeOut": "5000",
+                                                            "extendedTimeOut": "1000",
+                                                            "showEasing": "swing",
+                                                            "hideEasing": "linear",
+                                                            "showMethod": "fadeIn",
+                                                            "hideMethod": "fadeOut"
+                                                        };
+                                                        toastr.success('SORTIR STOCK BERHASIL DILAKUKAN!', "SUCCESS", opts);
+                                                    },
+                                                    complete: (data) => {
+                                                        console.log(data);
+                                                        let responseJSON = data.responseJSON.select_claim;
+                                                        let sisa_stock = data.responseJSON.sisa_stock;
+                                                        let status_complete;
+                                                        if(parseInt(sisa_stock) > 0) {
+                                                            status_complete = "<a href='javascript:;' id='modal-sortir-stock"+responseJSON.id_customer_claim+"' class='btn btn-success'><i class='entypo-pencil'></i></a>"
+                                                        } else {
+                                                            status_complete = "<i id='ganti-part"+id_claim+"' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>"
+                                                        }
+                                                        
+                                                        $("#modal-sortir-stock"+id_claim+"").remove();
+                                                        $("#tgl_sortir"+id_claim+"").val(null);
+                                                        $("#type"+id_claim+"").val("");
+                                                        $("#stock"+id_claim+"").val(0);
+                                                        $("#ok"+id_claim+"").val(0);
+                                                        $("#ng"+id_claim+"").val(0);
+                                                        $("#sisa"+id_claim+"").val(0);
+                                                        $("#status-sortir-stock"+id_claim+"").html(status_complete);
+                                                        $("#sortir-stock"+id_claim+"").modal('hide');
+                                                        if(responseJSON.ppt_file != null && responseJSON.ofp != null && responseJSON.id_pergantian_part != null && responseJSON.id_sortir_stock != null && responseJSON.id_pfmea != null) {
+                                                            $("#status_claim"+responseJSON.id_customer_claim).text("");
+                                                            $("#status_claim"+responseJSON.id_customer_claim).text("CLOSE");
+                                                        }
+                                                    },
+                                                    error: (jqXHR, textStatus, errorThrown) => {
+                                                        alert(textStatus +" "+errorThrown);
+                                                    }
+                                                });
+                                            } else {
+                                                alert("SEMUA FIELD HARUS DI ISI TERLEBIH DAHULU!!!")
+                                            }	
+                                        });
                                     }	
                                 }
 

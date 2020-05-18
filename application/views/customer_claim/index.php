@@ -699,7 +699,7 @@
 																		<div class="form-group">
 																			<label class="col-sm-2 control-label" style="text-align:left;">Type</label>
 																			<div class="col-sm-7">
-																				<input type="text" class="form-control" name="type" id="type<?php echo $id; ?>" placeholder="problem..." value="<?php echo $data->type; ?>" required readonly>
+																				<input type="text" class="form-control" name="type" id="type<?php echo $id; ?>" placeholder="type..." value="<?php echo $data->type; ?>" required readonly>
 																			</div>
 																		</div>
 																		<div class="form-group" style="padding: 10px;">
@@ -810,7 +810,7 @@
 															<h4 class="modal-title">PFMEA FILES - <?php echo $data->nama_part; ?></h4>
 														</div>
 														<div class="modal-body">
-															<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>" width="75">
+															<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>">
 																<thead>
 																	<tr>
 																		<th width="1" style="text-align: center;">No</th>

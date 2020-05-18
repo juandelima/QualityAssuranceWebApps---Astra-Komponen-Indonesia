@@ -20,9 +20,9 @@ class User_model extends CI_Model {
 		$data = array(
 			'photo' => 'member-1.jpg',
 			'full_name' => 'Juan Valerian Delima',
-			'username' => 'juanvaleriand',
+			'username' => 'juandelima',
 			'role' => 'Super Admin',
-			'password' => password_hash('admin123', PASSWORD_DEFAULT),
+			'password' => password_hash('123456', PASSWORD_DEFAULT),
 			'created_at' => date('Y-m-d H:i:s'),
 			'updated_at' => date('Y-m-d H:i:s')
 		);

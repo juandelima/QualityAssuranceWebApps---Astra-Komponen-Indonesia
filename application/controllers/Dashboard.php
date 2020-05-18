@@ -106,17 +106,6 @@ class Dashboard extends CI_Controller {
 			'proses' => $get_proses,
 			'count_aktivitas' => $count_aktivitas
 		);
-
-		// $data = array(
-		// 	'customers' => $customers,
-		// 	'customer' => $get_customer,
-		// 	'customer_claim' => $get_customer_claim,
-		// 	'customer_claim_dist' => $get_customer_claim_distinct,
-		// 	'count_customer_claim' => $count_customer_claim,
-		// 	'start' => $start,
-		// 	'end' => $end,
-		// 	'slug' => $slug
-		// );
 		$this->load->view('index', $data);
 	}
 

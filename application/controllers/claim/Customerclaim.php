@@ -424,15 +424,6 @@ class Customerclaim extends CI_Controller {
 
 				$this->customerclaim_model->save_claim_customer($data_multiple);
 				$next_id_customer_claim = $this->customerclaim_model->max_id();
-				// $get_customer_claim = $this->customerclaim_model->get_customer_claim();
-				// $select_record_part = $this->customerclaim_model->select_id_part($data_multiple['id_part']);
-				// $sum = 0;
-				// for($i = 0; $i < count($get_customer_claim); $i++) {
-				// 	if($select_record_part->id_customer === $get_customer_claim[$i]->customer) {
-				// 		$sum += $get_customer_claim[$i]->jml_qty_visual + $get_customer_claim[$i]->jml_qty_nonvisual;
-				// 	}
-				// }
-				// $this->customer_model->update_visual_nonvisual($select_record_part->id_customer, $sum);
 				$data_visual = array(
 					'id_customer_claim' => $next_id_customer_claim,
 					'Kotor' => $this->input->post('kotor_visual'),
@@ -694,13 +685,16 @@ class Customerclaim extends CI_Controller {
 					'Belum Finishing', 'Foam Ng'];
 		$value_non_visual = ['Deformasi', 'Patah / Crack', 'Part Tidak Lengkap', 'Elector Mark', 'Short Shot', 'Material Asing',
 					'Pecah', 'Stay Lepas', 'Salah Ulir', 'Visual T/A', 'Ulir Ng', 'Rubber TA', 'Hole Ng'];
+
 		for($i = 1; $i < count($get_field_visual); $i++) {
 			$key_visual[] = json_encode($get_field_visual[$i]);
 		}
+
 		$label_visual = array_combine($key_visual, $value_visual);
 		for($i = 1; $i < count($get_field_non_visual); $i++) {
 			$key_non_visual[] = json_encode($get_field_non_visual[$i]);
 		}
+		
 		$label_non_visual = array_combine($key_non_visual, $value_non_visual);
 		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
 		$merge_field_except = [];
@@ -719,23 +713,34 @@ class Customerclaim extends CI_Controller {
 			}
 		}
 
-		$count_get_claim_by_id_part = count($get_claim_by_id_part);
-		for($i = 0; $i < $count_get_claim_by_id_part; $i++) {
-			if(!empty($get_claim_by_id_part[$i]->id_sortir_stock)) {
-				$id_sortir_stock = $get_claim_by_id_part[$i]->id_sortir_stock;
-				break;
-			} else {
-				$id_sortir_stock = null;
-			}
-		}
+		// $count_get_claim_by_id_part = count($get_claim_by_id_part);
+		// for($i = 0; $i < $count_get_claim_by_id_part; $i++) {
+		// 	if(!empty($get_claim_by_id_part[$i]->id_sortir_stock)) {
+		// 		$id_sortir_stock = $get_claim_by_id_part[$i]->id_sortir_stock;
+		// 		break;
+		// 	} else {
+		// 		$id_sortir_stock = null;
+		// 	}
+		// }
 
-		$select_sortir_stock_by_id = $this->customerclaim_model->select_sortir_stock_by_id($id_sortir_stock);
+
+		$select_sortir_stock_by_id = $this->customerclaim_model->select_sortir_stock_by_id($get_claim->id_sortir_stock);
 		if(!empty($select_sortir_stock_by_id)) {
+			$stock = $select_sortir_stock_by_id->stock;
+			$ok = $select_sortir_stock_by_id->ok;
+			$ng = $select_sortir_stock_by_id->ng;
 			$sisa = $select_sortir_stock_by_id->sisa;
+
 		} else {
+			$stock = 0;
+			$ok = 0;
+			$ng = 0;
 			$sisa = 0;
 		}
 		$data = array(
+			'stock' => $stock,
+			'ok' => $ok,
+			'ng' => $ng,
 			'sisa' => $sisa,
 			'problem_part' => array_unique($problem_part)
 		);
@@ -746,10 +751,10 @@ class Customerclaim extends CI_Controller {
 
 	public function simpan_sortir($id_customer_claim) {
 		$id_sortir_stock = 1;
+		$select_claim = $this->customerclaim_model->select_claim($id_customer_claim);
 		$get_data_sortir = $this->customerclaim_model->get_data_sortir();
 		$tgl_sortir = $_POST['tgl_sortir'];
 		if(!empty($get_data_sortir)) {
-			$id_sortir_stock = $get_data_sortir->id_sortir_stock + 1;
 			$data = array(
 				'id_sortir_stock' => $id_sortir_stock,
 				'tgl' => date('Y-m-d', strtotime($tgl_sortir)),
@@ -758,12 +763,19 @@ class Customerclaim extends CI_Controller {
 				'ng' => $_POST['ng'],
 				'sisa' => $_POST['sisa']
 			);
-			$updateData = array(
-				'id_sortir_stock' => $data['id_sortir_stock'],
-				'id_customer_claim' => $id_customer_claim
-			);
-			$result = $this->customerclaim_model->simpan_data_sortir($data);
-			$this->customerclaim_model->update_sortir_field($updateData);
+			if(!empty($select_claim->id_sortir_stock)) {
+				$data['id_sortir_stock'] = $select_claim->id_sortir_stock;
+				$result = $this->customerclaim_model->update_data_sortir($data);
+			} else {
+				$data['id_sortir_stock'] = $get_data_sortir->id_sortir_stock + 1;
+				$updateData = array(
+					'id_sortir_stock' => $data['id_sortir_stock'],
+					'id_customer_claim' => $id_customer_claim
+				);
+				$result = $this->customerclaim_model->simpan_data_sortir($data);
+				$this->customerclaim_model->update_sortir_field($updateData);
+			}
+			
 		} else {
 			$data = array(
 				'id_sortir_stock' => $id_sortir_stock,
@@ -781,6 +793,7 @@ class Customerclaim extends CI_Controller {
 			$this->customerclaim_model->update_sortir_field($updateData);
 		}
 		$select_claim = $this->customerclaim_model->select_claim($id_customer_claim);
+		$sisa_stock = $this->customerclaim_model->select_sortir_stock_by_id($select_claim->id_sortir_stock);
 		$id_user = $this->session->userdata('id_users');
 		$data_aktivitas = array(
 			"id_user" => $id_user,
@@ -790,6 +803,7 @@ class Customerclaim extends CI_Controller {
 		);
 		$data = array(
 			'result' => $result,
+			'sisa_stock' => $sisa_stock->sisa,
 			'select_claim' => $select_claim
 		);
 		$this->aktivitas_model->save_aktivitas($data_aktivitas);
