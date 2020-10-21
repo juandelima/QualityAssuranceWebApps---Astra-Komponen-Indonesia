@@ -93,10 +93,7 @@ class CustomerClaim {
         proses.change(() => {
             let getCustomerVal = filter_customer.val();
             const getProsesVal = proses.val();
-            if(getCustomerVal == "") {
-                getCustomerVal = "all";
-            }
-            this.filter(table_customer_claim, getCustomerVal, getProsesVal);
+            this.filter(table_customer_claim, getCustomerVal = 'all', getProsesVal);
         });
     }
 
