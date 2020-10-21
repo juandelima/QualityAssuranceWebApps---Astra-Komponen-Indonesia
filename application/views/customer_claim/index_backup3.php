@@ -80,22 +80,21 @@
 		}
 
 		.red {
-			background-color: #fa163f!important;
-			color: #fff!important;
+			background-color: #fa163f;
+			color: #fff;
 			text-align: center;
 			font-weight: bold;
 		}
 
 		.kuning {
-			background-color: #ffdc34!important;
-			color: #1b262c!important;
+			background-color: #ffdc34;
+			color: #1b262c;
 			text-align: center;
 			font-weight: bold;
 		}
-
 		.hijau {
-			background-color: #21bf73!important;
-			color: #fff!important;
+			background-color: #21bf73;
+			color: #fff;
 			text-align: center;
 			font-weight: bold;
 		}
@@ -264,30 +263,26 @@
 					<input type="hidden" name="id_customer" id="id_customer" value=""/>
 					<input type="hidden" name="part" id="part" value=""/>
 					<div class="row" style="margin-bottom: 10px;">
-					<div class="<?php if($this->session->userdata['role'] != 'User') { ?> col-sm-6 <?php } else { ?> col-sm-12 <?php } ?>">
+						<?php if($this->session->userdata['role'] != 'User') { ?>
+							<div class="col-sm-6">
 								<a href="<?php echo base_url('claim/customerclaim/create_customerclaim'); ?>" class="btn btn-blue btn-icon btn-block">
 									<i class="entypo-user-add"></i>
 									ADD CUSTOMER CLAIM
 								</a>
-						</div>
+							</div>
 
-						<?php if($this->session->userdata['role'] != 'User') { ?> 
 							<div class="col-sm-6">
-									<a href="javascript:;" id="add_delivery" onclick="jQuery('#form_delivery').modal('show', {backdrop: 'static', keyboard: false});" class="btn btn-success btn-icon btn-block">
-										<i class="entypo-box"></i>
-										ADD DELIVERY
-									</a>
+								<a href="javascript:;" onclick="jQuery('#form_delivery').modal('show', {backdrop: 'static', keyboard: false});" class="btn btn-success btn-icon btn-block">
+									<i class="entypo-box"></i>
+									ADD DELIVERY
+								</a>
 							</div>
 						<?php } ?>
 					</div>
 				</form>
-				
-
-				<?php if($this->session->userdata['role'] != 'User') { ?> 
 				<div class="panel panel-primary" id="charts_env">
 					<div class="panel-body">
 						<div class="row">
-						
 							<div class="col-md-12">
 								<ul class="nav nav-tabs">
 									<li class="active">
@@ -296,23 +291,21 @@
 											<span class="hidden-xs">Customer Claim</span>
 										</a>
 									</li>
-
 									<li>
 										<a href="#delivery" data-toggle="tab">
-											<span class="visible-xs"><i class="entypo-chart-line"></i></span>
+											<span class="visible-xs"><i class="entypo-chart-bar"></i></span>
 											<span class="hidden-xs">Delivery</span>
 										</a>
 									</li>
 								</ul>
-								
 								<div class="tab-content">
 									<div class="tab-pane active" id="customer_claim">
-									<form role="form" id="filter_table" class="form-horizontal form-groups-bordered" style="margin-top: 20px;">
+										<form role="form" id="filter_table" class="form-horizontal form-groups-bordered" style="margin-top: 20px;">
 											<div class="row">
 												<div class="col-sm-3">
 													<div class="form-group">
 														<div class="col-sm-10">
-															<select name="filter_customer" id="filter_customer" class="select2" data-allow-clear="true" data-placeholder="Pilih customer...">
+															<select name="table_ganti_customer" id="table_ganti_customer" class="select2" data-allow-clear="true" data-placeholder="Pilih customer...">
 																<option></option>
 																<?php foreach($customers as $data) { ?>
 																	<option value="<?php echo $data->id_customer; ?>"><?php echo $data->nama_customer; ?></option>
@@ -325,47 +318,237 @@
 												<div class="col-sm-3">
 													<div class="form-group">
 														<div class="col-sm-10">
-															<select name="proses" id="proses" class="selectboxit" data-first-option="false">
-																<option>proses</option>
-																<option value="" selected>Semua Proses</option>
-																<?php foreach($proses as $data) { ?>
-																	<option value="<?php echo $data->proses; ?>"><?php echo $data->proses; ?></option>
-																<?php } ?>
+															<select name="table_ganti_part" id="table_ganti_part" class="select2" data-allow-clear="true" data-placeholder="Pilih part...">
+																<option></option>
+																<?php
+																	foreach($customer_claim_dist as $data) {
+																?>
+																	<option value="<?php echo $data->nama_part; ?>"><?php echo $data->nama_part; ?></option>
+																<?php 
+																	}
+																?>
+															</select>
+														</div>
+													</div>
+												</div>
+
+												<div class="col-sm-3">
+													<div class="form-group">
+														<!-- <label class="col-sm-2 control-label">Year</label> -->
+														<div class="col-sm-10">
+															<select name="table_year" id="table_year" class="select2" data-allow-clear="true" data-placeholder="Pilih tahun...">
+																<option></option>
+																<?php
+																	$firstYear = (int)date('Y') - 9;
+																	$lastYear = $firstYear + 9;
+																	for($i = $firstYear; $i <= $lastYear; $i++) { 
+																?>
+																		<option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+																<?php
+																	}
+																?>
 															</select>
 														</div>
 													</div>
 												</div>
 											</div>										
 										</form>
+
 										<div class="row">
 											<div class="col-md-12">
-												<table class="table table-bordered nowrap" id="table_customer_claim">
-													<thead>
-														<tr>
-															<th width="1" style="text-align: center;">No</th>
-															<th width="50" style="text-align: center;">Tgl</th>
-															<th class="no_surat_claim">No Surat Claim</th>
-															<th style="text-align: center;">Nama Part</th>
-															<th style="text-align: center;">Type</th>
-															<th style="text-align: center;">Proses</th>
-															<th width="50" style="text-align: center;">Due Date</th>
-															<th style="text-align: center;">OFP</th>
-															<th style="text-align: center;">Pergantian Part</th>
-															<th style="text-align: center;">Sortir Stock</th>
-															<th width="180" style="text-align: center;">PICA</th>
-															<th style="text-align: center;">PFMEA</th>
-															<th style="text-align: center;">Status</th>
-															<th style="text-align: center;" width="40">Card</th>
-														</tr>
-													</thead>
-												</table>
+												<div id="main-table">
+													<table class="table table-bordered nowrap" id="table_customer_claim">
+														<thead>
+															<tr>
+																<th width="1" style="text-align: center;">No</th>
+																<th width="50" style="text-align: center;">Tgl</th>
+																<th class="no_surat_claim">No Surat Claim</th>
+																<th style="text-align: center;">Nama Part</th>
+																<th style="text-align: center;">Type</th>
+																<th style="text-align: center;">Proses</th>
+																<th width="50" style="text-align: center;">Due Date</th>
+																<th style="text-align: center;">OFP</th>
+																<th style="text-align: center;">Pergantian Part</th>
+																<th style="text-align: center;">Sortir Stock</th>
+																<th width="180" style="text-align: center;">PICA</th>
+																<th style="text-align: center;">PFMEA</th>
+																<th style="text-align: center;">Status</th>
+																<th style="text-align: center;" width="40">Card</th>
+															</tr>
+														</thead>
+														
+														<tbody>
+															<?php
+																$index = 1;
+																foreach($get_all_customer_claim as $data) {
+																	$date = strtotime($data->tgl_input);
+																	$card = $data->card;
+																	if($card == "Green Card") {
+																		$style_card = "background-color: #42b883; color: #ffffff; text-align: center;";
+																	} elseif($card == "Red Card") {
+																		$style_card = "background-color: #ff0000; color: #ffffff; text-align: center;";
+																	} elseif($card == "Yellow Card") {
+																		$style_card = "background-color: #ffd800; color: #222831; text-align: center;";
+																	} else {
+																		$style_card = null;
+																	}
+
+																	$overdue = date("Y-m-d", strtotime("+3 day", $date));
+																	$datenow = date("Y-m-d");
+																	if($datenow > $overdue) {
+																		if(!empty($data->ppt_file)) {
+																			$style = "background-color: #ffd800; color: #222831";
+																		} else {
+																			$style = "background-color: #ff0000; color: #ffffff";
+																		}
+																	} else {
+																		if(!empty($data->ppt_file)) {
+																			$style = "background-color: #42b883; color: #ffffff";
+																		} else {
+																			$style = "background-color: #ffffff; color: #222831";
+																		}
+																	}
+															?>
+															<tr>
+																<td>
+																	<?php echo $index; ?>
+																</td>
+																<td>
+																	<?php echo $data->tgl_input; ?>
+																</td>
+																<td>
+																	<?php echo $data->no_surat_claim; ?>
+																</td>
+																<td>
+																	<?php echo $data->nama_part; ?>
+																</td>
+																<td style="text-align: center;">
+																	<?php echo $data->type; ?>
+																</td>
+																<td style="text-align: center;">
+																	<?php echo $data->proses; ?>
+																</td>
+																<td style="<?php echo $style; ?>" style="text-align: center;">
+																	<?php echo date('d-m-Y', strtotime($overdue)); ?>
+																</td>
+
+																<td style="text-align: center;">
+																	<a href='javascript:;' id='modal-upload-ofp<?php echo $data->id_customer_claim; ?>' class='btn btn-blue'><i class='entypo-upload'></i></a>
+																	<?php
+																		if(empty($data->ofp)) {
+																	?>
+																		<a class='btn btn-red enable_ofp<?php echo $data->id_customer_claim; ?>' id='download_ofp_file"<?php echo $data->id_customer_claim; ?>"' disabled><i class='entypo-eye'></i></a>
+																	<?php
+																		} else {
+																	?>
+																		<a class='btn btn-red enable_ofp<?php echo $data->id_customer_claim; ?>' id='download_ofp_file"<?php echo $data->id_customer_claim; ?>"'><i class='entypo-eye'></i></a>
+																	<?php
+																		}
+																	?>
+																</td>
+
+																<td style="text-align: center;">
+																	<?php
+																		if(empty($data->id_pergantian_part)) {
+																	?>
+																			<a href='javascript:;' id='modal-pergantian-part<?php echo $data->id_customer_claim; ?>' class='btn btn-info btn-icon icon-left'><i class='entypo-pencil'></i> Pergantian part</a>
+																	<?php 
+																		} else {
+																	?>
+																			<i id='ganti-part<?php echo $data->id_customer_claim; ?>' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i> Sudah melakukan pergantian part
+																	<?php
+																		}
+																	?>
+																</td>
+
+																<td style="text-align: center;">
+																	<?php
+																		if(empty($data->id_sortir_stock)) {
+																	?>
+																			<a href='javascript:;' id='modal-sortir-stock<?php echo $data->id_customer_claim; ?>' class='btn btn-blue'><i class='entypo-pencil'></i></a>
+																	<?php 
+																		} else {
+																	?>
+																			<?php
+																				if($data->sisa > 0) {
+																			?>
+																					<a href='javascript:;' id='modal-sortir-stock<?php echo $data->id_customer_claim; ?>' class='btn btn-success'><i class='entypo-pencil'></i></a>
+																			<?php
+																				} else {
+																			?>
+																					<i id='ganti-part<?php echo $data->id_customer_claim; ?>' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>
+																			<?php
+																				}
+																			?>
+																	<?php
+																		}
+																	?>
+																</td>
+
+																<td style="text-align: center;">
+																	<a href='javascript:;' id='modal-upload-ppt<?php echo $data->id_customer_claim; ?>' class='btn btn-blue'><i class='entypo-upload'></i></a>
+																	<?php
+																		if(empty($data->ppt_file)) {
+																	?>
+																			<a class='btn btn-success enable_pica<?php echo $data->id_customer_claim; ?>' id='download_ppt_file<?php echo $data->id_customer_claim; ?>' disabled><i class='entypo-eye'></i></a>
+																	<?php 
+																		} else {
+																	?>
+																			<a href='javascript:;' id='download_ppt_file<?php echo $data->id_customer_claim; ?>' class='btn btn-success'><i class='entypo-eye'></i></a>
+																	<?php
+																		}
+																	?>
+																</td>
+
+																<td>
+																	<a href='javascript:;' id='modal-pfmea<?php echo $data->id_customer_claim; ?>' class='btn btn-blue'><i class='entypo-upload'></i></a>
+																	<?php
+																		if(empty($data->id_pfmea)) {
+																	?>
+																			<a class='btn btn-info enable_pfmea<?php echo $data->id_customer_claim; ?>' disabled><i class='entypo-eye'></i></a>
+																	<?php 
+																		} else {
+																	?>
+																			<a href='javascript:;' id='modal_files<?php echo $data->id_customer_claim; ?>' class='btn btn-info'><i class='entypo-eye'></i></a>
+																	<?php
+																		}
+																	?>
+																</td>
+																	
+																<td style="text-align: center;">
+																	<?php
+																		if($data->ofp != null && $data->id_pergantian_part != null && $data->id_sortir_stock != null && $data->ppt_file != null && $data->id_pfmea != null) {
+																	?>
+																			CLOSE
+																	<?php
+																		} else {
+																	?>
+																			OPEN
+																	<?php 
+																		} 
+																	?>
+																</td>
+
+																<td style="<?php echo $style_card; ?>">
+																	<?php
+																		echo $card;
+																	?>
+																</td>
+															</tr>
+															<?php
+																$index++;
+																}
+															?>
+														</tbody>
+													</table>
+												</div>
 											</div>
-											
 											<?php
 												$index = 0;
 												foreach($customer_claim as $data) {
 													$id = $data->id_customer_claim;
 											?>
+											
 											<div class="modal fade" id="upload-ppt<?php echo $id; ?>">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -401,6 +584,7 @@
 													</div> 
 												</div>
 											</div>
+											
 
 											<div class="modal fade" id="modal_view_pica_files<?php echo $id; ?>">
 												<div class="modal-dialog">
@@ -410,7 +594,7 @@
 															<h4 class="modal-title">PICA FILES - <?php echo $data->nama_part; ?></h4>
 														</div>
 														<div class="modal-body">
-															<table class="table table-bordered" id="table_file_pica<?php echo $id; ?>" width="100%">
+															<table class="table table-bordered" id="table_file_pica<?php echo $id; ?>">
 																<thead>
 																	<tr>
 																		<th width="1" style="text-align: center;">No</th>
@@ -431,6 +615,8 @@
 													</div>
 												</div>
 											</div>
+
+
 
 											<div class="modal fade" id="upload-ofp<?php echo $id; ?>">
 												<div class="modal-dialog">
@@ -476,7 +662,7 @@
 															<h4 class="modal-title">OFP FILES - <?php echo $data->nama_part; ?></h4>
 														</div>
 														<div class="modal-body">
-															<table class="table table-bordered" id="table_file_ofp<?php echo $id; ?>" width="100%">
+															<table class="table table-bordered" id="table_file_ofp<?php echo $id; ?>">
 																<thead>
 																	<tr>
 																		<th width="1" style="text-align: center;">No</th>
@@ -497,6 +683,7 @@
 													</div>
 												</div>
 											</div>
+
 
 											<div class="modal fade" id="pergantian-part<?php echo $id; ?>">
 												<div class="modal-dialog">
@@ -550,7 +737,7 @@
 													</div> 
 												</div>
 											</div>
-
+											
 											<div class="modal fade" id="sortir-stock<?php echo $id; ?>">
 												<div class="modal-dialog" style="width: 50%">
 													<div class="modal-content">
@@ -687,7 +874,7 @@
 													</div> 
 												</div>
 											</div>
-
+											
 											<div class="modal fade" id="modal_view_files<?php echo $id; ?>">
 												<div class="modal-dialog">
 													<div class="modal-content">
@@ -696,7 +883,7 @@
 															<h4 class="modal-title">PFMEA FILES - <?php echo $data->nama_part; ?></h4>
 														</div>
 														<div class="modal-body">
-															<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>" width="100%">
+															<table class="table table-bordered" id="table_file_pfmea<?php echo $id; ?>">
 																<thead>
 																	<tr>
 																		<th width="1" style="text-align: center;">No</th>
@@ -724,18 +911,62 @@
 										</div>
 									</div>
 									<div class="tab-pane" id="delivery">
-										<div class="row">
-											<div class="col-md-12">
-												<table class="table table-bordered nowrap" id="delivery_table" width="100%">
-													<thead>
-														<tr>
-															<th width="1%" style="text-align: center;">No</th>
-															<th width="50" style="text-align: center;">Tgl</th>
-															<th style="text-align: center;">Quantity</th>
-														</tr>
-													</thead>
-												</table>
-											</div>
+										<div id="skeleton-delivery-table">
+											<table class="table table-bordered" id="table_delivery_skeleton">
+												<thead>
+													<tr>
+														<th style="text-align: center;">No</th>
+														<th style="text-align: center;">Tgl</th>
+														<th style="text-align: center;">Quantity</th>
+														<th style="text-align: center;">Aksi</th>
+													</tr>
+												</thead>
+															
+												<tbody class="tbody">
+													<?php for($i = 0; $i < 10; $i++) {
+													?>
+													<tr>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+														<td class="loading">
+															<div class="bar"></div>
+														</td>
+													</tr>
+													<?php } ?>
+												</tbody>
+											</table>
+										</div>
+										<div id="main-delivery-table" class="hide-main-table">
+											<table class="table table-bordered" id="table_delivery1">
+												<thead>
+													<tr>
+														<th width="1" style="text-align: center;">No</th>
+														<th width="80" style="text-align: center;">Tgl Delivery</th>
+														<th width="500" style="text-align: center;">Quantity</th>
+														<th style="text-align: center;">Aksi</th>
+													</tr>
+												</thead>
+														
+												<tbody>
+															
+												</tbody>
+											</table>
+										</div>
+
+
+										<div id="modal-edit-delivery">
+
+										</div>
+
+										<div id="modal-delete-delivery">
+											
 										</div>
 									</div>
 								</div>
@@ -743,7 +974,7 @@
 						</div>
 					</div>
 				</div>
-				<?php } ?>
+				
 				<div class="modal fade" id="form_delivery">
 						<div class="modal-dialog">
 							<div class="modal-content">
@@ -810,11 +1041,11 @@
 	</div>
 	<link rel="stylesheet" href="<?php echo site_url('assets/js/daterangepicker/daterangepicker-bs3.css'); ?>">
 	<?php $this->load->view('_partials/js.php'); ?>
-	<script src="<?php echo site_url('assets/js/customer_claim/new_customer_claim.js'); ?>"></script>
-	<script src="<?php echo site_url('assets/js/customer_claim/new_delivery.js'); ?>"></script>
+	<script src="<?php echo site_url('assets/js/customer_claim/filter_customer_claim.js'); ?>"></script>
 	<?php $this->load->view('_partials/customer_claim.php'); ?>
 	<script src="<?php echo site_url('assets/js/icheck/icheck.min.js'); ?>"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.js"></script>
+	<script src="<?php echo site_url('assets/js/customer_claim/delivery.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/chatting/chat.js'); ?>"></script>
 	<?php $this->load->view('_partials/chatting'); ?>
 </body>

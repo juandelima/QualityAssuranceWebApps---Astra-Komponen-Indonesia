@@ -11,7 +11,7 @@ function annual_monthly_chart(root_url, last_year, full_year, count_customer_cla
 				$("#year_to option:contains("+year_from_disable+")").attr("disabled","disabled");
 			}
         });
-        
+		
         $("#filter_year").on('change', 'select#year_to', function(e) {
 			let year_from = $('#year_from').val();
 			let year_to = $(e.target).val();

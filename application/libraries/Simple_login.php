@@ -42,8 +42,15 @@ class Simple_login {
 
 				$this->CI->user_model->update($update_LastLogin);
 				$this->CI->user_model->update_status_online($update_statusOnline);
-				$this->CI->session->set_flashdata('success','<b>Selamat Datang '.$user->full_name.' :)</b>');
-				redirect(base_url('dashboard'), 'refresh');
+				
+				if($this->CI->session->userdata('role') == 'Admin' || $this->CI->session->userdata('role') == 'User') {
+					$this->CI->session->set_flashdata('sukses','<b>Selamat Datang '.$user->full_name.' :)</b>');
+					redirect(base_url('claim/customerclaim'),'refresh');
+				} else {
+					$this->CI->session->set_flashdata('success','<b>Selamat Datang '.$user->full_name.' :)</b>');
+					redirect(base_url('dashboard'), 'refresh');
+				}
+				
 			} else {
 				$this->CI->session->set_flashdata('warning','Password Anda salah');
 			}
@@ -54,6 +61,9 @@ class Simple_login {
 
 	public function loged() {
         if(!empty($this->CI->session->userdata('username'))){
+			if($this->CI->session->userdata('role') == 'Admin') {
+				redirect(base_url('claim/customerclaim'),'refresh');
+			}
             redirect(base_url('dashboard'),'refresh');
         }
 	}

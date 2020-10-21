@@ -12,15 +12,29 @@ class Delivery extends CI_Controller {
     }
     
     public function get_data() {
-        $data = $this->delivery_model->listing_deliv();
-        $count_data = count($data);
-
-        $data_ = array(
-            'data' => $data,
-            'count_data' => $count_data
-        );
-        echo json_encode($data_);
+        $response_data["data"] = array();
+		$no = 1;
+        $getDelivery = $this->delivery_model->listing_deliv();
+        $previousTgl = null;
+        $previousQty = null;
+        foreach($getDelivery as $data) {
+            if($data->qty > 0) {
+                if($previousTgl != $data->tgl_delivery) {
+                    $dailyDeliv = $this->delivery_model->daily_ppm($data->tgl_delivery);
+                    $dataDelivery = array(
+                        'no' => $no,
+                        'tgl_delivery' => $data->tgl_delivery,
+                        'qty' => $dailyDeliv->total_qty
+                    );
+                    $response_data[] = array_push($response_data["data"], $dataDelivery);
+                    $previousTgl = $data->tgl_delivery;
+                    $no += 1;
+                }
+            }
+        }
+        echo json_encode($response_data);
     }
+
 
     public function update_data() {
         if($this->session->userdata['role'] == 'User') {
@@ -32,7 +46,7 @@ class Delivery extends CI_Controller {
         $tgl = $this->input->post('tgl');
         $data = array(
            'id_delivery' => $id_delivery,
-            'qty' => $qty
+           'qty' => $qty
         );
         $id_user = $this->session->userdata('id_users');
 		$data_aktivitas = array(

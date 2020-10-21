@@ -11,12 +11,13 @@ class Customerclaim_model extends CI_Model {
 		$count_list_visual = count($list_field_visual);
 		$count_list_nonvisual = count($list_field_non_visual);
 		$get_customer_claim = $this->get_customer_claim();
-		for($i = 0; $i < 500; $i++) {
+		$index = 1;
+		for($i = 0; $i < 400; $i++) {
 			$getPart = $this->getRandomPart();
 			$getClaim = $this->getClaim();
 			$intvl = $i + 5;
 			$tgl_input = date("Y-m-d", strtotime("+10 day", $start_date));
-			$tgl_claim = date("Y-m-d", strtotime("+5 day", $start_date));
+			$tgl_claim = date("Y-m-d", strtotime("+8 day", $start_date));
 			$tgl_delive = date("Y-m-d", strtotime("+15 day", $start_date));
 			$year = date("Y", strtotime($tgl_input));
 			$data = array(
@@ -54,7 +55,7 @@ class Customerclaim_model extends CI_Model {
 				if($field == "id_customer_claim") {
 					continue;
 				}
-				$data_visual[$field] = rand(0, 5);
+				$data_visual[$field] = rand(0, 15);
 				$sum_visual += $data_visual[$field];
 			}
 
@@ -66,7 +67,7 @@ class Customerclaim_model extends CI_Model {
 				if($field == "id_customer_claim") {
 					continue;
 				}
-				$data_non_visual[$field] = rand(0, 5);
+				$data_non_visual[$field] = rand(0, 10);
 				$sum_non_visual += $data_non_visual[$field];
 			}
 
@@ -167,7 +168,7 @@ class Customerclaim_model extends CI_Model {
 
 			$data_delivery = array(
 				'tgl_delivery' => $tgl_delive,
-				'qty' => rand(10, 200)
+				'qty' => rand(10, 100)
 			);
 			$this->save_claim_customer($data);
 
@@ -185,12 +186,30 @@ class Customerclaim_model extends CI_Model {
 			// echo "<br/>";
 			// echo "<br/>";
 			$start_date = strtotime($tgl_input); 
+			$index += 1;
 		}
 		
 	}
 
 	public function save_delivery($data) {
 		$this->db->insert('delivery', $data);
+	}
+
+	public function save_pergantian_part($data) {
+		$result = $this->db->insert('pergantian_part', $data);
+		return $result;
+	}
+
+	public function save_pfmea_file($data) {
+		$this->db->insert('pfmea', $data);
+	}
+
+	public function save_pica_file($data) {
+		$this->db->insert('pica', $data);
+	}
+
+	public function save_ofp_file($data) {
+		$this->db->insert('ofp', $data);
 	}
 
 	public function getClaim() {
@@ -295,15 +314,8 @@ class Customerclaim_model extends CI_Model {
 	}
 
 	public function get_customer_claim() {
-		$array_select = array(
-			'claim_customer.*',
-			'data_parts.*',
-		);
-		$this->db->select($array_select);
-		$this->db->from($this->table);
-		$this->db->join("data_parts", "data_parts.id_part = claim_customer.id_part", "INNER");
-		$this->db->order_by("claim_customer.id_customer_claim", "ASC");
-		$query = $this->db->get();
+		$query = $this->db->query("select data_parts.*, claim_customer.* from $this->table inner join data_parts
+			on $this->table.id_part = data_parts.id_part order by claim_customer.tgl_input desc");
 		return $query->result();
 	}
 
@@ -311,17 +323,11 @@ class Customerclaim_model extends CI_Model {
 		$query = $this->db->query("select distinct data_parts.nama_part from claim_customer inner join data_parts
 		on data_parts.id_part = claim_customer.id_part");
 		return $query->result();
-		// $array_select = array(
-		// 	'claim_customer.*',
-		// 	'data_parts.*',
-		// );
-		// $this->db->select($array_select);
-		// $this->db->from($this->table);
-		// $this->db->join("data_parts", "data_parts.id_part = claim_customer.id_part", "INNER");
-		// $this->db->group_by('nama_part');
-		// $this->db->order_by("claim_customer.id_customer_claim", "ASC");
-		// $query = $this->db->get();
-		// return $query->result();
+	}
+
+	public function get_proses() {
+		$query = $this->db->query("select distinct proses from data_parts");
+		return $query->result();
 	}
 
 	public function get_customer_claim_sort_by_date() {
@@ -349,6 +355,7 @@ class Customerclaim_model extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
 	}
+	
 	public function save_claim_customer($data) {
 		$this->db->insert($this->table, $data);
 	}
@@ -368,6 +375,44 @@ class Customerclaim_model extends CI_Model {
 		return $result;
 	}
 
+	public function last_id_pergantian_part() {
+		$this->db->select("*");
+		$this->db->from('pergantian_part');
+		$this->db->order_by('id_pergantian_part', 'DESC');
+		$result = $this->db->get();
+		return $result->row();
+	}
+	public function update_pergantian_part($data) {
+		$this->db->set('id_pergantian_part', $data['id_pergantian_part']);
+		$this->db->where('id_customer_claim', $data['id_customer_claim']);
+		$this->db->update('claim_customer');
+	}
+
+	public function upload_ofp($data) {
+		$this->db->set('ofp', $data['ofp']);
+		$this->db->where('id_customer_claim', $data['id_customer_claim']);
+		$result = $this->db->update('claim_customer');
+		return $result;
+	}
+
+	public function update_id_pfmea($id_customer_claim) {
+		$this->db->set('id_pfmea', $id_customer_claim);
+		$this->db->where('id_customer_claim', $id_customer_claim);
+		$this->db->update('claim_customer');
+	}
+
+	public function update_id_pica($id_customer_claim) {
+		$this->db->set('ppt_file', $id_customer_claim);
+		$this->db->where('id_customer_claim', $id_customer_claim);
+		$this->db->update('claim_customer');
+	}
+
+	public function update_id_ofp($id_customer_claim) {
+		$this->db->set('ofp', $id_customer_claim);
+		$this->db->where('id_customer_claim', $id_customer_claim);
+		$this->db->update('claim_customer');
+	}
+
 	public function max_id() {
 		$this->db->select_max('id_customer_claim');
 		$this->db->from($this->table);
@@ -376,6 +421,23 @@ class Customerclaim_model extends CI_Model {
 		return $max;
 	}
 
+	public function get_customer_claim_by_tb($tahun, $bulan, $id_part) {
+		$query = $this->db->query("
+			select * from claim_customer inner join data_parts
+			on claim_customer.id_part = data_parts.id_part
+			where extract(year from claim_customer.tgl_input) = $tahun and
+			extract(month from claim_customer.tgl_input) = $bulan and
+			claim_customer.id_part = '$id_part' and data_parts.customer = 1 order by claim_customer.tgl_input desc limit 1
+		");
+		return $query->result();
+	}
+
+	public function select_part_distinct() {
+		$query = $this->db->query("
+			select distinct nama_part from data_parts
+		");
+		return $query->result();
+	}
 
 	public function filter_claim($year, $month, $nama_part) { // Buat get datapart sebelumnya utk kalkulasi card
 		$array_select = array(
@@ -409,7 +471,7 @@ class Customerclaim_model extends CI_Model {
 		return $query->result();
 	}
 
-	public function chart_rejection_claim($start = null, $end = null, $part = null, $year = null, $month = null, $status_claim = null) {
+	public function chart_rejection_claim($start, $end, $part, $year, $month, $status_claim, $proses, $id_customer) {
 		$get_customer_claim_sort_by_date = $this->get_customer_claim_sort_by_date();
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$start_all_part = $get_customer_claim_sort_by_date[0]->tgl_input;
@@ -572,43 +634,504 @@ class Customerclaim_model extends CI_Model {
 		// 	}
 		// }
 		
+		if($status_claim != null && $part != null && $start != null && $end != null && $id_customer != null && $proses != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where claim_customer.status_claim = '$status_claim' and data_parts.customer = '$id_customer' and
+				data_parts.proses = '$proses' and data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+		if($status_claim != null && $part != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where claim_customer.status_claim = '$status_claim' and data_parts.customer = '$id_customer' and
+				data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+		if($proses != null && $part != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and
+				data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+		if($status_claim != null && $part != null && $start != null && $end != null && $proses != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where claim_customer.status_claim = '$status_claim' and data_parts.proses = '$proses' and
+				data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
 		if($status_claim != null && $part != null && $start != null && $end != null) {
-			
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where claim_customer.status_claim = '$status_claim' and
+				data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+
+		if($proses != null && $part != null && $start != null && $end != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and
+				data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+
+		if($status_claim != null && $proses != null && $start != null && $end != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where claim_customer.status_claim = '$status_claim' and
+				data_parts.proses = '$proses' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+
+		if($part != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.nama_part = '$part' and data_parts.customer = '$id_customer' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+		if($proses != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+		if($status_claim != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+
+
+		if($status_claim != null && $start != null && $end != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
+		
+
+		if($proses != null && $start != null && $end != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
 		}
 
 
 		if($part != null && $start != null && $end != null) {
-			
-		} 
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
+		}
 
-		if($status_claim != null && $start != null && $end != null) {
-			
+		if($start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.customer = '$id_customer' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
 		}
 
 		if($start != null && $end != null) {
-			
+			$query = $this->db->query("
+				select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+				inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+			");
+			return $query->result();
 		}
 
-		if($part != null) {
+
+		if($status_claim != null && $part != null && $id_customer != null && $proses != null) {
 			if($year != null && $month != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
 			} elseif ($year != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
 			} elseif($month != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
 			} else {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part'
+				");
+				return $query->result();
 			}
 		} else {
+			if($status_claim != null && $id_customer != null && $proses != null) {
+				if($year != null && $month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} elseif ($year != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and extract(YEAR from claim_customer.tgl_input) = $year
+					");
+					return $query->result();
+				} elseif($month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} else {
+					if(!empty($get_customer_claim_sort_by_date)) {
+						$query = $this->db->query("
+							select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+							inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+							inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+							where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+						");
+						return $query->result();
+					}
+				}
+			}
+		}
+
+
+		if($proses != null && $part != null && $id_customer != null) {
 			if($year != null && $month != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
 			} elseif ($year != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
 			} elseif($month != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
 			} else {
-				if(!empty($get_customer_claim_sort_by_date)) {
-					
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and data_parts.nama_part = '$part'
+				");
+				return $query->result();
+			}
+		} else {
+			if($proses != null && $id_customer != null) {
+				if($year != null && $month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} elseif ($year != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and extract(YEAR from claim_customer.tgl_input) = $year
+					");
+					return $query->result();
+				} elseif($month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} else {
+					if(!empty($get_customer_claim_sort_by_date)) {
+						$query = $this->db->query("
+							select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+							inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+							inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+							where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+						");
+						return $query->result();
+					}
+				}
+			}
+		}
+
+
+		if($status_claim != null && $proses != null && $id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.proses = '$proses' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.proses = '$proses' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.proses = '$proses' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} else {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.proses = '$proses'
+				");
+				return $query->result();
+			}
+		}
+
+
+		if($status_claim != null && $part != null && $id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} else {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part'
+				");
+				return $query->result();
+			}
+		} else {
+			if($status_claim != null && $id_customer != null) {
+				if($year != null && $month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} elseif ($year != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and extract(YEAR from claim_customer.tgl_input) = $year
+					");
+					return $query->result();
+				} elseif($month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} else {
+					if(!empty($get_customer_claim_sort_by_date)) {
+						$query = $this->db->query("
+							select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+							inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+							inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+							where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+						");
+						return $query->result();
+					}
+				}
+			}
+		}
+
+
+
+		if($proses != null && $part != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} else {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part'
+				");
+				return $query->result();
+			}
+		} else {
+			if($proses != null) {
+				if($year != null && $month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} elseif ($year != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and extract(YEAR from claim_customer.tgl_input) = $year
+					");
+					return $query->result();
+				} elseif($month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} else {
+					if(!empty($get_customer_claim_sort_by_date)) {
+						
+						$query = $this->db->query("
+							select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+							inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+							inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+							where data_parts.proses = '$proses' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+						");
+						return $query->result();
+					}
 				}
 			}
 		}
@@ -617,32 +1140,268 @@ class Customerclaim_model extends CI_Model {
 
 		if($status_claim != null && $part != null) {
 			if($year != null && $month != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
 			} elseif ($year != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
 			} elseif($month != null) {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
 			} else {
-				
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where claim_customer.status_claim = '$status_claim' and data_parts.nama_part = '$part'
+				");
+				return $query->result();
 			}
 		} else {
 			if($status_claim != null) {
 				if($year != null && $month != null) {
-					
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where claim_customer.status_claim = '$status_claim' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
 				} elseif ($year != null) {
-					
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where claim_customer.status_claim = '$status_claim' and extract(YEAR from claim_customer.tgl_input) = $year
+					");
+					return $query->result();
 				} elseif($month != null) {
-					
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where claim_customer.status_claim = '$status_claim' and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
 				} else {
 					if(!empty($get_customer_claim_sort_by_date)) {
 						
+						$query = $this->db->query("
+							select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+							inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+							inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+							where claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+						");
+						return $query->result();
 					}
 				}
 			}
 		}
+
+
+		if($part != null && $proses != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} else {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+				");
+				return $query->result();
+			}
+		}
+
+		if($part != null && $id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} else {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+				");
+				return $query->result();
+			}
+		} else {
+			if($id_customer != null) {
+				if($year != null && $month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} elseif ($year != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and extract(YEAR from claim_customer.tgl_input) = $year
+					");
+					return $query->result();
+				} elseif($month != null) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and extract(MONTH from claim_customer.tgl_input) = $month
+					");
+					return $query->result();
+				} else {
+					if(!empty($get_customer_claim_sort_by_date) && $id_customer != null) {
+						$query = $this->db->query("
+							select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+							inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+							inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+							where data_parts.customer = '$id_customer' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+						");
+						return $query->result();
+					}
+				}
+			}
+		}
+
+
+		if($part != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.nama_part = '$part' and extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.nama_part = '$part' and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} else {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.nama_part = '$part' and claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+				");
+				return $query->result();
+			}
+		} else {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where extract(YEAR from claim_customer.tgl_input) = $year and extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where extract(YEAR from claim_customer.tgl_input) = $year
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+					inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where extract(MONTH from claim_customer.tgl_input) = $month
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+						select visual.*, non_visual.* from claim_customer inner join data_parts on claim_customer.id_part = data_parts.id_part
+						inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where claim_customer.tgl_input >= '$start_by_all_part' and claim_customer.tgl_input <= '$end_by_all_part'
+					");
+					return $query->result();
+				}
+			}
+		}
+		
 	}
 
-	public function chart_part_claim($start = null, $end = null, $year = null, $month = null, $status_claim = null) {
+	
+
+	public function chart_part_claim($start, $end, $year, $month, $status_claim, $proses, $id_customer) {
 		$get_customer_claim_sort_by_date = $this->get_customer_claim_sort_by_date();
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$start_all_part = $get_customer_claim_sort_by_date[0]->tgl_input;
@@ -770,6 +1529,55 @@ class Customerclaim_model extends CI_Model {
 		// 		return $query->result();
 		// 	}
 		// }
+		
+		if($status_claim != null && $start != null && $end != null && $id_customer != null && $proses != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				group by data_parts.nama_part
+			");
+			return $query->result();
+		}
+
+		if($status_claim != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				group by data_parts.nama_part
+			");
+			return $query->result();
+		}
+
+		if($status_claim != null && $start != null && $end != null && $proses != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				group by data_parts.nama_part
+			");
+			return $query->result();
+		}
+
+
+		if($proses != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				group by data_parts.nama_part
+			");
+			return $query->result();
+		}
 
 		if($status_claim != null && $start != null && $end != null) {
 			$query = $this->db->query("
@@ -778,6 +1586,30 @@ class Customerclaim_model extends CI_Model {
 				on claim_customer.id_customer_claim = visual.id_customer_claim
 				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
 				where claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				group by data_parts.nama_part
+			");
+			return $query->result();
+		}
+
+		if($start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.customer = '$id_customer' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				group by data_parts.nama_part
+			");
+			return $query->result();
+		}
+
+		if($start != null && $end != null && $proses != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
 				group by data_parts.nama_part
 			");
 			return $query->result();
@@ -794,6 +1626,191 @@ class Customerclaim_model extends CI_Model {
 			");
 			return $query->result();
 		}
+
+		if($status_claim != null && $id_customer != null && $proses != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+						select data_parts.nama_part from claim_customer 
+						inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+						on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+						group by data_parts.nama_part
+					");
+					return $query->result();
+				}
+			}
+		}
+
+		if($status_claim != null && $id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+						select data_parts.nama_part from claim_customer 
+						inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+						on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+						group by data_parts.nama_part
+					");
+					return $query->result();
+				}
+			}
+		}
+
+		if($proses != null && $id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+						select data_parts.nama_part from claim_customer 
+						inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+						on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+						group by data_parts.nama_part
+					");
+					return $query->result();
+				}
+			}
+		}
+
+		if($status_claim != null && $proses != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+						select data_parts.nama_part from claim_customer 
+						inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+						on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+						group by data_parts.nama_part
+					");
+					return $query->result();
+				}
+			}
+		}
+
 
 		if($status_claim != null) {
 			if($year != null && $month != null) {
@@ -841,6 +1858,98 @@ class Customerclaim_model extends CI_Model {
 			}
 		}
 
+		if($id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' AND extract(YEAR from claim_customer.tgl_input) = $year
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+						select data_parts.nama_part from claim_customer 
+						inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+						on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.customer = '$id_customer' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+						group by data_parts.nama_part
+					");
+					return $query->result();
+				}
+			}
+		}
+
+		
+		if($proses != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' AND extract(MONTH from claim_customer.tgl_input) = $month
+					group by data_parts.nama_part
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+						select data_parts.nama_part from claim_customer 
+						inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+						on claim_customer.id_customer_claim = visual.id_customer_claim
+						inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+						where data_parts.proses = '$proses' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+						group by data_parts.nama_part
+					");
+					return $query->result();
+				}
+			}
+		}
 
 		if($year != null && $month != null) {
 			$query = $this->db->query("
@@ -887,13 +1996,49 @@ class Customerclaim_model extends CI_Model {
 		}
 	}
 
-	public function filter_part($nama_part, $start = null, $end = null, $year = null, $month = null, $status_claim = null) {
+	public function filter_part($nama_part, $start, $end, $year, $month, $status_claim, $proses, $id_customer) {
 		$get_customer_claim_sort_by_date = $this->get_customer_claim_sort_by_date();
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$start_all_part = $get_customer_claim_sort_by_date[0]->tgl_input;
 			$end_all_part = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date)  - 1]->tgl_input;
 			$start_by_all_part = date('Y-m-d', strtotime($start_all_part));
 			$end_by_all_part = date('Y-m-d', strtotime($end_all_part));
+		}
+
+		if($status_claim != null && $start != null && $end != null && $id_customer != null && $proses != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				and data_parts.nama_part = '$nama_part'
+			");
+			return $query->result();
+		}
+
+		if($status_claim != null && $start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				and data_parts.nama_part = '$nama_part'
+			");
+			return $query->result();
+		}
+		
+		if($status_claim != null && $start != null && $end != null && $proses != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				and data_parts.nama_part = '$nama_part'
+			");
+			return $query->result();
 		}
 
 		if($status_claim != null && $start != null && $end != null) {
@@ -903,6 +2048,30 @@ class Customerclaim_model extends CI_Model {
 				on claim_customer.id_customer_claim = visual.id_customer_claim
 				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
 				where claim_customer.status_claim = '$status_claim' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				and data_parts.nama_part = '$nama_part'
+			");
+			return $query->result();
+		}
+
+		if($start != null && $end != null && $id_customer != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.customer = '$id_customer' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
+				and data_parts.nama_part = '$nama_part'
+			");
+			return $query->result();
+		}
+
+		if($start != null && $end != null && $proses != null) {
+			$query = $this->db->query("
+				select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+				inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+				on claim_customer.id_customer_claim = visual.id_customer_claim
+				inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+				where data_parts.proses = '$proses' and claim_customer.tgl_input >= '$start' and claim_customer.tgl_input <= '$end'
 				and data_parts.nama_part = '$nama_part'
 			");
 			return $query->result();
@@ -919,6 +2088,195 @@ class Customerclaim_model extends CI_Model {
 			");
 			return $query->result();
 		}
+
+
+		if($status_claim != null && $id_customer != null && $proses != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+				}
+			}
+		}
+
+
+		if($status_claim != null && $id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and claim_customer.status_claim = '$status_claim' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+				}
+			}
+		}
+
+
+		if($proses != null && $id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' and data_parts.proses = '$proses' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+				}
+			}
+		}
+
+
+		if($status_claim != null && $proses != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND extract(YEAR from claim_customer.tgl_input) = $year
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' and claim_customer.status_claim = '$status_claim' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+				}
+			}
+		}
+
 
 		if($status_claim != null) {
 			if($year != null && $month != null) {
@@ -967,6 +2325,98 @@ class Customerclaim_model extends CI_Model {
 		}
 
 
+		if($proses != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' AND extract(YEAR from claim_customer.tgl_input) = $year
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.proses = '$proses' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+				}
+			}
+		}
+
+		if($id_customer != null) {
+			if($year != null && $month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' AND extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif ($year != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' AND extract(YEAR from claim_customer.tgl_input) = $year
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} elseif($month != null) {
+				$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' AND extract(MONTH from claim_customer.tgl_input) = $month
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+			} else {
+				if(!empty($get_customer_claim_sort_by_date)) {
+					$query = $this->db->query("
+					select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
+					inner join data_parts on claim_customer.id_part = data_parts.id_part inner join visual
+					on claim_customer.id_customer_claim = visual.id_customer_claim
+					inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim
+					where data_parts.customer = '$id_customer' AND claim_customer.tgl_input >= '$start_by_all_part' AND claim_customer.tgl_input <= '$end_by_all_part'
+					AND data_parts.nama_part = '$nama_part'
+				");
+				return $query->result();
+				}
+			}
+		}
+
 		if($year != null && $month != null) {
 			$query = $this->db->query("
 				select data_parts.nama_part, visual.*, non_visual.* from claim_customer 
@@ -1011,7 +2461,7 @@ class Customerclaim_model extends CI_Model {
 	}
 
 
-	public function rejection_per_year_month($year, $annual_status_claim, $customer) {
+	public function rejection_per_year_month($year, $annual_status_claim, $customer, $proses) {
 		// $array_select = array(
 		// 	'claim_customer.*',
 		// 	'visual.*',
@@ -1033,7 +2483,15 @@ class Customerclaim_model extends CI_Model {
 		// $this->db->where("extract(YEAR from claim_customer.tgl_input)", $year);
 		// $query = $this->db->get();
 		// return $query->result();
-		if($annual_status_claim != null and $customer != null) {
+		if($annual_status_claim != null and $customer != null and $proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year 
+			AND claim_customer.status_claim = '$annual_status_claim' AND data_parts.customer = '$customer' AND data_parts.proses = '$proses'");
+			return $query->result();
+		} elseif($annual_status_claim != null and $customer != null) {
 			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
 			inner join data_parts on claim_customer.id_part = data_parts.id_part
 			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
@@ -1041,6 +2499,22 @@ class Customerclaim_model extends CI_Model {
 			where extract(YEAR from claim_customer.tgl_input) = $year 
 			AND claim_customer.status_claim = '$annual_status_claim' AND data_parts.customer = '$customer'");
 			return $query->result();
+		} elseif($proses != null and $customer != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year 
+			AND data_parts.proses = '$proses' AND data_parts.customer = '$customer'");
+			return $query->result(); 
+		} elseif($annual_status_claim != null and $proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year 
+			AND claim_customer.status_claim = '$annual_status_claim' AND data_parts.proses = '$proses'");
+			return $query->result(); 
 		} elseif($annual_status_claim != null) {
 			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
 			inner join data_parts on claim_customer.id_part = data_parts.id_part
@@ -1055,6 +2529,13 @@ class Customerclaim_model extends CI_Model {
 			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
 			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.customer = '$customer'");
 			return $query->result();
+		} elseif($proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.proses = '$proses'");
+			return $query->result(); 
 		} else {
 			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
 			inner join data_parts on claim_customer.id_part = data_parts.id_part
@@ -1065,7 +2546,7 @@ class Customerclaim_model extends CI_Model {
 		}
 	}
 
-	public function montly_rejection($year, $month, $monthly_status_claim, $customer) {
+	public function montly_rejection($year, $month, $monthly_status_claim, $customer, $proses) {
 		// $array_select = array(
 		// 	'claim_customer.*',
 		// 	'visual.*',
@@ -1086,14 +2567,37 @@ class Customerclaim_model extends CI_Model {
 		// $this->db->where('MONTH(claim_customer.tgl_input)', $month);
 		// $query = $this->db->get();
 		// return $query->result();
-
-		if($customer != null and $monthly_status_claim != null) {
+		if($customer != null and $monthly_status_claim != null and $proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+			AND data_parts.customer = '$customer' AND claim_customer.status_claim = '$monthly_status_claim' AND data_parts.proses = '$proses'");
+			return $query->result();
+		} elseif($customer != null and $monthly_status_claim != null) {
 			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
 			inner join data_parts on claim_customer.id_part = data_parts.id_part
 			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
 			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
 			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
 			AND data_parts.customer = '$customer' AND claim_customer.status_claim = '$monthly_status_claim'");
+			return $query->result();
+		} elseif($proses != null and $monthly_status_claim != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+			AND data_parts.proses = '$proses' AND claim_customer.status_claim = '$monthly_status_claim'");
+			return $query->result();
+		} elseif($proses != null and $customer != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+			AND data_parts.proses = '$proses' AND data_parts.customer = '$customer'");
 			return $query->result();
 		} elseif ($customer != null) {
 			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
@@ -1102,6 +2606,14 @@ class Customerclaim_model extends CI_Model {
 			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
 			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
 			AND data_parts.customer = '$customer'");
+			return $query->result();
+		} elseif ($proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month
+			AND data_parts.proses = '$proses'");
 			return $query->result();
 		} elseif ($monthly_status_claim != null) {
 			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
@@ -1119,6 +2631,277 @@ class Customerclaim_model extends CI_Model {
 			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month");
 			return $query->result();
 		}
+	}
+
+	public function model_filter_table($nama_part, $id_customer, $year, $limit) {
+		if($nama_part != null && $id_customer != null && $year != null) {
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.nama_part = '$nama_part' AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			return $query->result();
+		}
+
+		if($nama_part != null && $id_customer != null) {
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where data_parts.nama_part = '$nama_part' AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			return $query->result();
+		}
+
+		if($nama_part != null && $year != null) {
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.nama_part = '$nama_part' order by claim_customer.tgl_input desc limit $limit");
+			return $query->result();
+		}
+
+		if($nama_part != null) {
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where data_parts.nama_part = '$nama_part' order by claim_customer.tgl_input desc limit $limit");
+			return $query->result();
+		}
 		
+
+		if($id_customer != null && $year != null) {
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			return $query->result();
+		}
+
+		if($id_customer != null) {
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part 
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+			where data_parts.customer = '$id_customer' order by claim_customer.tgl_input desc limit $limit");
+			return $query->result();
+		}
+
+		if($year != null) {
+			$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table 
+			inner join data_parts on $this->table.id_part = data_parts.id_part
+			left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock 
+			where extract(YEAR from claim_customer.tgl_input) = $year order by claim_customer.tgl_input desc limit $limit");
+			return $query->result();
+		}
+
+		$query = $this->db->query("select data_parts.*, claim_customer.*, sortir_stock.* from $this->table
+		inner join data_parts on $this->table.id_part = data_parts.id_part 
+		left join sortir_stock on $this->table.id_sortir_stock = sortir_stock.id_sortir_stock
+		order by claim_customer.tgl_input desc");
+		return $query->result();
+	}
+
+	public function get_files_ofp($id_ofp) {
+		$this->db->select("*");
+		$this->db->from("ofp");
+		$this->db->where("id_ofp", $id_ofp);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function get_files_pica($id_pica) {
+		$this->db->select("*");
+		$this->db->from("pica");
+		$this->db->where("id_pica", $id_pica);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function get_files_pfmea($id_pfmea) {
+		$this->db->select("*");
+		$this->db->from("pfmea");
+		$this->db->where("id_pfmea", $id_pfmea);
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function model_sortir_stock($id_customer_claim) {
+		$query = $this->db->query("select data_parts.*, claim_customer.*, visual.*, non_visual.* from $this->table inner join data_parts
+			on $this->table.id_part = data_parts.id_part left join visual on $this->table.id_customer_claim = visual.id_customer_claim 
+			left join non_visual on $this->table.id_customer_claim = non_visual.id_customer_claim
+			where claim_customer.id_customer_claim = '$id_customer_claim'");
+		return $query->row();
+	}
+
+	public function get_claim_by_id_part($id_part) {
+		$query = $this->db->query("select data_parts.*, claim_customer.*, visual.*, non_visual.* from $this->table inner join data_parts
+			on $this->table.id_part = data_parts.id_part inner join visual on $this->table.id_customer_claim = visual.id_customer_claim 
+			inner join non_visual on $this->table.id_customer_claim = non_visual.id_customer_claim
+			where claim_customer.id_part = '$id_part' order by claim_customer.id_sortir_stock desc");
+		return $query->result();
+	}
+
+
+	public function simpan_data_sortir($data) {
+		$this->db->insert('sortir_stock', $data);
+	}
+
+	public function update_data_sortir($data) {
+		$this->db->set('tgl', $data['tgl']);
+		$this->db->set('stock', $data['stock']);
+		$this->db->set('ok', $data['ok']);
+		$this->db->set('ng', $data['ng']);
+		$this->db->set('sisa', $data['sisa']);
+		$this->db->where('id_sortir_stock', $data['id_sortir_stock']);
+		$result = $this->db->update('sortir_stock');
+		return $result;
+	}
+	
+	public function update_sortir_field($data) {
+		$this->db->set('id_sortir_stock', $data['id_sortir_stock']);
+		$this->db->where('id_customer_claim', $data['id_customer_claim']);
+		$result = $this->db->update('claim_customer');
+		return $result;
+	}
+
+	public function get_data_sortir() {
+		$query = $this->db->query("select * from sortir_stock order by id_sortir_stock desc");
+		return $query->row();
+	}
+
+	public function select_sortir_stock_by_id($id_sortir_stock) {
+		if($id_sortir_stock != null) {
+			$query = $this->db->query("select * from sortir_stock where id_sortir_stock = $id_sortir_stock");
+			return $query->row();
+		}
+		return null;
+	}
+
+	public function daily_filter($tanggal, $status, $customer, $proses, $part) {
+		$year = date('Y', strtotime($tanggal));
+		$month = date('m', strtotime($tanggal));
+		$day = date('d', strtotime($tanggal));
+		if($customer != null and $status != null and $proses != null and $part != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.customer = '$customer' AND claim_customer.status_claim = '$status' 
+			AND data_parts.proses = '$proses' AND data_parts.nama_part = '$part'");
+			return $query->result();
+		} elseif($customer != null and $status != null and $part != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.customer = '$customer' 
+			AND claim_customer.status_claim = '$status' AND data_parts.nama_part = '$part'");
+			return $query->result();
+		} elseif($proses != null and $status != null and $part != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' 
+			AND claim_customer.status_claim = '$status' AND data_parts.nama_part = '$part'");
+			return $query->result();
+		} elseif($proses != null and $customer != null and $part != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' 
+			AND data_parts.customer = '$customer' AND data_parts.nama_part = '$part'");
+			return $query->result();
+		} elseif($customer != null and $status != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.customer = '$customer' AND claim_customer.status_claim = '$status'");
+			return $query->result();
+		} elseif($part != null and $status != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.nama_part = '$part' AND claim_customer.status_claim = '$status'");
+			return $query->result();
+		} elseif($proses != null and $status != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' AND claim_customer.status_claim = '$status'");
+			return $query->result();
+		} elseif($proses != null and $part != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' AND data_parts.nama_part = '$part'");
+			return $query->result();
+		} elseif($proses != null and $customer != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses' AND data_parts.customer = '$customer'");
+			return $query->result(); 
+		} elseif($part != null and $customer != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.nama_part = '$part' AND data_parts.customer = '$customer'");
+			return $query->result(); 
+		} elseif ($customer != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.customer = '$customer'");
+			return $query->result();
+		} elseif ($proses != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.proses = '$proses'");
+			return $query->result();
+		} elseif ($status != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND claim_customer.status_claim = '$status'");
+			return $query->result();
+		} elseif ($part != null) {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day AND data_parts.nama_part = '$part'");
+			return $query->result();
+		} else {
+			$query = $this->db->query("select claim_customer.*, visual.*, non_visual.* from claim_customer 
+			inner join data_parts on claim_customer.id_part = data_parts.id_part
+			inner join visual on claim_customer.id_customer_claim = visual.id_customer_claim
+			inner join non_visual on claim_customer.id_customer_claim = non_visual.id_customer_claim 
+			where extract(YEAR from claim_customer.tgl_input) = $year AND extract(MONTH from claim_customer.tgl_input) = $month 
+			AND extract(DAY from claim_customer.tgl_input) = $day");
+			return $query->result();
+		}
 	}
 }

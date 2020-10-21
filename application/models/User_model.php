@@ -23,6 +23,7 @@ class User_model extends CI_Model {
 			'username' => 'juandelima',
 			'role' => 'Super Admin',
 			'password' => password_hash('123456', PASSWORD_DEFAULT),
+			'online' => '1',
 			'created_at' => date('Y-m-d H:i:s'),
 			'updated_at' => date('Y-m-d H:i:s')
 		);

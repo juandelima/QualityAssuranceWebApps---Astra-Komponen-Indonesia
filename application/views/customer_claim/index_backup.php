@@ -158,14 +158,17 @@
 											<?php echo $sum_rejection; ?>
 										</a>
 									</td>
-									<td style="<?php echo $style; ?>"><?php echo date('d-m-Y', strtotime($overdue)); ?></td>
+									
+									
 									<td style="text-align: center;">
 										<a href="javascript:;" onclick="jQuery('#modal-upload-ppt<?php echo $data->id_customer_claim; ?>').modal('show', {backdrop: 'static'});" class="btn btn-blue btn-icon icon-left">
 												Upload
 											<i class="entypo-upload"></i>
 										</a>
-
-									<a <?php if(empty($data->ppt_file)) { ?> disabled <?php } else { ?> href="<?php echo base_url('assets/claim_customer/ppt/'.$data->ppt_file)?>" <?php } ?>class="btn btn-success btn-icon icon-left" download="PART - <?php echo $data->NAMA_PART; ?>">
+										<?php 
+										
+										?>
+										<a <?php if(empty($data->ppt_file)) { ?> disabled <?php } else { ?> href="<?php echo base_url('assets/claim_customer/ppt/'.$data->ppt_file)?>" <?php } ?>class="btn btn-success btn-icon icon-left" download="PART - <?php echo $data->NAMA_PART; ?>">
 												Download
 											<i class="entypo-download"></i>
 										</a>

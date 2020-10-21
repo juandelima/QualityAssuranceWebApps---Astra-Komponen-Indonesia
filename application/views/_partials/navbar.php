@@ -33,7 +33,7 @@
 			<ul id="main-menu" class="main-menu">
 				<!-- add class "multiple-expanded" to allow multiple submenus to open -->
 				<!-- class "auto-inherit-active-class" will automatically add "active" class for parent elements who are marked already with class "active" -->
-				<?php if($this->session->userdata['role'] != 'Admin') { ?>
+				<?php if($this->session->userdata['role'] != 'Admin' and $this->session->userdata['role'] != 'User') { ?>
 				<li <?php if($slug == 'dashboard') { ?> class="active" <?php } ?>>
 					<a href="<?php echo base_url('dashboard') ?>">
 						<i class="entypo-monitor"></i>
@@ -41,6 +41,7 @@
 					</a>
 				</li>
 				<?php } ?>
+				<?php if($this->session->userdata['role'] != 'User') { ?>
 				<li class="<?php if($slug == 'listpart' || $slug == 'create_new_part'){ ?>opened active <?php } ?>has-sub">
 					<a href="#">
 						<i class="entypo-layout"></i>
@@ -54,6 +55,7 @@
 						</li>
 					</ul>
 				</li>
+				<?php } ?>
 				<li class="<?php if($slug == 'customerclaim' || $slug == 'create_customerclaim' || $slug == 'comingsoon'){ ?>opened active <?php } ?>has-sub">
 					<a href="#">
 						<i class="entypo-newspaper"></i>

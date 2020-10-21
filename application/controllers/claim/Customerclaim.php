@@ -29,6 +29,8 @@ class Customerclaim extends CI_Controller {
 		$count_aktivitas = count($get_data_aktivitas);
 		$get_data_delivery = $this->delivery_model->listing_deliv();
 		$count_delivery = count($get_data_delivery);
+		$get_all_customer_claim = $this->customerclaim_model->model_filter_table();
+		$get_proses = $this->customerclaim_model->get_proses();
 		if(!empty($get_customer_claim_sort_by_date)) {
 			$getStart = $get_customer_claim_sort_by_date[0]->tgl_input;
 			$getEnd = $get_customer_claim_sort_by_date[count($get_customer_claim_sort_by_date) - 1]->tgl_input;
@@ -51,20 +53,21 @@ class Customerclaim extends CI_Controller {
 			'count_user' => $count_user,
 			'count_aktivitas' => $count_aktivitas,
 			'count_delivery' => $count_delivery,
-			'get_data_delivery' => json_encode($get_data_delivery)
+			'get_data_delivery' => json_encode($get_data_delivery),
+			'get_all_customer_claim' => $get_all_customer_claim,
+			'proses' => $get_proses
 		);
 		$this->load->view('customer_claim/index', $data);
 	} 
-	
 
  	public function create_customerclaim() {
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
-		$session_role = $this->session->userdata['role'];
-		if($session_role != 'Super Admin' and $session_role != 'Admin') {
-			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
-			redirect(base_url(), 'refresh');
-		}
+		// $session_role = $this->session->userdata['role'];
+		// if($session_role != 'Super Admin' and $session_role != 'Admin') {
+		// 	$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
+		// 	redirect(base_url(), 'refresh');
+		// }
 		$list_customer = $this->customer_model->customer_list();
 		$slug = $this->uri->segment(3);
 		$get_field_visual = $this->customerclaim_model->list_field_visual();
@@ -266,11 +269,9 @@ class Customerclaim extends CI_Controller {
 		
 		$result_chart_part = array();
 		$chart_part_claim = $this->customerclaim_model->chart_part_claim($start, $end, $year, $month, $status, $proses, $id_customer);
-		// print_r($chart_part_claim);
 		if(!empty($chart_part_claim)) {
 			$count_chart_part_claim = count($chart_part_claim);
 			for($i = 0; $i < $count_chart_part_claim; $i++) {
-				// echo $i."<br/>";
 				$nama_part = $chart_part_claim[$i]->nama_part;
 				$filter_part = $this->customerclaim_model->filter_part($nama_part, $start, $end, $year, $month, $status, $proses, $id_customer);
 				$count_filter_part = count($filter_part);
@@ -298,36 +299,108 @@ class Customerclaim extends CI_Controller {
 		
 	}
 
-	public function filter_table() {
-		$customer = $_GET['table_ganti_customer'];
-		$nama_part = $_GET['table_ganti_part'];
-		$year = $_GET['table_year'];
-		$limit = $_GET['banyak_data'];
-		if($customer != null) {
-			$customer = $customer;
-		} else {
-			$customer = null;
-		}
+	public function getCustomerClaim($filter_customer = null, $filter_proses = null) {
+		$get_all_customer_claim = $this->customerclaim_model->model_filter_table($filter_customer, $filter_proses);
+		$response_data["data"] = array();
+		$no = 1;
+		foreach($get_all_customer_claim as $data) {
+			$date = strtotime($data->tgl_input);
+			$card = $data->card;
+			if($card == "Green Card") {
+				$style_card = "background-color: #42b883; color: #ffffff; text-align: center;";
+			} elseif($card == "Red Card") {
+				$style_card = "background-color: #ff0000; color: #ffffff; text-align: center;";
+			} elseif($card == "Yellow Card") {
+				$style_card = "background-color: #ffd800; color: #222831; text-align: center;";
+			} else {
+				$style_card = null;
+			}
 
-		if($nama_part != null) {
-			$nama_part = $nama_part;
-		} else {
-			$nama_part = null;
-		}
+			$overdue = date("Y-m-d", strtotime("+3 day", $date));
+			$datenow = date("Y-m-d");
+			if($datenow > $overdue) {
+				if(!empty($data->ppt_file)) {
+					$style = "kuning";
+				} else {
+					$style = "red";
+				}
+				$htmlDue = "<div id='status_color$data->id_customer_claim' class='$style'>$overdue</div>";
+			} else {
+				if(!empty($data->ppt_file)) {
+					$style = "hijau";
+				} else {
+					$style = "netral";
+				}
+				$htmlDue = "<div id='status_color$data->id_customer_claim' class='$style'>$overdue</div>";
+			}
 
-		if($year != null) {
-			$year = $year;
-		} else {
-			$year = null;
-		}
+			$uploadOfp = "<a href='javascript:;' id='modal-upload-ofp$data->id_customer_claim' class='btn btn-blue'><i class='entypo-upload'></i></a>";
+			if(empty($data->ofp)) {
+				$downloadOfp = "<a class='btn btn-red disable enable_ofp$data->id_customer_claim' disabled><i class='entypo-eye'></i></a>";
+			} else {
+				$downloadOfp = "<a class='btn btn-red enable_ofp$data->id_customer_claim' id='download_ofp_file$data->id_customer_claim'><i class='entypo-eye'></i></a>";
+			}
 
-		if($limit != null) {
-			$limit = $limit;
-		} else {
-			$limit = 10;
+			if(empty($data->id_pergantian_part)) {
+				$modalPergantianPart = "<a href='javascript:;' id='modal-pergantian-part$data->id_customer_claim' class='btn btn-info btn-icon icon-left'><i class='entypo-pencil'></i> Pergantian part</a>";
+			} else {
+				$modalPergantianPart = "<i class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i> Sudah melakukan pergantian part";
+			}
+			$pergantianPart = "<div id='pergantian_part$data->id_customer_claim'></div>";
+
+			if(empty($data->id_sortir_stock)) {
+				$modalSortirStock = "<a href='javascript:;' id='modal-sortir-stock$data->id_customer_claim' class='btn btn-blue'><i class='entypo-pencil'></i></a>";
+			} else {
+				if($data->sisa > 0) {
+					$modalSortirStock = "<a href='javascript:;' id='modal-sortir-stock$data->id_customer_claim' class='btn btn-success'><i class='entypo-pencil'></i></a>";
+				} else {
+					$modalSortirStock = "<i id='ganti-part$data->id_customer_claim' class='entypo-check' style='color: #21bf73; font-weight: bold; font-size: 15px;'></i>";
+				}
+			}
+			$statusSortirStock = "<div id='status-sortir-stock$data->id_customer_claim'></div>";
+
+			$uploadPica = "<a href='javascript:;' id='modal-upload-ppt$data->id_customer_claim' class='btn btn-blue'><i class='entypo-upload'></i></a>";
+			if(empty($data->ppt_file)) {
+				$pica = "<a class='btn btn-success disable enable_pica$data->id_customer_claim' disabled><i class='entypo-eye'></i></a>";
+			} else {
+				$pica = "<a class='btn btn-success enable_pica$data->id_customer_claim' id='download_ppt_file$data->id_customer_claim'><i class='entypo-eye'></i></a>";
+			}
+
+			$uploadPfmea = "<a href='javascript:;' id='modal-pfmea$data->id_customer_claim' class='btn btn-blue'><i class='entypo-upload'></i></a>";
+			if(empty($data->id_pfmea)) {
+				$pfmea = "<a class='btn btn-info disable enable_pfmea$data->id_customer_claim' disabled><i class='entypo-eye'></i></a>";
+			} else {
+				$pfmea = "<a class='btn btn-info enable_pfmea$data->id_customer_claim' id='modal_files$data->id_customer_claim'><i class='entypo-eye'></i></a>";
+			}
+
+
+			if($data->ofp != null && $data->id_pergantian_part != null && $data->id_sortir_stock != null && $data->ppt_file != null && $data->id_pfmea != null) {
+				$status = "<div id='status_claim$data->id_customer_claim'>CLOSE</div>";
+			} else {
+				$status = "<div id='status_claim$data->id_customer_claim'>OPEN</div>";
+			}
+			$dataClaim = array(
+				'no' => $no,
+				'id_customer_claim' => $data->id_customer_claim,
+				'tgl_input' => $data->tgl_input,
+				'no_sap' => $data->no_surat_claim,
+				'nama_part' => $data->nama_part,
+				'type' => $data->type,
+				'proses' => $data->proses,
+				'due_date' => $htmlDue,
+				'ofp' => $uploadOfp.' '.$downloadOfp,
+				'pergantian_part' => $modalPergantianPart.' '.$pergantianPart,
+				'sortir_stock' => $modalSortirStock.' '.$statusSortirStock,
+				'pica' => $uploadPica.' '.$pica,
+				'pfmea' => $uploadPfmea.' '.$pfmea,
+				'status' => $status,
+				'card' => "<div style='$style_card'>$card</div>"
+			);
+
+			$response_data[] = array_push($response_data["data"], $dataClaim);
+			$no += 1;
 		}
-		$get_all_customer_claim = $this->customerclaim_model->model_filter_table($nama_part, $customer, $year, $limit);
-		echo json_encode($get_all_customer_claim);
+		echo json_encode($response_data);
 	}
 
 	public function get_previous_data_part() {
@@ -606,6 +679,9 @@ class Customerclaim extends CI_Controller {
 		$qty = $_POST['qty'];
 		$strTgl_toTime = date('Y-m-d', strtotime($tgl));
 		$result = $this->delivery_model->save_delivery($strTgl_toTime, $qty);
+		$getDeliv = $this->delivery_model->listing_deliv();
+		$getLastRecord = $getDeliv[0];
+		$countRecord = $this->delivery_model->count_delivery();
 		$id_user = $this->session->userdata('id_users');
 		$data_aktivitas = array(
 			"id_user" => $id_user,
@@ -613,8 +689,12 @@ class Customerclaim extends CI_Controller {
 			"tgl" => date("Y-m-d"),
 			"jam" => date("H:i:s")
 		);
+		$data = array(
+			'no' => $countRecord->count_deliv,
+			'data_deliv' => $getLastRecord
+		);
 		$this->aktivitas_model->save_aktivitas($data_aktivitas);
-		echo json_encode($result);
+		echo json_encode($data);
 
 	}
 
@@ -647,20 +727,67 @@ class Customerclaim extends CI_Controller {
 		echo json_encode($data);
 	}
 
+
 	public function get_ofp_files($id_ofp) {
-		$result = $this->customerclaim_model->get_files_ofp($id_ofp);
-		echo json_encode($result);
+		$response_data["data"] = array();
+		$no = 1;
+		$baseUrl = base_url('assets/claim_customer/ofp/');
+		$ofpFiles = $this->customerclaim_model->get_files_ofp($id_ofp);
+		foreach($ofpFiles as $data) {
+			$downloadOfp = "<a target='_blank' href='$baseUrl$data->nama_file' class='btn btn-blue'><i class='entypo-download'></i></a>";
+			$dataOfpFiles = array(
+				'no' => $no,
+				'id_ofp' => $data->id_ofp,
+				'tgl_upload' => $data->tgl_upload,
+				'nama_file' => $data->nama_file,
+				'download' => $downloadOfp
+			);
+			$response_data[] = array_push($response_data["data"], $dataOfpFiles);
+			$no += 1;
+		}
+		echo json_encode($response_data);
 	}
 	
 	public function get_pica_files($id_pica) {
-		$result = $this->customerclaim_model->get_files_pica($id_pica);
-		echo json_encode($result);
-	}
-	public function get_pfmea_files($id_pfmea) {
-		$result = $this->customerclaim_model->get_files_pfmea($id_pfmea);
-		echo json_encode($result);
+		$response_data["data"] = array();
+		$no = 1;
+		$baseUrl = base_url('assets/claim_customer/pica/');
+		$picaFiles = $this->customerclaim_model->get_files_pica($id_pica);
+		foreach($picaFiles as $data) {
+			$downloadPica = "<a target='_blank' href='$baseUrl$data->nama_file' class='btn btn-blue'><i class='entypo-download'></i></a>";
+			$dataPicaFiles = array(
+				'no' => $no,
+				'id_pica' => $data->id_pica,
+				'tgl_upload' => $data->tgl_upload,
+				'nama_file' => $data->nama_file,
+				'download' => $downloadPica
+			);
+			$response_data[] = array_push($response_data["data"], $dataPicaFiles);
+			$no += 1;
+		}
+
+		echo json_encode($response_data);
 	}
 
+	public function get_pfmea_files($id_pfmea) {
+		$response_data["data"] = array();
+		$no = 1;
+		$baseUrl = base_url('assets/claim_customer/pfmea/');
+		$pfmeaFiles = $this->customerclaim_model->get_files_pfmea($id_pfmea);
+		foreach($pfmeaFiles as $data) {
+			$downloadPfmea = "<a target='_blank' href='$baseUrl$data->nama_file' class='btn btn-blue'><i class='entypo-download'></i></a>";
+			$dataPfmeaFiles = array(
+				'no' => $no,
+				'id_pfmea' => $data->id_pfmea,
+				'tgl_upload' => $data->tgl_upload,
+				'nama_file' => $data->nama_file,
+				'download' => $downloadPfmea
+			);
+			$response_data[] = array_push($response_data["data"], $dataPfmeaFiles);
+			$no += 1;
+		}
+		echo json_encode($response_data);
+	}
 	
 	public function testing_input() {
 		echo $this->customerclaim_model->testing();
@@ -712,16 +839,6 @@ class Customerclaim extends CI_Controller {
 				$problem_part[] = $mergeLabel[json_encode($problem)];
 			}
 		}
-
-		// $count_get_claim_by_id_part = count($get_claim_by_id_part);
-		// for($i = 0; $i < $count_get_claim_by_id_part; $i++) {
-		// 	if(!empty($get_claim_by_id_part[$i]->id_sortir_stock)) {
-		// 		$id_sortir_stock = $get_claim_by_id_part[$i]->id_sortir_stock;
-		// 		break;
-		// 	} else {
-		// 		$id_sortir_stock = null;
-		// 	}
-		// }
 
 
 		$select_sortir_stock_by_id = $this->customerclaim_model->select_sortir_stock_by_id($get_claim->id_sortir_stock);

@@ -678,7 +678,6 @@ function delivery(root_url, count_delivery, role, get_data_delivery) {
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     alert(textStatus +" "+errorThrown);
-
                 }
             });
         }

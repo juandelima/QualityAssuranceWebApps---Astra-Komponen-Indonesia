@@ -116,12 +116,13 @@ class Dashboard extends CI_Controller {
 		$count_deliv = count($listing_deliv);
 		$dataMonth = array();
 		$getYear = $_GET['year1'];
+
 		if($getYear != NULL) {
 			$year = $getYear;
 		} else {
 			$year = date('Y');
 		}
-		// echo json_encode($year);
+		
 		$months = ["Jan-$year", "Feb-$year", "Mar-$year","Apr-$year", "May-$year", "Jun-$year", 
 					"Jul-$year", "Aug-$year", "Sep-$year", "Oct-$year", "Nov-$year", "Dec-$year"];
 		$get_field_visual = $this->customerclaim_model->list_field_visual();
@@ -158,6 +159,7 @@ class Dashboard extends CI_Controller {
 
 		$count_merge_field = count($merge_field_except);
 		$ppm = [];
+
 		for($i = 0; $i < count($months); $i++) {
 			$month = date("m", strtotime($months[$i]));
 			$rejection_per_year_month = $this->customerclaim_model->montly_rejection($year, $month, $status_claim, $customer, $proses);
@@ -298,12 +300,10 @@ class Dashboard extends CI_Controller {
 			$key_visual[] = json_encode($get_field_visual[$i]);
 		}
 		$label_visual = array_combine($key_visual, $value_visual);
-
 		for($i = 1; $i < count($get_field_non_visual); $i++) {
 			$key_non_visual[] = json_encode($get_field_non_visual[$i]);
 		}
 		$label_non_visual = array_combine($key_non_visual, $value_non_visual);
-
 		$mergeField = array_merge($get_field_visual, $get_field_non_visual);
 		$merge_field_except = [];
 		for($i = 0; $i < count($mergeField); $i++) {
@@ -361,6 +361,7 @@ class Dashboard extends CI_Controller {
 		$daily = [];
 		$linked = [];
 		$defects = [];
+		$ppm = [];
 		for($tgl = 0; $tgl <= 30; $tgl++) {
 			if($previous_month != $current_month) {
 				break;
@@ -373,7 +374,7 @@ class Dashboard extends CI_Controller {
 			$current_month = intval(date("m", strtotime("+$tgl day", $year_month)));
 			if($current_month == $previous_month) {
 				$daily_filter = $this->customerclaim_model->daily_filter($fullDate, $status, $customer, $proses, $part);
-				
+				$daily_delivery = $this->delivery_model->daily_ppm("$tahun-$current_month-$day");
 				$count_daily_filter = count($daily_filter);
 				for($i = 0; $i < $count_daily_filter; $i++) {
 					if(!empty($daily_filter[$i])) {
@@ -400,7 +401,13 @@ class Dashboard extends CI_Controller {
 					arsort($temp);
 				}
 
+				if($daily_delivery->total_qty != null && $daily_delivery->total_qty > 0) {
+					$calculate_ppm = (int)$daily_delivery->total_qty;
+				} else {
+					$calculate_ppm = 0;
+				}
 
+				$ppm[] = $calculate_ppm;
 				$daily[$day] = $dailySum;
 				$linked[] = "$day";
 				$defects[] = $temp;
@@ -411,6 +418,7 @@ class Dashboard extends CI_Controller {
 			"tahun" => $tahun,
 			"linked" => $linked,
 			"defects" => $defects,
+			"ppm" => $ppm,
 			"bulan" => date("M"),
 			"count_customer_claim" => $count_customer_claim,
 			"count_deliv" => $count_deliv

@@ -19,7 +19,7 @@ class Customer_model extends CI_Model {
 
 	
 	public function customer_list() {
-		$data = $this->db->get($this->table);
+		$data = $this->db->get('customer');
 		return $data->result();
 	}
 

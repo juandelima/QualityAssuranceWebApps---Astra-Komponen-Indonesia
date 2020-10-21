@@ -14,14 +14,6 @@ class Listpart extends CI_Controller {
 		$this->load->helper('url');
 	}
 
-	// public function index() {
-	// 	$listpart_model = $this->listpart_model->list_part();
-	// 	$data = array(
-	// 		'listpart' => $listpart_model
-	// 	);
-	// 	$this->load->view('master_data/list_part/index', $data);
-	// }
-
 	public function index() {
 		$slug = $this->uri->segment(2);
 		$listing_user = $this->user_model->list_user();

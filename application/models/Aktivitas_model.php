@@ -15,6 +15,7 @@ class Aktivitas_model extends CI_Model {
         $this->db->select($array_select);
         $this->db->from($this->table);
         $this->db->join("users", "users.id_users = aktivitas_user.id_user", "inner");
+        $this->db->order_by("id_aktivitas", "DESC");
         $data = $this->db->get();
         return $data->result();
     }

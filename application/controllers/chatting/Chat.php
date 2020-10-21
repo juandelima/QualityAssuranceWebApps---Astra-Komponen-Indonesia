@@ -41,10 +41,6 @@ class Chat extends CI_Controller {
         }
     }
 
-    public function receiver_message() {
-
-    }
-
     public function history_message() {
       $id_receiver = $this->input->get('id_receiver');
       $id_from = $this->input->get('from');

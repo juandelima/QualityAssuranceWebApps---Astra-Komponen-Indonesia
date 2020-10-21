@@ -536,7 +536,7 @@
 										</div>
 
 										<div class="panel-body" id="daily_body_chart">
-											<div class="row" style="margin-bottom: 10px;">
+											<div class="row" style="margin-bottom: 10px;" id="daily_grafik">
 												<div class="col-sm-4" id="year_daily_list">
 													<div class="form-group">
 														<div class="col-sm-10">
@@ -555,6 +555,7 @@
 														</div>
 													</div>
 												</div>
+	
 												<div class="col-sm-4" id="month_daily_list">
 													<div class="form-group">
 														<div class="col-sm-10">
@@ -573,8 +574,16 @@
 														</div>
 													</div>
 												</div>
+
+												<div class="col-sm-2" id="ppm_daily_list">
+													<div class="form-group" style="margin-top: 5px;">
+														<input type="checkbox" id="ppm_check" onclick="checkedPpm()">
+														<label for="ppm_check">Ppm</label>
+													</div>
+												</div>
 											</div>
 											<div id="daily_container"></div>
+											<div id="daily_container_ppm" style="display: none;"></div>
 										</div>
 									</div>
 								</div>
@@ -612,6 +621,7 @@
 	<script src="<?php echo site_url('assets/js/fusioncharts.jqueryplugin.min.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/chart/change_chart.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/chart/daily_chart.js'); ?>"></script>
+	<script src="<?php echo site_url('assets/js/chart/daily_chart_ppm.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/chart/annual_monthly_chart.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/chart/detail_chart.js'); ?>"></script>
 	<script src="<?php echo site_url('assets/js/chatting/chat.js'); ?>"></script>

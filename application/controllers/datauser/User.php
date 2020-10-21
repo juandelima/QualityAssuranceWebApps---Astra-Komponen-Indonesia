@@ -12,7 +12,8 @@ class User extends CI_Controller {
 	}
 	
 	public function insert() {
-		$this->user_model->data_dummy();
+		$test = $this->user_model->data_dummy();
+		print_r($test);
 	}
 
 	
