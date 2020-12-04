@@ -210,7 +210,7 @@
 			<div class="main-content">
 				<?php $this->load->view('_partials/navbar_head.php'); ?>
 				<?php
-					if($this->session->flashdata('sukses')){
+					if($this->session->flashdata('sukses')) {
 				?>
 				<script>
 					jQuery(document).ready(function($) {
@@ -264,19 +264,19 @@
 					<input type="hidden" name="id_customer" id="id_customer" value=""/>
 					<input type="hidden" name="part" id="part" value=""/>
 					<div class="row" style="margin-bottom: 10px;">
-					<div class="<?php if($this->session->userdata['role'] != 'User') { ?> col-sm-6 <?php } else { ?> col-sm-12 <?php } ?>">
-								<a href="<?php echo base_url('claim/customerclaim/create_customerclaim'); ?>" class="btn btn-blue btn-icon btn-block">
-									<i class="entypo-user-add"></i>
-									ADD CUSTOMER CLAIM
-								</a>
+						<div class="<?php if($this->session->userdata['role'] != 'User') { ?> col-sm-6 <?php } else { ?> col-sm-12 <?php } ?>">
+							<a href="<?php echo base_url('claim/customerclaim/create_customerclaim'); ?>" class="btn btn-blue btn-icon btn-block">
+								<i class="entypo-user-add"></i>
+								ADD CUSTOMER CLAIM
+							</a>
 						</div>
 
 						<?php if($this->session->userdata['role'] != 'User') { ?> 
 							<div class="col-sm-6">
-									<a href="javascript:;" id="add_delivery" onclick="jQuery('#form_delivery').modal('show', {backdrop: 'static', keyboard: false});" class="btn btn-success btn-icon btn-block">
-										<i class="entypo-box"></i>
-										ADD DELIVERY
-									</a>
+								<a href="javascript:;" id="add_delivery" onclick="jQuery('#form_delivery').modal('show', {backdrop: 'static', keyboard: false});" class="btn btn-success btn-icon btn-block">
+									<i class="entypo-box"></i>
+									ADD DELIVERY
+								</a>
 							</div>
 						<?php } ?>
 					</div>
@@ -765,6 +765,27 @@
 																<a href="#"><i class="entypo-calendar"></i></a>
 															</div>
 														</div>
+													</div>
+												</div>
+												
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">Proses</label>
+													<div class="col-sm-4">
+														<select name="proses_deliv" id="proses_deliv" class="form-control">
+															<option>proses</option>
+															<?php foreach($proses as $data) { ?>
+																<option value="<?php echo $data->proses; ?>"><?php echo $data->proses; ?></option>
+															<?php } ?>
+														</select>
+													</div>
+												</div>
+
+												<div class="form-group">
+													<label class="col-sm-3 control-label" style="text-align:left;">Customer</label>
+													<div class="col-sm-4">
+														<select name="customer_deliv" id="customer_deliv" class="form-control">
+															<option>customer</option>
+														</select>
 													</div>
 												</div>
 

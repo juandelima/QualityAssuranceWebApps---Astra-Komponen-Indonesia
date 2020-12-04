@@ -7,6 +7,7 @@ class Listpart extends CI_Controller {
 		parent::__construct();
 		$this->load->helper('text');
 		$this->load->model('customer_model');
+		$this->load->model('customerclaim_model');
 		$this->load->model('listpart_model');
 		$this->load->model('user_model');
 		$this->load->model('aktivitas_model');
@@ -131,6 +132,8 @@ class Listpart extends CI_Controller {
 		$session_role = $this->session->userdata['role'];
 		$listing_user = $this->user_model->list_user();
 		$count_user = count($listing_user) - 1;
+		$customer_model = $this->customer_model->customer_list();
+		$get_proses = $this->customerclaim_model->get_proses();
 		$slug = $this->uri->segment(3);
 		if($session_role != 'Super Admin' and $session_role != 'Admin') {
 			$this->session->set_flashdata('error', "CANNOT ACCESS THIS PAGE!!!");
@@ -138,10 +141,13 @@ class Listpart extends CI_Controller {
 		}
 		$data = array(
 			'slug' => $slug,
-			'count_user' => $count_user
+			'count_user' => $count_user,
+			'customer' => $customer_model,
+			'proses' => $get_proses
 		);
 		$this->load->view('master_data/list_part/create_new_part', $data);
 	}
+
 
 	public function create() {
 		$session_role = $this->session->userdata['role'];

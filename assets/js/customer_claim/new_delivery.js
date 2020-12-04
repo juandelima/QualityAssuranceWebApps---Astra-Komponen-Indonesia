@@ -6,6 +6,7 @@ function delivery(root_url, role) {
     jQuery(document).ready(($) => {
         const delivery_table = $('#delivery_table');
         loadTableDelivery(get_data, delivery_table);
+        selectProses();
         $("#add_delivery").click(function(e) {
             e.preventDefault();
             spinner();
@@ -16,6 +17,47 @@ function delivery(root_url, role) {
             $(".dataTables_scrollHeadInner").css( "width", "100%" );
         });
     });
+}
+
+
+function selectProses() {
+    const proses_deliv = $("#proses_deliv");
+    proses_deliv.change(() => {
+        getProsesVal = proses_deliv.val();
+        selectCustomer(getProsesVal);
+    });
+}
+
+function selectCustomer(proses) {
+    let customer_deliv = $("#customer_deliv");
+    customer_deliv.empty();
+    console.log(proses === "PI");
+    if(proses === "PI") {
+        customer_deliv.append($('<option></option>').val("AHM").html("AHM"));
+        customer_deliv.append($('<option></option>').val("AVI").html("AVI"));
+        customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+        customer_deliv.append($('<option></option>').val("DNIA").html("DNIA"));
+        customer_deliv.append($('<option></option>').val("HMMI").html("HMMI"));
+        customer_deliv.append($('<option></option>').val("YUTAKA").html("YUTAKA"));
+        customer_deliv.append($('<option></option>').val("TACI").html("TACI"));
+        customer_deliv.append($('<option></option>').val("TAM").html("TAM"));
+        customer_deliv.append($('<option></option>').val("TMMIN").html("TMMIN"));
+        customer_deliv.append($('<option></option>').val("AWP").html("AWP"));
+    } else if(proses === "PT") {
+        customer_deliv.append($('<option></option>').val("AHM").html("AHM"));
+        customer_deliv.append($('<option></option>').val("AVI").html("AVI"));
+        customer_deliv.append($('<option></option>').val("YUTAKA").html("YUTAKA"));
+        customer_deliv.append($('<option></option>').val("TAM").html("TAM"));
+        customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+    } else if(proses === "SB") {
+        customer_deliv.append($('<option></option>').val("AHM").html("AHM"));
+        customer_deliv.append($('<option></option>').val("IAMI").html("IAMI"));
+        customer_deliv.append($('<option></option>').val("SUZUKI").html("SUZUKI"));
+        customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+    } else if(proses === "BM") {
+        customer_deliv.append($('<option></option>').val("SUZUKI").html("SUZUKI"));
+        customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+    }
 }
 
 function loadTableDelivery(get_data, delivery_table) {

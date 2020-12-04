@@ -677,8 +677,10 @@ class Customerclaim extends CI_Controller {
 		}
 		$tgl = $_POST['tgl_deliv'];
 		$qty = $_POST['qty'];
+		$proses = $_POST['proses_deliv'];
+		$customer = $_POST['customer_deliv'];
 		$strTgl_toTime = date('Y-m-d', strtotime($tgl));
-		$result = $this->delivery_model->save_delivery($strTgl_toTime, $qty);
+		$result = $this->delivery_model->save_delivery($strTgl_toTime, $qty, $proses, $customer);
 		$getDeliv = $this->delivery_model->listing_deliv();
 		$getLastRecord = $getDeliv[0];
 		$countRecord = $this->delivery_model->count_delivery();

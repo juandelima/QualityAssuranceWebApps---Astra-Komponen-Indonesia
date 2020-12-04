@@ -64,19 +64,32 @@
 								<div class="form-group">
 									<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">&emsp;&emsp;PROSES</label>
 									<div class="col-sm-5">
-										<input type="text" class="autocomplete form-control" id="proses" name="proses" placeholder="PI" required>
+										
+										<select name="proses" id="proses" class="form-control">
+											<option>proses</option>
+											<?php foreach($proses as $data) { ?>
+												<option value="<?php echo $data->proses; ?>"><?php echo $data->proses; ?></option>
+											<?php } ?>
+										</select>
 									</div>
 								</div>
+
+
 								<div class="form-group">
 									<label for="field-1" class="col-sm-3 control-label" style="text-align:left;">&emsp;&emsp;CUSTOMER</label>
 									<div class="col-sm-5">
-										<input type="text" class="autocomplete form-control" id="customer" name="customer" placeholder="AHM/AHD/AVI" required>
+										<select name="customer" id="customer" class="form-control">
+											<option>customer</option>
+											
+										</select>
 									</div>
 								</div>
+
+								
 								<div class="form-group center-block pull-left" style="margin-left: 20px;">
 									<button type="submit" id="simpan" class="btn btn-green btn-icon icon-left col-left">
-									Simpan
-									<i class="entypo-check"></i>
+										Simpan
+										<i class="entypo-check"></i>
 									</button>
 									<a href="<?php echo base_url('masterdata/listpart') ?>" class="btn btn-red btn-icon icon-left">
 											Kembali
@@ -97,58 +110,47 @@
 	<?php $this->load->view('_partials/chatting'); ?>
 	<script>
 		jQuery(document).ready( function($) {
-			$('#customer').autocomplete({
-				source: "<?php echo site_url('masterdata/listpart/get_customer');?>",
-				select: function (event, ui) {
-					$("#customer").val(ui.item.value);
-                }
-			});
-
-
-			// $("#no_sap").on('change', function() {
-			// 	var no_sap = $("#no_sap").val();
-			// 	$.ajax({
-			// 		url: "<?php echo base_url('masterdata/listpart/get_autofill'); ?>",
-			// 		data: '&no_sap='+no_sap,
-			// 		success: function(data) {
-			// 			var hasil = JSON.parse(data);
-			// 			$.each(hasil, function(key ,val) {
-			// 				$("#no_sap").val(val.NO_SAP);
-			// 				$("#s_grade").val(val.SAFETY_GRADE);
-			// 				$("#nama_part").val(val.NAMA_PART);
-			// 				$("#type_part").val(val.TYPE);
-			// 				$("#proses").val(val.PROSES);
-			// 				$("#customer").val(val.CUSTOMER);
-			// 			});
-			// 		}
-
-			// 	});
-			// });
-			var type_part = ["ANF","K03S","K07A","K0JA","K0WA",
-							"K15A","K15G","K15M","K18H","K25A",
-							"K41A","K44F","K46A","K46F","K47A",
-							"K47G","K56A","K56F","K59","K59A",
-							"K59J","K60A","K60R","K60V","K61A",
-							"K64","K64A","K66","K81A","K84A",
-							"K93","K93A","K97F","K97G","KVB",
-							"KVY","KWBF","KWCA","KWW","KWWF",
-							"KWWX","KYEA","KYZA","KZL","KZLG", "KZRA", "17880", "1110", "17870"];
-							
-			$("#nama_part, #no_sap, #s_grade, #type_part, #proses, #customer").keyup(function() {
-				$(this).val($(this).val().toUpperCase());
-				var get_val = $("#nama_part").val();
-
-				if(get_val.length === 0) {
-					$("#type_part").val("");
-				}
-				
-				for(var i = 0; i < type_part.length; i++) {
-					if(get_val.indexOf(type_part[i]) > -1) {
-						$("#type_part").val(type_part[i]);
-					}
-				}
-			});	
+				selectProses();
 		});
+
+		function selectProses() {
+			const proses = $("#proses");
+			proses.change(() => {
+				getProsesVal = proses.val();
+				selectCustomer(getProsesVal);
+			});
+		}
+
+		function selectCustomer(proses) {
+			let customer_deliv = $("#customer");
+			customer_deliv.empty();
+			if(proses === "PI") {
+				customer_deliv.append($('<option></option>').val("AHM").html("AHM"));
+				customer_deliv.append($('<option></option>').val("AVI").html("AVI"));
+				customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+				customer_deliv.append($('<option></option>').val("DNIA").html("DNIA"));
+				customer_deliv.append($('<option></option>').val("HMMI").html("HMMI"));
+				customer_deliv.append($('<option></option>').val("YUTAKA").html("YUTAKA"));
+				customer_deliv.append($('<option></option>').val("TACI").html("TACI"));
+				customer_deliv.append($('<option></option>').val("TAM").html("TAM"));
+				customer_deliv.append($('<option></option>').val("TMMIN").html("TMMIN"));
+				customer_deliv.append($('<option></option>').val("AWP").html("AWP"));
+			} else if(proses === "PT") {
+				customer_deliv.append($('<option></option>').val("AHM").html("AHM"));
+				customer_deliv.append($('<option></option>').val("AVI").html("AVI"));
+				customer_deliv.append($('<option></option>').val("YUTAKA").html("YUTAKA"));
+				customer_deliv.append($('<option></option>').val("TAM").html("TAM"));
+				customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+			} else if(proses === "SB") {
+				customer_deliv.append($('<option></option>').val("AHM").html("AHM"));
+				customer_deliv.append($('<option></option>').val("IAMI").html("IAMI"));
+				customer_deliv.append($('<option></option>').val("SUZUKI").html("SUZUKI"));
+				customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+			} else if(proses === "BM") {
+				customer_deliv.append($('<option></option>').val("SUZUKI").html("SUZUKI"));
+				customer_deliv.append($('<option></option>').val("ADM").html("ADM"));
+			}
+		}
 	</script>
 </body>
 </html>

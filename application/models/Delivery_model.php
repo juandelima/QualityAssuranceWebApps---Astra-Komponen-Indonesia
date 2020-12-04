@@ -3,10 +3,12 @@ class Delivery_model extends CI_Model {
 
 	private $table = 'delivery';
 
-	public function save_delivery($tgl, $qty) {
+	public function save_delivery($tgl, $qty, $proses, $customer) {
 		$data = array(
 			'tgl_delivery' => $tgl,
-			'qty' => $qty
+			'qty' => $qty,
+			'proses' => $proses,
+			'customer' => $customer
 		);
 		$result = $this->db->insert($this->table, $data);
 		return $result;
